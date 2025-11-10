@@ -1,27 +1,27 @@
 "use client";
 import { useTimer } from "@/store/useTimer";
-
+import { Button } from "@/components/Button";
 export function TimerControls() {
   const start = useTimer((s) => s.start);
   const pause = useTimer((s) => s.pause);
   const isRunning = useTimer((s) => s.isRunning);
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 w-full items-center justify-center">
       {!isRunning ? (
-        <button
+        <Button
           onClick={start}
-          className="px-4 py-2 rounded bg-purple-600 text-white"
+          className="w-full"
         >
           Start
-        </button>
+        </Button>
       ) : (
-        <button
+        <Button
           onClick={pause}
-          className="px-4 py-2 rounded bg-gray-600 text-white"
+          className="w-full"
         >
           Pause
-        </button>
+        </Button>
       )}
     </div>
   );
