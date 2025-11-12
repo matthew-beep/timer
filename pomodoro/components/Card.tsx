@@ -16,10 +16,10 @@ export function Card({
     <button
       {...props}
       className={clsx(
-        "px-4 py-2 rounded-lg font-medium transition-colors active:scale-[0.98] select-none",
+        "px-4 py-2 rounded-lg font-medium transition-colors select-none",
         {
-          "bg-purple-600 text-white hover:bg-purple-700": variant === "primary",
-          "bg-zinc-200 text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600":
+          "bg-purple-600 text-white": variant === "primary",
+          "bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600":
             variant === "secondary",
           "bg-transparent text-current hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50":
             variant === "ghost",
