@@ -5,12 +5,14 @@
   --foreground: #171717;
   --test: #00cda1;
   --timer-background: #ffffff;
+  --card: #eaeaea;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-test: var(--test);
+  --color-card:var(--bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

@@ -18,7 +18,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans border-2">
+    <div className="flex min-h-screen items-center justify-center font-sans border-2 bg-[var(--background)] text-[var(--text-color)]">
       <main className="w-full">
         <Header />
         <input
@@ -34,7 +34,7 @@ export default function Home() {
           value={bgColor}
         />
         <div id="app" 
-          className="min-h-screen bg-[var(--background)] text-[var(--text-color)]" >
+          className="min-h-screen" >
           <div className="w-full h-96 flex flex-col items-center justify-center"> 
           <h1 className="text-6xl">Pomodoro Puppy</h1>
           <Timer />
