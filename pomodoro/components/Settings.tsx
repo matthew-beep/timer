@@ -40,14 +40,18 @@ export default function Settings({ onClose }: { onClose: () => void }) {
               </button>
             </div>
             <div>
-            <label htmlFor="my-input">Enter text:</label>
-            <input
-                id="my-input"
-                type="text"
-                value={inputValue} // Bind the input's value to the state variable
-                onChange={handleChange} // Attach the handleChange function to the onChange event
-                placeholder="Type here"
-            />
+              <div className="flex flex-col">            
+                <label htmlFor="my-input">Work Timer Duration:</label>
+                <input
+                  id="my-input"
+                  type="text"
+                  value={inputValue} // Bind the input's value to the state variable
+                  onChange={handleChange} // Attach the handleChange function to the onChange event
+                  placeholder="Type here"
+                  className="border-2 rounded-md p-2"
+                />
+            </div>
+
             </div>
           </Card>
         </motion.div>
