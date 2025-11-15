@@ -5,9 +5,11 @@ import Header from "@/components/Header";
 import { CanvasWrapper } from "@/components/Canvas";
 import { useState, useEffect } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
+import { useNotesStore } from "@/store/useNotes";
 
 export default function Home() {
   const [bgColor, setBgColor] = useState("#1e293b");
+  const notes = useNotesStore((s) => s.notes);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--background", bgColor);
@@ -18,7 +20,12 @@ export default function Home() {
 
       <div className="min-h-screen font-sans text-[var(--text-color)]">
         <Header />
-
+        {notes.map((note) => (
+          <div
+            key={note.id}>
+              {note.id}
+          </div>
+        ))}
         <input
           type="color"
           className="w-10 h-10 cursor-pointer"

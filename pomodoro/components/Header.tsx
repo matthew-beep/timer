@@ -4,18 +4,19 @@ import { useNotesStore } from '@/store/useNotes';
 import { Button } from './Button';
 import Settings from '@/components/Settings';
 import { AnimatePresence } from 'motion/react';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export default function Header() {
     const isRunning = useTimer((s) => s.isRunning);
-    const notes = useNotesStore((s) => s.notes);
+
     const addNote = useNotesStore((s) => s.addNote);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
 
     const addSticky = () => {
-        console.log("add sticky");
-        addNote({ id: '1', x: 0, y: 0, text: 'New Sticky Note', color: 'yellow', zIndex: 1 });
-        console.log(notes);
+        const id = uuidv4();
+        console.log("add sticky: ", id);
+        addNote({ id: id, x: 0, y: 0, text: 'New Sticky Note', color: 'yellow', zIndex: 1 });
     }
 
     return (
