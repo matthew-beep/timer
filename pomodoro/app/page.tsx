@@ -6,7 +6,7 @@ import { CanvasWrapper } from "@/components/Canvas";
 import { useState, useEffect } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 import { useNotesStore } from "@/store/useNotes";
-
+import StickyNote from "@/components/Sticky";
 export default function Home() {
   const [bgColor, setBgColor] = useState("#1e293b");
   const notes = useNotesStore((s) => s.notes);
@@ -21,10 +21,7 @@ export default function Home() {
       <div className="min-h-screen font-sans text-[var(--text-color)]">
         <Header />
         {notes.map((note) => (
-          <div
-            key={note.id}>
-              {note.id}
-          </div>
+          <StickyNote key={note.id} id={note.id} />
         ))}
         <input
           type="color"
