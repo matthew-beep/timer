@@ -11,33 +11,24 @@ export default function Home() {
   const [bgColor, setBgColor] = useState("#1e293b");
   const notes = useNotesStore((s) => s.notes);
 
-  useEffect(() => {
-    document.documentElement.style.setProperty("--background", bgColor);
-    document.documentElement.style.setProperty("--text-color", "#ffffff");
-  }, [bgColor]);
+
 
   return (
 
-      <div className="min-h-screen font-sans text-[var(--text-color)]">
+      <div className="h-screen flex flex-col font-sans text-[var(--text-color)] border-2 border-amber-600">
         <Header />
-        {notes.map((note) => (
-          <StickyNote key={note.id} id={note.id} />
-        ))}
-        <input
-          type="color"
-          className="w-10 h-10 cursor-pointer"
-          value={bgColor}
-          onChange={(e) => {
-            const newColor = e.target.value;
-            setBgColor(newColor);
-            document.documentElement.style.setProperty("--background", newColor);
-          }}
-        />
-
-        <div className="w-full h-96 flex flex-col items-center justify-center">
-          <h1 className="text-6xl">Pomodoro Puppy</h1>
-          <Timer />
+        <div className="relative overflow-hidden border-2 h-full border-blue-200">
+          <div className="absolute top-0 left-0 w-full h-full z-0">
+            {notes.map((note) => (
+              <StickyNote key={note.id} id={note.id} />
+            ))}
+          </div>
+          <div className="w-full flex flex-col items-center justify-center h-full">
+            <h1 className="text-6xl">Pomodoro Puppy</h1>
+            <Timer />
+          </div>
         </div>
+
       </div>
   );
 }

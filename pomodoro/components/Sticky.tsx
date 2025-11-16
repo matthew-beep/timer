@@ -2,6 +2,7 @@
 
 import { useRef, useState, ChangeEvent } from "react";
 import Draggable from "react-draggable";
+import { ReactSketchCanvas } from "react-sketch-canvas";
 
 
 interface StickyNoteProps {
@@ -20,6 +21,7 @@ export default function StickyNote({
 
   const [text, setText] = useState(initialText);
   const nodeRef = useRef<HTMLDivElement>(null);
+  const draw = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
@@ -64,6 +66,18 @@ export default function StickyNote({
           "
           rows={6}
         />
+
+      <ReactSketchCanvas
+        className="inset-0 z-0 border-2"
+        strokeWidth={4}
+        strokeColor="black"
+        style={{
+          border: "none",
+          width: "100%",
+          height: "100%",
+        }}
+        canvasColor="red"
+      />
       </div>
     </Draggable>
   );

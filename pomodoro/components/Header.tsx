@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTimer } from "@/store/useTimer";
 import { useNotesStore } from '@/store/useNotes';
 import { Button } from './Button';
@@ -12,6 +12,12 @@ export default function Header() {
 
     const addNote = useNotesStore((s) => s.addNote);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+    const [bgColor, setBgColor] = useState("#1e293b");
+
+
+    useEffect(() => {
+        document.documentElement.style.setProperty("--background", bgColor);
+    }, []);
 
     const addSticky = () => {
         const id = uuidv4();
@@ -21,6 +27,16 @@ export default function Header() {
 
     return (
         <div className="rounded-md flex justify-end">
+        <input
+          type="color"
+          className="w-10 h-10 cursor-pointer border-2"
+          value={bgColor}
+          onChange={(e) => {
+            const newColor = e.target.value;
+            setBgColor(newColor);
+            document.documentElement.style.setProperty("--background", newColor);
+          }}
+        />
             {isRunning ?
             <div>timer active</div> :
             <div>timer inactive</div>
