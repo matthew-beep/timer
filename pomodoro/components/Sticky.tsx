@@ -2,7 +2,7 @@
 
 import { useRef, useState, ChangeEvent } from "react";
 import Draggable from "react-draggable";
-import { ReactSketchCanvas } from "react-sketch-canvas";
+import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 
 
 interface StickyNoteProps {
@@ -22,9 +22,21 @@ export default function StickyNote({
   const [text, setText] = useState(initialText);
   const nodeRef = useRef<HTMLDivElement>(null);
   const draw = useState<boolean>(false);
+  const canvasRef = useRef<ReactSketchCanvasRef>(null);
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
+  };
+
+  const handleStrokeEnd = async () => {
+    if (canvasRef.current) {
+      try {
+        const paths = await canvasRef.current.exportPaths();
+        localStorage.setItem(`sticky-drawing-${id}`, JSON.stringify(paths));
+      } catch (error) {
+        console.error("Failed to save paths:", error);
+      }
+    }
   };
 
   return (
@@ -34,7 +46,7 @@ export default function StickyNote({
         className="
           w-60 p-3 rounded-md shadow-lg sticky-note 
           flex flex-col gap-2 select-none cursor-default
-          border border-black/10
+          border border-black/10 pointer-events-auto
         "
         style={{ backgroundColor: color }}
       >
@@ -68,9 +80,13 @@ export default function StickyNote({
         />
 
       <ReactSketchCanvas
+        ref={canvasRef}
         className="inset-0 z-0 border-2"
-        strokeWidth={4}
+        strokeWidth={2}
         strokeColor="black"
+        onChange={() => {
+          console.log("drawing")
+        }}
         style={{
           border: "none",
           width: "100%",
