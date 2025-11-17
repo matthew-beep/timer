@@ -4,15 +4,14 @@ import { useRef, ChangeEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/Card";
 import Draggable from "react-draggable";
+import { useTimer } from "@/store/useTimer";
 
 export default function Settings({ onClose }: { onClose: () => void }) {
   // Use a nodeRef to avoid react-dom.findDOMNode (not available/allowed in some React runtimes)
-    const [inputValue, setInputValue] = useState('');
 
-    // Define a function to handle changes in the input field
-    const handleChange = (event:ChangeEvent<HTMLInputElement>) => {
-        setInputValue(event.target.value); // Update the state with the new input value
-    };
+    const durations = useTimer((s) => s.durations);
+    const setDurationValue = useTimer((s) => s.setDurationValue);
+
   const nodeRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -21,7 +20,7 @@ export default function Settings({ onClose }: { onClose: () => void }) {
       <div ref={nodeRef} className="fixed top-16 right-4 z-50">
         <motion.div
           style={{
-            width: "32rem",
+            width: "16rem",
             transformOrigin: "top right",
           }}
           initial={{ scale: 0.5, opacity: 0 }}
@@ -43,12 +42,12 @@ export default function Settings({ onClose }: { onClose: () => void }) {
               <div className="flex flex-col">            
                 <label htmlFor="my-input">Work Timer Duration:</label>
                 <input
-                  id="my-input"
-                  type="text"
-                  value={inputValue} // Bind the input's value to the state variable
-                  onChange={handleChange} // Attach the handleChange function to the onChange event
-                  placeholder="Type here"
-                  className="border-2 rounded-md p-2"
+                    id="my-input"
+                    type="text"
+                    value={durations.focus / 60}
+                    onChange={(e) => setDurationValue("focus", Number(e.target.value))}
+                    placeholder="Type here"
+                    className="border-2 rounded-md p-2"
                 />
             </div>
 

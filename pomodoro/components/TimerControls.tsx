@@ -11,14 +11,14 @@ export function TimerControls() {
       {!isRunning ? (
         <Button
           onClick={start}
-          className="w-full"
+          className="w-full px-4 py-2"
         >
           Start
         </Button>
       ) : (
         <Button
           onClick={pause}
-          className="w-full"
+          className="w-full px-4 py-2"
         >
           Pause
         </Button>

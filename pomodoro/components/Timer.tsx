@@ -21,12 +21,14 @@ export default function Timer() {
         <Button
           variant={mode === "focus" ? "primary" : "secondary"}
           onClick={() => setMode("focus")}
+          className="px-4 py-2"
         >
           Work
         </Button>
         <Button
           variant={mode === "short" ? "primary" : "secondary"}
           onClick={() => setMode("short")}
+          className="px-4 py-2"
         >
           Break
         </Button>

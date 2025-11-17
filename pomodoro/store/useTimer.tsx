@@ -4,35 +4,68 @@ type TimerMode = "focus" | "short" | "long";
 
 interface TimerState {
   mode: TimerMode;
-  duration: number; // in seconds
+
+  // Store user-editable durations
+  durations: {
+    focus: number;
+    short: number;
+    long: number;
+  };
+
+  duration: number;
   timeRemaining: number;
   isRunning: boolean;
+
+  // actions
   setMode: (mode: TimerMode) => void;
+  setDurationValue: (mode: TimerMode, value: number) => void;
   start: () => void;
   pause: () => void;
   reset: () => void;
   tick: () => void;
 }
 
-const DURATIONS = {
-  focus: 25 * 60,
-  short: 5 * 60,
-  long: 15 * 60,
-};
-
 export const useTimer = create<TimerState>((set, get) => ({
   mode: "focus",
-  duration: DURATIONS["focus"],
-  timeRemaining: DURATIONS["focus"],
+
+  durations: {
+    focus: 25 * 60,
+    short: 5 * 60,
+    long: 15 * 60,
+  },
+
+  duration: 25 * 60,
+  timeRemaining: 25 * 60,
   isRunning: false,
 
-  setMode: (mode) =>
-    set(() => ({
+  setMode: (mode) => {
+    const d = get().durations[mode];
+    set({
       mode,
-      duration: DURATIONS[mode],
-      timeRemaining: DURATIONS[mode],
+      duration: d,
+      timeRemaining: d,
       isRunning: false,
-    })),
+    });
+  },
+
+  setDurationValue: (mode, valueMinutes) => {
+    const seconds = valueMinutes * 60;
+
+    set((s) => ({
+      durations: {
+        ...s.durations,
+        [mode]: seconds,
+      },
+    }));
+
+    // If you're editing the active mode, update duration + reset timer
+    if (get().mode === mode) {
+      set({
+        duration: seconds,
+        timeRemaining: seconds,
+      });
+    }
+  },
 
   start: () => set({ isRunning: true }),
   pause: () => set({ isRunning: false }),
@@ -47,9 +80,7 @@ export const useTimer = create<TimerState>((set, get) => ({
     const { timeRemaining, isRunning } = get();
     if (!isRunning) return;
     if (timeRemaining <= 1) {
-      // timer finished
       set({ isRunning: false, timeRemaining: 0 });
-      // you could trigger sound, animation, popup, dog animation, etc.
     } else {
       set({ timeRemaining: timeRemaining - 1 });
     }

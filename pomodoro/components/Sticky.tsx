@@ -1,100 +1,74 @@
 "use client";
 
-import { useRef, useState, ChangeEvent } from "react";
-import Draggable from "react-draggable";
+import { useRef, useState } from "react";
+import { Rnd } from "react-rnd";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
-
-
-interface StickyNoteProps {
-  id: string;
-  initialText?: string;
-  color?: string;
-  onDelete?: (id: string) => void;
-}
+import { IoIosClose } from "react-icons/io";
 
 export default function StickyNote({
   id,
   initialText = "",
-  color = "#FFF476", // classic sticky-note yellow
-  onDelete,
-}: StickyNoteProps) {
-
+  color = "#FFF476",
+}) {
   const [text, setText] = useState(initialText);
-  const nodeRef = useRef<HTMLDivElement>(null);
-  const draw = useState<boolean>(false);
+  const [draw, setDraw] = useState(false);
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
-  };
-
-  const handleStrokeEnd = async () => {
-    if (canvasRef.current) {
-      try {
-        const paths = await canvasRef.current.exportPaths();
-        localStorage.setItem(`sticky-drawing-${id}`, JSON.stringify(paths));
-      } catch (error) {
-        console.error("Failed to save paths:", error);
-      }
-    }
-  };
-
   return (
-    <Draggable nodeRef={nodeRef} handle=".sticky-handle">
+    <Rnd
+      default={{
+        x: 100,
+        y: 100,
+        width: 220,
+        height: 220,
+      }}
+      minWidth={160}
+      minHeight={160}
+      maxWidth={600}
+      maxHeight={600}
+      dragHandleClassName="sticky-handle"
+      bounds="parent"
+      className="rounded-md shadow-lg overflow-hidden pointer-events-auto"
+    >
       <div
-        ref={nodeRef}
-        className="
-          w-60 p-3 rounded-md shadow-lg sticky-note 
-          flex flex-col gap-2 select-none cursor-default
-          border border-black/10 pointer-events-auto
-        "
         style={{ backgroundColor: color }}
+        className="w-full h-full flex flex-col"
       >
-        {/* Header / Drag Handle */}
+        {/* Header / Handle */}
         <div
           className="
-            sticky-handle w-full flex justify-between items-center
-            cursor-move font-semibold text-black/70
+            sticky-handle cursor-move flex justify-between items-center 
+            p-3 font-semibold text-black/70 bg-black/5
           "
         >
           <span className="text-sm">Note</span>
-          {onDelete && (
-            <button
-              onClick={() => onDelete(id)}
-              className="text-black/60 hover:text-black"
-            >
-              X
+
+          <div className="flex gap-2">
+            <button onClick={() => setDraw(!draw)}>draw</button>
+            <button className="rounded-full text-black/60 hover:text-black">
+              <IoIosClose size={18} />
             </button>
-          )}
+          </div>
         </div>
 
-        {/* Editable Text Area */}
-        <textarea
-          value={text}
-          onChange={handleChange}
-          className="
-            bg-transparent w-full resize-none outline-none
-            text-black/80 text-sm leading-relaxed
-          "
-          rows={6}
-        />
+        {/* Content */}
+        {!draw && (
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="bg-transparent w-full h-full resize-none outline-none p-3 text-black/80 text-sm"
+          />
+        )}
 
-      <ReactSketchCanvas
-        ref={canvasRef}
-        className="inset-0 z-0 border-2"
-        strokeWidth={2}
-        strokeColor="black"
-        onChange={() => {
-          console.log("drawing")
-        }}
-        style={{
-          border: "none",
-          width: "100%",
-          height: "100%",
-        }}
-        canvasColor="red"
-      />
+        {draw && (
+          <ReactSketchCanvas
+            ref={canvasRef}
+            strokeWidth={2}
+            strokeColor="black"
+            className="w-full h-full"
+          />
+        )}
       </div>
-    </Draggable>
+    </Rnd>
   );
 }

@@ -5,6 +5,8 @@ import { Button } from './Button';
 import Settings from '@/components/Settings';
 import { AnimatePresence } from 'motion/react';
 import { v4 as uuidv4 } from 'uuid';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { RiStickyNoteAddLine } from "react-icons/ri";
 
 
 export default function Header() {
@@ -27,31 +29,28 @@ export default function Header() {
 
     return (
         <div className="rounded-md flex justify-end">
-        <input
-          type="color"
-          className="w-10 h-10 cursor-pointer border-2"
-          value={bgColor}
-          onChange={(e) => {
-            const newColor = e.target.value;
-            setBgColor(newColor);
-            document.documentElement.style.setProperty("--background", newColor);
-          }}
-        />
-            {isRunning ?
-            <div>timer active</div> :
-            <div>timer inactive</div>
-            }
-            <div className='flex border-2 relative'>
-                <Button className="w-auto shrink">Draw</Button>
-                <Button className="w-auto shrink" onClick={addSticky}>Sticky</Button>
-                <Button className="w-auto shrink" onClick={() => setSettingsOpen(!settingsOpen)}>Settings</Button>
-                
-            </div>
-                <AnimatePresence>
-                    {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
-                </AnimatePresence>
+            <input
+            type="color"
+            className="w-10 h-10 cursor-pointer"
+            value={bgColor}
+            onChange={(e) => {
+                const newColor = e.target.value;
+                setBgColor(newColor);
+                document.documentElement.style.setProperty("--background", newColor);
+            }}
+            />
 
-            
+            <div className='flex relative gap-2'>    
+                <Button className="flex items-center justify-center p-2" onClick={addSticky}>
+                    <RiStickyNoteAddLine size={32}/>
+                </Button>
+                <Button className="flex items-center justify-center p-2" onClick={() => setSettingsOpen(!settingsOpen)}>
+                    <IoSettingsOutline size={32}/>
+                </Button>
+            </div>
+            <AnimatePresence>
+                {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
+            </AnimatePresence>
         </div>
     );
 }
