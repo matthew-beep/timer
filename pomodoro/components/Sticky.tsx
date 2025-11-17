@@ -6,7 +6,7 @@ import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { IoIosClose } from "react-icons/io";
 
 export default function StickyNote({
-  id,
+  id="",
   initialText = "",
   color = "#FFF476",
 }) {
@@ -41,7 +41,7 @@ export default function StickyNote({
             p-3 font-semibold text-black/70 bg-black/5
           "
         >
-          <span className="text-sm">Note</span>
+          <span className="text-sm">{id}</span>
 
           <div className="flex gap-2">
             <button onClick={() => setDraw(!draw)}>draw</button>

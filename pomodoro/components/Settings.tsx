@@ -6,6 +6,8 @@ import { Card } from "@/components/Card";
 import Draggable from "react-draggable";
 import { useTimer } from "@/store/useTimer";
 
+
+// TODO: Refactor to use react-rnd instead of draggable
 export default function Settings({ onClose }: { onClose: () => void }) {
   // Use a nodeRef to avoid react-dom.findDOMNode (not available/allowed in some React runtimes)
 
