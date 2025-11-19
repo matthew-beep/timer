@@ -41,6 +41,9 @@ export default function Timer() {
         </h3>
       </div>
 
+      <div className="w-full h-2 bg-gray-500 rounded-full"></div>
+
+
       {/* Controls + Timer Logic */}
       <TimerController />
       <TimerControls />

@@ -8,7 +8,7 @@ export default function Home() {
   const notes = useNotesStore((s) => s.notes);
   return (
 
-      <div className="h-screen flex flex-col font-sans text-[var(--text-color)] border-amber-600">
+      <div className="h-screen flex flex-col font-sans ">
         <Header />
         <div className="relative overflow-hidden h-full border-blue-200">
           <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">

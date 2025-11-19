@@ -4,15 +4,17 @@ import { useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { IoIosClose } from "react-icons/io";
+import { useNotesStore } from "@/store/useNotes";
 
 export default function StickyNote({
-  id="",
+  id = "",
   initialText = "",
   color = "#FFF476",
 }) {
   const [text, setText] = useState(initialText);
   const [draw, setDraw] = useState(false);
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
+  const deleteNote = useNotesStore((s) => s.deleteNote);
 
   return (
     <Rnd
@@ -37,15 +39,17 @@ export default function StickyNote({
         {/* Header / Handle */}
         <div
           className="
-            sticky-handle cursor-move flex justify-between items-center 
+            sticky-handle cursor-move flex justify-end items-center 
             p-3 font-semibold text-black/70 bg-black/5
           "
         >
-          <span className="text-sm">{id}</span>
 
           <div className="flex gap-2">
             <button onClick={() => setDraw(!draw)}>draw</button>
-            <button className="rounded-full text-black/60 hover:text-black">
+            <button 
+            className="rounded-full text-black/60 hover:text-black"
+            onClick={() => deleteNote(id)}
+            >
               <IoIosClose size={18} />
             </button>
           </div>

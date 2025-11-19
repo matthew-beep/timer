@@ -4,8 +4,9 @@
   --background: #ffffff;
   --foreground: #171717;
   --test: #00cda1;
-  --timer-background: #ffffff;
+  --timer-bg: #ffffff;
   --card: #eaeaea;
+  --text: #ffffff;
 }
 
 @theme inline {
@@ -15,6 +16,7 @@
   --color-card:var(--bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-text: var(--text);
 }
 
 /*
