@@ -11,9 +11,8 @@ import { useTimer } from "@/store/useTimer";
 export default function Settings({ onClose }: { onClose: () => void }) {
   // Use a nodeRef to avoid react-dom.findDOMNode (not available/allowed in some React runtimes)
 
-    const durations = useTimer((s) => s.durations);
-    const setDurationValue = useTimer((s) => s.setDurationValue);
-
+  const durations = useTimer((s) => s.durations);
+  const setDurationValue = useTimer((s) => s.setDurationValue);
   const nodeRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -51,7 +50,18 @@ export default function Settings({ onClose }: { onClose: () => void }) {
                     placeholder="Type here"
                     className="border-2 rounded-md p-2"
                 />
-            </div>
+              </div>
+              <div className="flex flex-col">            
+                <label htmlFor="my-input">Break Timer Duration:</label>
+                <input
+                    id="my-input"
+                    type="text"
+                    value={durations.short / 60}
+                    onChange={(e) => setDurationValue("short", Number(e.target.value))}
+                    placeholder="Type here"
+                    className="border-2 rounded-md p-2"
+                />
+              </div>
 
             </div>
           </Card>
