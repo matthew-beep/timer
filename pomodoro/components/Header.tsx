@@ -10,7 +10,6 @@ import { RiStickyNoteAddLine } from "react-icons/ri";
 
 
 export default function Header() {
-    const isRunning = useTimer((s) => s.isRunning);
 
     const addNote = useNotesStore((s) => s.addNote);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
