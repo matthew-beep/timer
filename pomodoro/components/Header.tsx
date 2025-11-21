@@ -13,7 +13,7 @@ export default function Header() {
 
     const addNote = useNotesStore((s) => s.addNote);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-    const [bgColor, setBgColor] = useState("#1e293b");
+    const [bgColor, setBgColor] = useState("#52CAF2");
 
 
     useEffect(() => {

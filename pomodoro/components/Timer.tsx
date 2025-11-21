@@ -20,7 +20,7 @@ export default function Timer() {
   const seconds = (timeRemaining % 60).toString().padStart(2, "0");
 
   return (
-    <div className="w-full max-w-sm rounded-2xl border border-zinc-300 dark:border-zinc-700 bg-[var(--timer-bg)] text-[var(--timer-fg)] shadow-sm p-6 space-y-6">
+    <div className="w-full max-w-sm text-[var(--timer-fg)] p-6 space-y-6">
       
       {/* Mode Buttons */}
       <div className="grid grid-cols-2 gap-2">
@@ -42,7 +42,7 @@ export default function Timer() {
 
       {/* Timer Display */}
       <div className="flex justify-center">
-        <h3 className="text-7xl font-bold tabular-nums tracking-tight">
+        <h3 className="text-9xl font-bold tabular-nums tracking-tight">
           {minutes}:{seconds}
         </h3>
       </div>

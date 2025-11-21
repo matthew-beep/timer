@@ -18,7 +18,7 @@ export function Card({
       className={clsx(
         "px-4 py-2 rounded-lg font-medium transition-colors select-none",
         {
-          "bg-[var(--card)] text-black border-2 border-zinc-100": variant === "primary",
+          "bg-[var(--card)] text-black": variant === "primary",
           "bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600":
             variant === "secondary",
           "bg-transparent text-current hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50":

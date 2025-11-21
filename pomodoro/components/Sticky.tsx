@@ -47,10 +47,12 @@ export default function StickyNote({
           <div className="flex gap-2">
             <button onClick={() => setDraw(!draw)}>draw</button>
             <button 
-            className="rounded-full text-black/60 hover:text-black"
+            className="rounded-full text-black/60 hover:bg-gray-600 hover:text-red-500"
             onClick={() => deleteNote(id)}
             >
-              <IoIosClose size={18} />
+              <IoIosClose 
+                size={18} 
+                />
             </button>
           </div>
         </div>

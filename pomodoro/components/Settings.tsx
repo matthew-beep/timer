@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/Card";
 import Draggable from "react-draggable";
 import { useTimer } from "@/store/useTimer";
+import { IoIosClose } from "react-icons/io";
 
 
 // TODO: Refactor to use react-rnd instead of draggable
@@ -18,7 +19,7 @@ export default function Settings({ onClose }: { onClose: () => void }) {
   return (
     // Pass nodeRef to Draggable and attach the ref to the actual DOM node child
     <Draggable handle=".settings-handle" nodeRef={nodeRef}>
-      <div ref={nodeRef} className="fixed top-16 right-4 z-50">
+      <div ref={nodeRef} className="fixed top-20 right-4 z-50">
         <motion.div
           style={{
             width: "16rem",
@@ -29,17 +30,23 @@ export default function Settings({ onClose }: { onClose: () => void }) {
           exit={{ scale: 0.5, opacity: 0 }}
           transition={{ duration: 0.1, ease: "easeOut" }}
         >
-          <Card className="p-6 w-full bg-[var(--card)] text-[var(--timer-fg)] shadow-lg rounded-xl">
+          <Card className="
+            p-6 w-full 
+            bg-white/10 
+            backdrop-blur-xl  
+            shadow-lg rounded-2xl 
+            text-[var(--timer-fg)]
+          ">
             <div className="settings-handle flex justify-between items-center mb-4 cursor-move">
               <h2 className="text-xl font-semibold">Settings</h2>
               <button
                 onClick={onClose}
                 className="text-sm text-gray-400 hover:text-gray-100"
               >
-                ✕
+                <IoIosClose size={24} />
               </button>
             </div>
-            <div>
+            <div className="gap-4 flex flex-col">
               <div className="flex flex-col">            
                 <label htmlFor="my-input">Work Timer Duration:</label>
                 <input
@@ -48,7 +55,7 @@ export default function Settings({ onClose }: { onClose: () => void }) {
                     value={durations.focus / 60}
                     onChange={(e) => setDurationValue("focus", Number(e.target.value))}
                     placeholder="Type here"
-                    className="border-2 rounded-md p-2"
+                    className="border border-gray-400 rounded-md p-2 active:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="flex flex-col">            
