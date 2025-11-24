@@ -24,6 +24,7 @@ export default function Settings({ onClose }: { onClose: () => void }) {
           style={{
             width: "16rem",
             transformOrigin: "top right",
+
           }}
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -32,7 +33,7 @@ export default function Settings({ onClose }: { onClose: () => void }) {
         >
           <Card className="
             p-6 w-full 
-            bg-white/10 
+            bg-white
             backdrop-blur-xl  
             shadow-lg rounded-2xl 
             text-[var(--timer-fg)]

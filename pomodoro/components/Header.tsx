@@ -12,6 +12,9 @@ import { RiStickyNoteAddLine } from "react-icons/ri";
 export default function Header() {
 
     const addNote = useNotesStore((s) => s.addNote);
+    const notes = useNotesStore((s) => s.notes);
+    const noteWidth = useNotesStore((s) => s.noteWidth);
+    const noteHeight = useNotesStore((s) => s.noteHeight);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const [bgColor, setBgColor] = useState("#52CAF2");
 
@@ -23,7 +26,11 @@ export default function Header() {
     const addSticky = () => {
         const id = uuidv4();
         console.log("add sticky: ", id);
-        addNote({ id: id, x: 0, y: 0, text: 'New Sticky Note', color: 'yellow', zIndex: 1 });
+        const lastNoteX = notes.length > 0 ? notes[notes.length - 1].x + 20 : 0;
+        const lastNoteY = notes.length > 0 ? notes[notes.length - 1].y + 20: 0;
+
+
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: 'New Sticky Note', color: 'yellow', zIndex: 1, width:noteWidth, height:noteHeight });
     }
 
     return (

@@ -10,28 +10,40 @@ export default function StickyNote({
   id = "",
   initialText = "",
   color = "#FFF476",
+  x = 100,
+  y = 100,
+  width = 220,
+  height = 300,
 }) {
   const [text, setText] = useState(initialText);
   const [draw, setDraw] = useState(false);
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const deleteNote = useNotesStore((s) => s.deleteNote);
+  const updateNote = useNotesStore((s) => s.updateNote);
 
   return (
-    <Rnd
-      default={{
-        x: 100,
-        y: 100,
-        width: 220,
-        height: 220,
-      }}
-      minWidth={160}
-      minHeight={160}
-      maxWidth={600}
-      maxHeight={600}
-      dragHandleClassName="sticky-handle"
-      bounds="parent"
-      className="rounded-md shadow-lg overflow-hidden pointer-events-auto"
-    >
+  <Rnd
+    position={{ x, y }}
+    size={{ width: width, height: height }}
+    onDragStop={(e, d) => updateNote(id, { x: d.x, y: d.y })}
+    onResizeStop={(e, direction, ref, delta, position) => {
+      console.log("resized to: ", ref.offsetWidth, ref.offsetHeight);
+      updateNote(id, {
+        width: ref.offsetWidth,
+        height: ref.offsetHeight,
+        x: position.x,
+        y: position.y,
+      });
+    }}
+    minWidth={200}
+    minHeight={160}
+    maxWidth={600}
+    maxHeight={600}
+    dragHandleClassName="sticky-handle"
+    bounds="parent"
+    className="rounded-md shadow-lg overflow-hidden pointer-events-auto"
+    style={{ display: "flex" }}   // important for stretch
+  >
       <div
         style={{ backgroundColor: color }}
         className="w-full h-full flex flex-col"
