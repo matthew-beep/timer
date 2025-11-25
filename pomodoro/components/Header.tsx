@@ -34,7 +34,9 @@ export default function Header() {
     }
 
     return (
-        <div className="rounded-md flex justify-end px-5 pt-5">
+        <div className="rounded-md flex justify-between px-5 pt-5">
+
+            <h1 className="text-5xl font-bold">Pomodoro Puppy</h1>
             <input
             type="color"
             className="w-10 h-10 cursor-pointer"
