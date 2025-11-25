@@ -34,7 +34,7 @@ export default function Header() {
     }
 
     return (
-        <div className="rounded-md flex justify-end">
+        <div className="rounded-md flex justify-end px-5 pt-5">
             <input
             type="color"
             className="w-10 h-10 cursor-pointer"
@@ -47,10 +47,10 @@ export default function Header() {
             />
 
             <div className='flex relative gap-2'>    
-                <Button className="flex items-center justify-center p-2" onClick={addSticky}>
+                <Button className="flex items-center justify-center p-2 rounded-lg" onClick={addSticky}>
                     <RiStickyNoteAddLine size={32}/>
                 </Button>
-                <Button className="flex items-center justify-center p-2" onClick={() => setSettingsOpen(!settingsOpen)}>
+                <Button className="flex items-center justify-center p-2 rounded-lg" onClick={() => setSettingsOpen(!settingsOpen)}>
                     <IoSettingsOutline size={32}/>
                 </Button>
             </div>

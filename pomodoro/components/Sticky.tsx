@@ -13,7 +13,7 @@ export default function StickyNote({
   x = 100,
   y = 100,
   width = 220,
-  height = 300,
+  height = 220,
 }) {
   const [text, setText] = useState(initialText);
   const [draw, setDraw] = useState(false);
