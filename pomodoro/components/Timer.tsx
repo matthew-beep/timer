@@ -47,13 +47,6 @@ export default function Timer() {
         </h3>
       </div>
 
-      <div className="w-full h-2 bg-gray-500 rounded-full overflow-hidden">
-        <motion.div
-          className="h-full bg-black rounded-full origin-left"
-          animate={{ scaleX: progress }}
-          transition={{ ease: "linear", duration: 0.1 }}
-        />
-      </div>
 
 
       {/* Controls + Timer Logic */}

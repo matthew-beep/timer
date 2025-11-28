@@ -16,7 +16,7 @@ export default function Header() {
     const noteWidth = useNotesStore((s) => s.noteWidth);
     const noteHeight = useNotesStore((s) => s.noteHeight);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-    const [bgColor, setBgColor] = useState("#52CAF2");
+    const [bgColor, setBgColor] = useState("#a2d2ff");
 
 
     useEffect(() => {
@@ -37,17 +37,6 @@ export default function Header() {
         <div className="rounded-md flex justify-between px-5 pt-5">
 
             <h1 className="text-5xl font-bold">Pomodoro Puppy</h1>
-            <input
-            type="color"
-            className="w-10 h-10 cursor-pointer"
-            value={bgColor}
-            onChange={(e) => {
-                const newColor = e.target.value;
-                setBgColor(newColor);
-                document.documentElement.style.setProperty("--background", newColor);
-            }}
-            />
-
             <div className='flex relative gap-2'>    
                 <Button className="flex items-center justify-center p-2 rounded-lg" onClick={addSticky}>
                     <RiStickyNoteAddLine size={32}/>

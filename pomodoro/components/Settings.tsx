@@ -11,7 +11,7 @@ import { IoIosClose } from "react-icons/io";
 // TODO: Refactor to use react-rnd instead of draggable
 export default function Settings({ onClose }: { onClose: () => void }) {
   // Use a nodeRef to avoid react-dom.findDOMNode (not available/allowed in some React runtimes)
-
+  const [bgColor, setBgColor] = useState("#a2d2ff");
   const durations = useTimer((s) => s.durations);
   const setDurationValue = useTimer((s) => s.setDurationValue);
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -72,6 +72,17 @@ export default function Settings({ onClose }: { onClose: () => void }) {
               </div>
 
             </div>
+
+            <input
+            type="color"
+            className="w-10 h-10 cursor-pointer"
+            value={bgColor}
+            onChange={(e) => {
+                const newColor = e.target.value;
+                setBgColor(newColor);
+                document.documentElement.style.setProperty("--background", newColor);
+            }}
+            />
           </Card>
         </motion.div>
       </div>

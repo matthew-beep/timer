@@ -13,14 +13,14 @@ export function TimerControls() {
       {!isRunning ? (
         <Button
           onClick={start}
-          className="w-auto px-4 py-2 rounded-full flex items-center justify-center"
+          className="w-12 h-12 px-4 py-2 rounded-full flex items-center justify-center"
         >
           <FaPlay />
         </Button>
       ) : (
         <Button
           onClick={pause}
-          className="w-auto px-4 py-2 rounded-full flex items-center justify-center"
+          className="w-12 h-12 px-4 py-2 rounded-full flex items-center justify-center"
         >
           <FaPause />
         </Button>

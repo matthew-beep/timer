@@ -5,15 +5,16 @@ import Header from "@/components/Header";
 import { useNotesStore } from "@/store/useNotes";
 import StickyNote from "@/components/Sticky";
 import Pet from "@/components/Pet";
-import { motion } from "framer-motion";
-import { useTimer } from "@/store/useTimer";
+import { useEffect } from "react";
 import ProgressBar from "@/components/Progress";
 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
-  const timeRemaining = useTimer((s) => s.timeRemaining);
-  const duration = useTimer((s) => s.duration);
-  const progress = 1 - timeRemaining / duration;
+
+  useEffect(() => {
+    console.log("notes: ", localStorage.getItem("notes"));
+  }, []);
+
   return (
 
       <div className="h-screen flex flex-col font-sans text-[var(--text)]">
