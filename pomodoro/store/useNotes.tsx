@@ -8,7 +8,7 @@ export type StickyNote = {
   text: string;
   color: string;
   zIndex: number;
-  width:number;
+  width: number;
   height: number;
 };
 
@@ -17,30 +17,37 @@ type NotesStore = {
   addNote: (note: StickyNote) => void;
   updateNote: (id: string, updates: Partial<StickyNote>) => void;
   deleteNote: (id: string) => void;
+
   noteWidth: number;
   noteHeight: number;
 };
 
-export const useNotesStore = create<NotesStore>((set) => ({
-  notes: [],
-  noteWidth: 220,
-  noteHeight: 300,
-  addNote: (note) =>
-    set((state) => ({
-      notes: [...state.notes, note],
-    })),
+export const useNotesStore = create<NotesStore>()(
+  persist(
+    (set) => ({
+      notes: [],
+      noteWidth: 220,
+      noteHeight: 300,
 
-  updateNote: (id, updates) =>
-    set((state) => ({
-      notes: state.notes.map((note) =>
-        note.id === id ? { ...note, ...updates } : note
-      ),
-    })),
+      addNote: (note) =>
+        set((state) => ({ notes: [...state.notes, note] })),
 
-  deleteNote: (id) =>
-    set((state) => ({
-      notes: state.notes.filter((note) => note.id !== id),
-    })),
+      updateNote: (id, updates) =>
+        set((state) => ({
+          notes: state.notes.map((note) =>
+            note.id === id ? { ...note, ...updates } : note
+          ),
+        })),
 
-    
-}));
+      deleteNote: (id) =>
+        set((state) => ({
+          notes: state.notes.filter((note) => note.id !== id),
+        })),
+    }),
+
+    {
+      name: "sticky-notes", // localStorage key
+    }
+  )
+);
+
