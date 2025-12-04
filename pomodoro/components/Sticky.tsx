@@ -21,13 +21,17 @@ export default function StickyNote({
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
 
+  const saveText = (newText: string) => {
+    setText(newText);
+    updateNote(id, { text: newText });
+  }
+
   return (
   <Rnd
     position={{ x, y }}
     size={{ width: width, height: height }}
     onDragStop={(e, d) => updateNote(id, { x: d.x, y: d.y })}
     onResizeStop={(e, direction, ref, delta, position) => {
-      console.log("resized to: ", ref.offsetWidth, ref.offsetHeight);
       updateNote(id, {
         width: ref.offsetWidth,
         height: ref.offsetHeight,
@@ -56,14 +60,14 @@ export default function StickyNote({
           "
         >
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center justify-center">
             <button onClick={() => setDraw(!draw)}>draw</button>
             <button 
-            className="rounded-full text-black/60 hover:bg-gray-600 hover:text-red-500"
+            className="rounded-full w-6 h-6 flex items-center justify-center text-black bg-gray-200/10 hover:bg-gray-300/80 transition-all duration-100"
             onClick={() => deleteNote(id)}
             >
               <IoIosClose 
-                size={18} 
+                size={52} 
                 />
             </button>
           </div>
@@ -73,7 +77,7 @@ export default function StickyNote({
         {!draw && (
           <textarea
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => saveText(e.target.value)}
             className="bg-transparent w-full h-full resize-none outline-none p-3 text-black/80 text-sm"
           />
         )}
