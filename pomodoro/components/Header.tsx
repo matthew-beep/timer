@@ -30,7 +30,7 @@ export default function Header() {
         const lastNoteY = notes.length > 0 ? notes[notes.length - 1].y + 20: 0;
 
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: 'New Sticky Note', color: 'yellow', zIndex: 1, width:noteWidth, height:noteHeight });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: 'New Sticky Note', color: 'yellow', zIndex: 1, width:noteWidth, height:noteHeight, mode: "text" });
     }
 
     return (

@@ -6,6 +6,19 @@ import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { IoIosClose } from "react-icons/io";
 import { useNotesStore } from "@/store/useNotes";
 
+
+function debounce<T extends (...args: unknown[]) => unknown>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  
+  return function(...args: Parameters<T>) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+}
+
 export default function StickyNote({
   id = "",
   initialText = "",
@@ -14,9 +27,10 @@ export default function StickyNote({
   y = 100,
   width = 220,
   height = 220,
+  mode = "text",
 }) {
   const [text, setText] = useState(initialText);
-  const [draw, setDraw] = useState(false);
+  const [draw, setDraw] = useState(mode === "draw" ? true : false);
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
@@ -25,6 +39,15 @@ export default function StickyNote({
     setText(newText);
     updateNote(id, { text: newText });
   }
+
+  
+
+  const saveCanvas = async () => {
+    if (!canvasRef.current) return;
+    const paths = await canvasRef.current.exportPaths();
+    //updateNote(id, { paths });
+    console.log("Saved paths: ", paths);
+  };
 
   return (
   <Rnd
@@ -45,7 +68,7 @@ export default function StickyNote({
     maxHeight={600}
     dragHandleClassName="sticky-handle"
     bounds="parent"
-    className="rounded-md shadow-lg overflow-hidden pointer-events-auto"
+    className="rounded-md shadow-lg overflow-hidden pointer-events-auto border border-[#cccccc]"
     style={{ display: "flex" }}   // important for stretch
   >
       <div
@@ -56,18 +79,25 @@ export default function StickyNote({
         <div
           className="
             sticky-handle cursor-move flex justify-end items-center 
-            p-3 font-semibold text-black/70 bg-black/5
+            font-semibold text-black/70 bg-black/5 h-12
           "
         >
 
-          <div className="flex gap-2 items-center justify-center">
-            <button onClick={() => setDraw(!draw)}>draw</button>
+          <div className="flex gap-2 items-center justify-end w-full h-full ">
+            <button onClick={
+              () => {
+                updateNote(id, { mode: draw ? "text" : "draw" }) 
+                setDraw(!draw);
+              }
+              }>
+                draw
+            </button>
             <button 
-            className="rounded-full w-6 h-6 flex items-center justify-center text-black bg-gray-200/10 hover:bg-gray-300/80 transition-all duration-100"
-            onClick={() => deleteNote(id)}
+              className="w-12 h-full flex items-center justify-center text-black hover:bg-black/10 transition-all duration-150"
+              onClick={() => deleteNote(id)}
             >
               <IoIosClose 
-                size={52} 
+                size={24} 
                 />
             </button>
           </div>
@@ -87,7 +117,11 @@ export default function StickyNote({
             ref={canvasRef}
             strokeWidth={2}
             strokeColor="black"
-            className="w-full h-full"
+            style={{ border: "none" }}
+            className="w-full h-full border-none"
+            onStroke={saveCanvas}
+            onChange={saveCanvas}
+            canvasColor={color}
           />
         )}
       </div>

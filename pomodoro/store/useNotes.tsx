@@ -10,6 +10,7 @@ export type StickyNote = {
   zIndex: number;
   width: number;
   height: number;
+  mode?: "draw" | "text"
 };
 
 type NotesStore = {

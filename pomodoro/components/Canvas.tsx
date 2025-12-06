@@ -5,10 +5,10 @@ import { PropsWithChildren } from "react";
 
 export function CanvasWrapper({ children }: PropsWithChildren) {
   return (
-    <div className="relative w-full h-screen overflow-hidden border-2 border-yellow-500 bg-orange-100">
+    <div className="relative w-full h-screen overflow-hidden border-yellow-500 bg-orange-100">
       {/* The canvas layer */}
       <ReactSketchCanvas
-        className="absolute inset-0 z-0 border-2"
+        className="absolute inset-0 z-0"
         strokeWidth={4}
         strokeColor="black"
         style={{

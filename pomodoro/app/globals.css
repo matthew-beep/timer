@@ -7,6 +7,7 @@
   --timer-bg: #ffffff;
   --card: #eaeaea;
   --text: #ffffff;
+  --button-primary: #cccccc;
 }
 
 @theme inline {
@@ -17,6 +18,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-text: var(--text);
+  --color-button-primary: var(--button-primary);
 }
 
 /*
