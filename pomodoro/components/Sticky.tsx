@@ -1,10 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { Rnd } from "react-rnd";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { IoIosClose } from "react-icons/io";
 import { useNotesStore } from "@/store/useNotes";
+import { MdDraw } from "react-icons/md";
+import { Button } from "./Button";
+import type { CanvasPath } from "react-sketch-canvas";
 
 
 function debounce<T extends (...args: unknown[]) => unknown>(
@@ -19,6 +22,18 @@ function debounce<T extends (...args: unknown[]) => unknown>(
   };
 }
 
+interface StickyNoteProps {
+  id: string;
+  initialText?: string;
+  color?: string;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  mode?: "draw" | "text";
+  paths?: CanvasPath[]; // <-- important
+}
+
 export default function StickyNote({
   id = "",
   initialText = "",
@@ -28,26 +43,53 @@ export default function StickyNote({
   width = 220,
   height = 220,
   mode = "text",
-}) {
+  paths= [],
+}: StickyNoteProps) {
   const [text, setText] = useState(initialText);
   const [draw, setDraw] = useState(mode === "draw" ? true : false);
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
 
+
+  useEffect(() => {
+    console.log("paths loaded: ", paths);
+  }, []);
+
   const saveText = (newText: string) => {
     setText(newText);
     updateNote(id, { text: newText });
   }
 
-  
-
   const saveCanvas = async () => {
     if (!canvasRef.current) return;
     const paths = await canvasRef.current.exportPaths();
-    //updateNote(id, { paths });
+    
     console.log("Saved paths: ", paths);
+    updateNote(id, { paths });
   };
+
+  const undoStroke = () => {
+    if (!canvasRef.current) return;
+    canvasRef.current.undo();
+  }
+  const redoStroke = () => {
+    if (!canvasRef.current) return;
+    canvasRef.current.redo();
+  }
+
+
+
+
+  /*
+  useEffect(() => {
+    // Load initial paths into canvas
+    if (paths.length > 0 && canvasRef.current) {
+      canvasRef.current.loadPaths(paths);
+    }
+  }, [])
+*/
+
 
   return (
   <Rnd
@@ -83,14 +125,16 @@ export default function StickyNote({
           "
         >
 
-          <div className="flex gap-2 items-center justify-end w-full h-full ">
-            <button onClick={
+          <div className="flex items-center justify-end w-full h-full ">
+            <button 
+            className="w-12 h-full flex items-center justify-center text-black hover:bg-black/10 transition-all duration-150"
+            onClick={
               () => {
                 updateNote(id, { mode: draw ? "text" : "draw" }) 
                 setDraw(!draw);
               }
               }>
-                draw
+                <MdDraw size={24} />
             </button>
             <button 
               className="w-12 h-full flex items-center justify-center text-black hover:bg-black/10 transition-all duration-150"
@@ -109,20 +153,35 @@ export default function StickyNote({
             value={text}
             onChange={(e) => saveText(e.target.value)}
             className="bg-transparent w-full h-full resize-none outline-none p-3 text-black/80 text-sm"
+            placeholder="Enter text..."
           />
         )}
 
         {draw && (
-          <ReactSketchCanvas
-            ref={canvasRef}
-            strokeWidth={2}
-            strokeColor="black"
-            style={{ border: "none" }}
-            className="w-full h-full border-none"
-            onStroke={saveCanvas}
-            onChange={saveCanvas}
-            canvasColor={color}
-          />
+          <div className="border-2 w-full h-full relative">
+            <ReactSketchCanvas
+              ref={canvasRef}
+              strokeWidth={2}
+              strokeColor="black"
+              style={{ border: "none" }}
+              className="w-full h-full border-none"
+              onStroke={saveCanvas}
+              onChange={saveCanvas}
+              canvasColor={color}
+            />
+            <div className="h-12 absolute bottom-0 w-full pointer-events-none flex p-1"> 
+              <Button 
+                className="pointer-events-auto rounded-full w-12" 
+                onClick={undoStroke}
+                >undo
+              </Button>
+              <Button 
+                className="pointer-events-auto rounded-full w-12" 
+                onClick={redoStroke}
+                >redo
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </Rnd>
