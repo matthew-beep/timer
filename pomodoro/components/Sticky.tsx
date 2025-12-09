@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Rnd } from "react-rnd";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { IoIosClose } from "react-icons/io";
@@ -8,23 +8,14 @@ import { useNotesStore } from "@/store/useNotes";
 import { MdDraw } from "react-icons/md";
 import { Button } from "./Button";
 import type { CanvasPath } from "react-sketch-canvas";
+import StickyText  from "./StickyText";
+import StickyCanvas  from "./StickyCanvas";
 
 
-function debounce<T extends (...args: unknown[]) => unknown>(
-  func: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  
-  return function(...args: Parameters<T>) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  };
-}
 
 interface StickyNoteProps {
   id: string;
-  initialText?: string;
+  text?: string;
   color?: string;
   x?: number;
   y?: number;
@@ -36,7 +27,7 @@ interface StickyNoteProps {
 
 export default function StickyNote({
   id = "",
-  initialText = "",
+  text = "",
   color = "#FFF476",
   x = 100,
   y = 100,
@@ -45,21 +36,11 @@ export default function StickyNote({
   mode = "text",
   paths= [],
 }: StickyNoteProps) {
-  const [text, setText] = useState(initialText);
+  
   const [draw, setDraw] = useState(mode === "draw" ? true : false);
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
-
-
-  useEffect(() => {
-    console.log("paths loaded: ", paths);
-  }, []);
-
-  const saveText = (newText: string) => {
-    setText(newText);
-    updateNote(id, { text: newText });
-  }
 
   const saveCanvas = async () => {
     if (!canvasRef.current) return;
@@ -73,6 +54,7 @@ export default function StickyNote({
     if (!canvasRef.current) return;
     canvasRef.current.undo();
   }
+
   const redoStroke = () => {
     if (!canvasRef.current) return;
     canvasRef.current.redo();
@@ -81,16 +63,7 @@ export default function StickyNote({
 
 
 
-  /*
-  useEffect(() => {
-    // Load initial paths into canvas
-    if (paths.length > 0 && canvasRef.current) {
-      canvasRef.current.loadPaths(paths);
-    }
-  }, [])
-*/
-
-
+  
   return (
   <Rnd
     position={{ x, y }}
@@ -148,41 +121,13 @@ export default function StickyNote({
         </div>
 
         {/* Content */}
-        {!draw && (
-          <textarea
-            value={text}
-            onChange={(e) => saveText(e.target.value)}
-            className="bg-transparent w-full h-full resize-none outline-none p-3 text-black/80 text-sm"
-            placeholder="Enter text..."
-          />
-        )}
+        {draw ? 
+        (<StickyCanvas id={id} color={color} paths={paths} />) 
+        : 
+        (<StickyText id={id} initialText={text} />)
+        }
 
-        {draw && (
-          <div className="border-2 w-full h-full relative">
-            <ReactSketchCanvas
-              ref={canvasRef}
-              strokeWidth={2}
-              strokeColor="black"
-              style={{ border: "none" }}
-              className="w-full h-full border-none"
-              onStroke={saveCanvas}
-              onChange={saveCanvas}
-              canvasColor={color}
-            />
-            <div className="h-12 absolute bottom-0 w-full pointer-events-none flex p-1"> 
-              <Button 
-                className="pointer-events-auto rounded-full w-12" 
-                onClick={undoStroke}
-                >undo
-              </Button>
-              <Button 
-                className="pointer-events-auto rounded-full w-12" 
-                onClick={redoStroke}
-                >redo
-              </Button>
-            </div>
-          </div>
-        )}
+
       </div>
     </Rnd>
   );
