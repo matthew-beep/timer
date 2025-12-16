@@ -8,6 +8,7 @@ import Pet from "@/components/Pet";
 import { useEffect } from "react";
 import ProgressBar from "@/components/Progress";
 
+
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
 
@@ -17,7 +18,7 @@ export default function Home() {
 
   return (
 
-      <div className="h-screen flex flex-col font-sans text-[var(--text)]">
+      <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh">
         <Header />
         <div className="relative overflow-hidden h-full">
           <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
