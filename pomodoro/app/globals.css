@@ -37,29 +37,26 @@ body {
 }
 
 .mesh {
+  position: relative;
   background-color:#ffdb99;
   background-image:
-radial-gradient(at 52% 50%, hsla(76,88%,74%,1) 0px, transparent 50%),
-radial-gradient(at 42% 94%, hsla(123,92%,72%,1) 0px, transparent 50%),
-radial-gradient(at 97% 60%, hsla(255,80%,72%,1) 0px, transparent 50%),
-radial-gradient(at 5% 89%, hsla(1,88%,67%,1) 0px, transparent 50%),
-radial-gradient(at 2% 60%, hsla(243,60%,66%,1) 0px, transparent 50%),
-radial-gradient(at 36% 72%, hsla(163,98%,66%,1) 0px, transparent 50%),
-radial-gradient(at 10% 85%, hsla(20,64%,78%,1) 0px, transparent 50%);
-}
-
-.mesh::after {
-
-  content: "";
-  position: absolute;
-  inset: 0 0 0 0;
-  width: 100%;
-  height: 100%;
-  mix-blend-mode: multiply;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-image: url(https://grainy-gradients.vercel.app/noise.svg);
-
+  radial-gradient(at 52% 50%, hsla(76,88%,74%,1) 0px, transparent 50%),
+  radial-gradient(at 42% 94%, hsla(123,92%,72%,1) 0px, transparent 50%),
+  radial-gradient(at 97% 60%, hsla(255,80%,72%,1) 0px, transparent 50%),
+  radial-gradient(at 5% 89%, hsla(1,88%,67%,1) 0px, transparent 50%),
+  radial-gradient(at 2% 60%, hsla(243,60%,66%,1) 0px, transparent 50%),
+  radial-gradient(at 36% 72%, hsla(163,98%,66%,1) 0px, transparent 50%),
+  radial-gradient(at 10% 85%, hsla(20,64%,78%,1) 0px, transparent 50%);
 }
 
 
+.glass {
+/* From https://css.glass */
+background: rgba(192, 137, 137, 0.5);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(25px);
+-webkit-backdrop-filter: blur(25px);
+border: 1px solid rgba(192, 137, 137, 1);
+
+}

@@ -6,6 +6,7 @@ import { Card } from "@/components/Card";
 import Draggable from "react-draggable";
 import { useTimer } from "@/store/useTimer";
 import { IoIosClose } from "react-icons/io";
+import { Rnd } from "react-rnd";
 
 
 // TODO: Refactor to use react-rnd instead of draggable
@@ -18,8 +19,11 @@ export default function Settings({ onClose }: { onClose: () => void }) {
 
   return (
     // Pass nodeRef to Draggable and attach the ref to the actual DOM node child
-    <Draggable handle=".settings-handle" nodeRef={nodeRef}>
-      <div ref={nodeRef} className="fixed top-20 right-4 z-50">
+    <Draggable 
+      handle=".settings-handle" 
+      nodeRef={nodeRef}
+    >
+      <div ref={nodeRef} className="fixed top-20 right-4 z-100 glass">
         <motion.div
           style={{
             width: "16rem",
@@ -31,13 +35,6 @@ export default function Settings({ onClose }: { onClose: () => void }) {
           exit={{ scale: 0.5, opacity: 0 }}
           transition={{ duration: 0.1, ease: "easeOut" }}
         >
-          <Card className="
-            p-6 w-full 
-            bg-white
-            backdrop-blur-xl  
-            shadow-lg rounded-2xl 
-            text-[var(--timer-fg)]
-          ">
             <div className="settings-handle flex justify-between items-center mb-4 cursor-move">
               <h2 className="text-xl font-semibold">Settings</h2>
               <button
@@ -83,7 +80,6 @@ export default function Settings({ onClose }: { onClose: () => void }) {
                 document.documentElement.style.setProperty("--background", newColor);
             }}
             />
-          </Card>
         </motion.div>
       </div>
     </Draggable>

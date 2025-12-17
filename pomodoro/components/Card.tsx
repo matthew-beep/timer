@@ -3,7 +3,7 @@
 import clsx from "clsx";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "glass";
 }
 
 export function Card({
@@ -23,6 +23,7 @@ export function Card({
             variant === "secondary",
           "bg-transparent text-current hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50":
             variant === "ghost",
+            "glass rounded-f":variant === "glass",
         },
         className
       )}
