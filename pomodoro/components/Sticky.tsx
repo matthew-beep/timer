@@ -83,11 +83,12 @@ export default function StickyNote({
     maxHeight={600}
     dragHandleClassName="sticky-handle"
     bounds="parent"
-    className="rounded-md shadow-lg overflow-hidden pointer-events-auto border glass"
+    className="pointer-events-auto"
     style={{ display: "flex" }}   // important for stretch
   >
       <div
-        className="w-full h-full flex flex-col"
+        className="w-full h-full flex flex-col border rounded-sm scale-95 hover:scale-100 shadow-md hover:shadow-2xl transition-all duration-150"
+        style={{ backgroundColor: color }}
       >
         {/* Header / Handle */}
         <div

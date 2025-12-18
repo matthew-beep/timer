@@ -9,7 +9,7 @@ import { IoSettingsOutline } from 'react-icons/io5';
 import { RiStickyNoteAddLine } from "react-icons/ri";
 
 
-export default function Header() {
+export default function Header({showSettings, setShowSettings}: {showSettings: boolean, setShowSettings: (show: boolean) => void}) {
 
     const addNote = useNotesStore((s) => s.addNote);
     const notes = useNotesStore((s) => s.notes);
@@ -38,16 +38,20 @@ export default function Header() {
 
             <h1 className="text-5xl font-bold">Pomodoro Puppy</h1>
             <div className='flex relative gap-2'>    
-                <Button className="flex items-center justify-center p-2 rounded-lg" onClick={addSticky}>
+                <Button className="flex items-center justify-center p-2 rounded-full" onClick={addSticky}>
                     <RiStickyNoteAddLine size={32}/>
                 </Button>
-                <Button className="flex items-center justify-center p-2 rounded-lg" onClick={() => setSettingsOpen(!settingsOpen)}>
+                <Button 
+                className="flex items-center justify-center p-2 rounded-full" onClick={() => setShowSettings(!settingsOpen)}>
                     <IoSettingsOutline size={32}/>
                 </Button>
             </div>
-            <AnimatePresence>
-                {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
-            </AnimatePresence>
+
         </div>
     );
 }
+
+
+/*            <AnimatePresence>
+                {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
+            </AnimatePresence>*/

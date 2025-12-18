@@ -7,10 +7,14 @@ import StickyNote from "@/components/Sticky";
 import Pet from "@/components/Pet";
 import { useEffect } from "react";
 import ProgressBar from "@/components/Progress";
+import Settings from "@/components/Settings";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     console.log("notes: ", localStorage.getItem("notes"));
@@ -18,7 +22,7 @@ export default function Home() {
 
   return (
     <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh">
-      <Header />
+      <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
       <div className="relative h-full">
         <div className="absolute top-0 left-0 w-full border-2 h-full z-10 pointer-events-none">
           {notes.map((note) => (
@@ -26,10 +30,41 @@ export default function Home() {
           ))}
         </div>
         
-        <div className="w-full flex flex-col items-center h-full justify-center z-0">
+        <div className="w-full flex flex-col items-center h-full justify-center z-0 ">
           <Pet />
           <Timer />
         </div>
+
+              <AnimatePresence>
+        {showSettings && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSettings(false)}
+              className="fixed inset-0 bg-black/20 z-40 backdrop-blur-xs"
+            />
+            
+            {/* Settings panel */}
+            <motion.div
+              className="fixed top-0 left-0 w-full h-full z-50"
+              onClick={() => setShowSettings(false)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Settings showSettings={showSettings} setShowSettings={setShowSettings} />
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
         <ProgressBar />
       </div>

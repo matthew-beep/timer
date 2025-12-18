@@ -1,11 +1,8 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect } from "react";
-import { Rnd } from "react-rnd";
+import { useRef } from "react";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
-import { IoIosClose } from "react-icons/io";
 import { useNotesStore } from "@/store/useNotes";
-import { MdDraw } from "react-icons/md";
 import { Button } from "./Button";
 import type { CanvasPath } from "react-sketch-canvas";
 
@@ -70,7 +67,7 @@ export default function StickyCanvas({
 
   
   return (
-    <div className="border-2 w-full h-full relative">
+    <div className="w-full h-full relative outline-none">
       <ReactSketchCanvas
         ref={canvasRef}
         strokeWidth={2}
@@ -81,7 +78,7 @@ export default function StickyCanvas({
         onChange={saveCanvas}
         canvasColor={color}
       />
-      <div className="h-12 absolute bottom-0 w-full pointer-events-none flex p-1"> 
+      <div className="h-12 absolute bottom-0 w-full pointer-events-none flex p-1 bg-black/10"> 
         <Button 
           className="pointer-events-auto rounded-full w-12" 
           onClick={undoStroke}

@@ -10,7 +10,7 @@ import { Rnd } from "react-rnd";
 
 
 // TODO: Refactor to use react-rnd instead of draggable
-export default function Settings({ onClose }: { onClose: () => void }) {
+export default function Settings({ onClose, showSettings, setShowSettings }: { onClose?: () => void, showSettings: boolean, setShowSettings: (show: boolean) => void }) {
   // Use a nodeRef to avoid react-dom.findDOMNode (not available/allowed in some React runtimes)
   const [bgColor, setBgColor] = useState("#a2d2ff");
   const durations = useTimer((s) => s.durations);
@@ -23,28 +23,17 @@ export default function Settings({ onClose }: { onClose: () => void }) {
       handle=".settings-handle" 
       nodeRef={nodeRef}
     >
-      <div ref={nodeRef} className="fixed top-20 right-4 z-100 glass">
-        <motion.div
-          style={{
-            width: "16rem",
-            transformOrigin: "top right",
-
-          }}
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.5, opacity: 0 }}
-          transition={{ duration: 0.1, ease: "easeOut" }}
-        >
-            <div className="settings-handle flex justify-between items-center mb-4 cursor-move">
+      <div ref={nodeRef} className="fixed top-20 right-4 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl space-6 pb-6">
+            <div className="settings-handle flex justify-between items-center mb-4 cursor-move pt-6 px-6 text-black">
               <h2 className="text-xl font-semibold">Settings</h2>
               <button
-                onClick={onClose}
-                className="text-sm text-gray-400 hover:text-gray-100"
+                onClick={() => {setShowSettings(!showSettings)}}
+                className="text-sm"
               >
                 <IoIosClose size={24} />
               </button>
             </div>
-            <div className="gap-4 flex flex-col">
+            <div className="gap-4 flex flex-col px-6 text-black">
               <div className="flex flex-col">            
                 <label htmlFor="my-input">Work Timer Duration:</label>
                 <input
@@ -53,7 +42,7 @@ export default function Settings({ onClose }: { onClose: () => void }) {
                     value={durations.focus / 60}
                     onChange={(e) => setDurationValue("focus", Number(e.target.value))}
                     placeholder="Type here"
-                    className="border border-gray-400 rounded-md p-2 active:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-white/50 rounded-xl border border-white/30 outline-none focus:bg-white/70"
                 />
               </div>
               <div className="flex flex-col">            
@@ -67,9 +56,6 @@ export default function Settings({ onClose }: { onClose: () => void }) {
                     className="border-2 rounded-md p-2"
                 />
               </div>
-
-            </div>
-
             <input
             type="color"
             className="w-10 h-10 cursor-pointer"
@@ -80,7 +66,10 @@ export default function Settings({ onClose }: { onClose: () => void }) {
                 document.documentElement.style.setProperty("--background", newColor);
             }}
             />
-        </motion.div>
+            </div>
+
+
+
       </div>
     </Draggable>
   );
