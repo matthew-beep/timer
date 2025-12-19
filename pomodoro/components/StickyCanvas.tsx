@@ -78,19 +78,21 @@ export default function StickyCanvas({
         onChange={saveCanvas}
         canvasColor={color}
       />
-      <div className="h-12 absolute bottom-0 w-full pointer-events-none flex p-1 bg-black/10"> 
+      <div className="h-12 absolute bottom-0 w-full pointer-events-none flex justify-between p-1 bg-black/10"> 
+        <div className="flex gap-1 h-full">
+          <Button 
+            className="pointer-events-auto rounded-full h-10 w-10" 
+            onClick={undoStroke}
+            >undo
+          </Button>
+          <Button 
+            className="pointer-events-auto rounded-full h-10 w-10" 
+            onClick={redoStroke}
+            >redo
+          </Button>
+        </div>
         <Button 
-          className="pointer-events-auto rounded-full w-12" 
-          onClick={undoStroke}
-          >undo
-        </Button>
-        <Button 
-          className="pointer-events-auto rounded-full w-12" 
-          onClick={redoStroke}
-          >redo
-        </Button>
-        <Button 
-          className="pointer-events-auto rounded-full w-12" 
+          className="pointer-events-auto rounded-full h-10 w-10" 
           onClick={() => {console.log("save")}}
           >save
         </Button>

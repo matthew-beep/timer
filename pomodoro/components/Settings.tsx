@@ -23,8 +23,8 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
       handle=".settings-handle" 
       nodeRef={nodeRef}
     >
-      <div ref={nodeRef} className="fixed top-20 right-4 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl space-6 pb-6">
-            <div className="settings-handle flex justify-between items-center mb-4 cursor-move pt-6 px-6 text-black">
+      <div ref={nodeRef} className="fixed top-20 right-4 bg-[#0a1929]/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl space-6 pb-6 overflow-hidden">
+            <div className="settings-handle flex justify-between items-center mb-4 cursor-move py-3 px-6 text-white bg-white/5">
               <h2 className="text-xl font-semibold">Settings</h2>
               <button
                 onClick={() => {setShowSettings(!showSettings)}}
@@ -33,7 +33,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                 <IoIosClose size={24} />
               </button>
             </div>
-            <div className="gap-4 flex flex-col px-6 text-black">
+            <div className="gap-4 flex flex-col px-6 text-white">
               <div className="flex flex-col">            
                 <label htmlFor="my-input">Work Timer Duration:</label>
                 <input
@@ -42,7 +42,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                     value={durations.focus / 60}
                     onChange={(e) => setDurationValue("focus", Number(e.target.value))}
                     placeholder="Type here"
-                    className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-white/50 rounded-xl border border-white/30 outline-none focus:bg-white/70"
+                    className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#181818] rounded-full border border-[#313131] outline-none"
                 />
               </div>
               <div className="flex flex-col">            

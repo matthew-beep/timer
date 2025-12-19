@@ -36,7 +36,7 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
     return (
         <div className="rounded-md flex justify-between px-5 pt-5 relative z-10">
 
-            <h1 className="text-5xl font-bold">Pomodoro Puppy</h1>
+            <h1 className="text-5xl font-bold">Study Space</h1>
             <div className='flex relative gap-2'>    
                 <Button className="flex items-center justify-center p-2 rounded-full" onClick={addSticky}>
                     <RiStickyNoteAddLine size={32}/>
