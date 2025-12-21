@@ -16,7 +16,7 @@ export function Button({
     <button
       {...props}
       className={clsx(
-        "font-medium transition-colors active:scale-[0.98] select-none",
+        "font-medium transition-colors active:scale-[0.98] select-none cursor-pointer",
         {
           "bg-button-primary text-white hover:bg-button-primary/50": variant === "primary",
           "bg-zinc-200 text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600":
@@ -32,3 +32,4 @@ export function Button({
     </button>
   );
 }
+

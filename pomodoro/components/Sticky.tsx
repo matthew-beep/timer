@@ -11,7 +11,8 @@ import type { CanvasPath } from "react-sketch-canvas";
 import StickyText  from "./StickyText";
 import StickyCanvas  from "./StickyCanvas";
 
-
+import { HiOutlinePencil } from "react-icons/hi2";
+import { RxText } from "react-icons/rx";
 
 interface StickyNoteProps {
   id: string;
@@ -28,7 +29,7 @@ interface StickyNoteProps {
 export default function StickyNote({
   id = "",
   text = "",
-  color = "#FFF476",
+  color = "#00b8db",
   x = 100,
   y = 100,
   width = 220,
@@ -84,33 +85,59 @@ export default function StickyNote({
     dragHandleClassName="sticky-handle"
     bounds="parent"
     className="pointer-events-auto"
-    style={{ display: "flex" }}   // important for stretch
+    style={{ 
+      display: "flex",
+    }}   // important for stretch
   >
       <div
-        className="w-full h-full flex flex-col border rounded-sm scale-95 hover:scale-100 shadow-md hover:shadow-2xl transition-all duration-150"
-        style={{ backgroundColor: color }}
+        className="w-full h-full flex flex-col rounded-sm hover:scale-105 shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
+        style={{
+          backgroundColor: 'rgba(10, 25, 41, 0.5)', 
+          border: `1px solid ${color}`,
+        }}  
       >
+
+        <div
+          className="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          }}
+        />
         {/* Header / Handle */}
         <div
           className="
-            sticky-handle cursor-move flex justify-end items-center 
-            font-semibold text-black/70 bg-black/5 h-12
+            sticky-handle cursor-move flex justify-between items-center 
+            font-semibold border-b border-white/5 bg-white/5 h-12 p-2
           "
         >
-
-          <div className="flex items-center justify-end w-full h-full ">
+          <div className="flex items-center gap-1 bg-black/20 rounded-lg p-1">
             <button 
-            className="w-12 h-full flex items-center justify-center text-black hover:bg-black/10 transition-all duration-150"
-            onClick={
-              () => {
-                updateNote(id, { mode: draw ? "text" : "draw" }) 
-                setDraw(!draw);
-              }
+              className={`w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'draw' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
+              onClick={
+                () => {
+                  updateNote(id, { mode: "draw" }) 
+                  setDraw(true);
+                }
               }>
-                <MdDraw size={24} />
-            </button>
+                <HiOutlinePencil size={14} />
+            </button> 
             <button 
-              className="w-12 h-full flex items-center justify-center text-black hover:bg-black/10 transition-all duration-150"
+              className={`w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'text' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
+              onClick={
+                () => {
+                  updateNote(id, { mode: "text" }) 
+                  setDraw(false);
+                }
+              }>
+                <RxText 
+                  size={14} 
+
+                />
+            </button>  
+          </div>
+          <div className="bg-black/20 p-1 rounded-lg">
+            <button 
+              className="w-8 h-full flex items-center justify-center transition-all duration-150 hover:bg-white/10 rounded-sm text-white/40 hover:text-white/70" 
               onClick={() => deleteNote(id)}
             >
               <IoIosClose 

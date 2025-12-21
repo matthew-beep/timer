@@ -33,7 +33,7 @@ export default function StickyText({
     <textarea
       value={text}
       onChange={(e) => saveText(e.target.value)}
-      className="bg-transparent w-full h-full resize-none outline-none p-3 text-black/80 text-sm"
+      className="bg-transparent w-full h-full resize-none outline-none p-3 text-white text-sm"
       placeholder="Enter text..."
     />
   );

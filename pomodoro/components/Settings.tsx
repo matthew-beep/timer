@@ -24,11 +24,11 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
       nodeRef={nodeRef}
     >
       <div ref={nodeRef} className="fixed top-20 right-4 bg-[#0a1929]/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl space-6 pb-6 overflow-hidden">
-            <div className="settings-handle flex justify-between items-center mb-4 cursor-move py-3 px-6 text-white bg-white/5">
+            <div className="settings-handle flex justify-between items-center mb-4 cursor-move py-3 px-6 text-white bg-white/5 hover:bg-white/10">
               <h2 className="text-xl font-semibold">Settings</h2>
               <button
                 onClick={() => {setShowSettings(!showSettings)}}
-                className="text-sm"
+                className="text-sm text-white/50 hover:bg-white/10 hover:text-white transition-all duration-150 rounded-full"
               >
                 <IoIosClose size={24} />
               </button>
@@ -63,13 +63,10 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
             onChange={(e) => {
                 const newColor = e.target.value;
                 setBgColor(newColor);
-                document.documentElement.style.setProperty("--background", newColor);
+                document.documentElement.style.setProperty("--button-primary", newColor);
             }}
             />
             </div>
-
-
-
       </div>
     </Draggable>
   );

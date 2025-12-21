@@ -24,7 +24,7 @@ export default function Home() {
     <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh">
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
       <div className="relative h-full">
-        <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-hidden">
           {notes.map((note) => (
             <StickyNote key={note.id} mode={note.mode} text={note.text} id={note.id} x={note.x} y={note.y} width={note.width} height={note.height} paths={note.paths}/>
           ))}

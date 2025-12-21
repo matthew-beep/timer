@@ -36,6 +36,33 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+input[type="color" i] {
+  border-radius: 50%;
+
+  
+  /* Can set padding between outer circle and color swatch for Firefox here;
+   * it doesn't support a color-swarch-wrapper pseudoclass
+   */
+  border-style: solid;
+  border-color: rgb(153, 153, 153);
+}
+
+/* Affects area between outer circle and color swatch. Firefox doesn't have an equivalent. */
+input[type="color" i]::-webkit-color-swatch-wrapper {
+  padding: 1px;
+}
+
+/* Affects the inner circle, i.e. the current color selection */
+input[type="color" i]::-webkit-color-swatch {
+  border-radius: 50%;
+  border: 0px;
+}
+
+input[type="color" i]::-moz-color-swatch {
+  border-radius: 50%;
+}
+
+
 @keyframes hero-gradient-animation {
     0% {
         --s-start-0: 3.781194741222177%;

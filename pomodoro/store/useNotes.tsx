@@ -2,14 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CanvasPath } from "react-sketch-canvas";
 
-type ExportImageType = 'jpeg' | 'png';
-
-interface Point {
-  x: number;
-  y: number;
-}
-
-
 export type StickyNote = {
   id: string;
   x: number;
