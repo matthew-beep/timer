@@ -1,12 +1,9 @@
 "use client";
 
-import { useRef, ChangeEvent, useState } from "react";
-import { motion } from "framer-motion";
-import { Card } from "@/components/Card";
+import { useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { useTimer } from "@/store/useTimer";
 import { IoIosClose } from "react-icons/io";
-import { Rnd } from "react-rnd";
 import { Button } from "./Button";
 
 
@@ -22,7 +19,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
     // Pass nodeRef to Draggable and attach the ref to the actual DOM node child
     <Draggable 
       handle=".settings-handle" 
-      nodeRef={nodeRef}
+      nodeRef={nodeRef as React.RefObject<HTMLElement>}
     >
       <div ref={nodeRef} className="fixed top-20 right-4 bg-[#0a1929]/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl space-6 pb-6 overflow-hidden">
             <div className="settings-handle flex justify-between items-center mb-4 cursor-move py-3 px-6 text-white bg-white/5 hover:bg-white/10">

@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useTimer } from "@/store/useTimer";
 import { useNotesStore } from '@/store/useNotes';
 import { Button } from './Button';
-import Settings from '@/components/Settings';
-import { AnimatePresence } from 'motion/react';
 import { v4 as uuidv4 } from 'uuid';
 import { IoSettingsOutline } from 'react-icons/io5';
 import { RiStickyNoteAddLine } from "react-icons/ri";

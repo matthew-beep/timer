@@ -13,7 +13,7 @@ import StickyCanvas  from "./StickyCanvas";
 
 import { HiOutlinePencil } from "react-icons/hi2";
 import { RxText } from "react-icons/rx";
-
+import { BiPaint } from "react-icons/bi";
 
 interface StickyNoteProps {
   id: string;
@@ -120,7 +120,7 @@ export default function StickyNote({
                   setDraw(true);
                 }
               }>
-                <HiOutlinePencil size={14} />
+                <BiPaint size={14} />
             </button> 
             <button 
               className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'text' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}

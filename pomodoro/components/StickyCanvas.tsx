@@ -8,19 +8,10 @@ import type { CanvasPath } from "react-sketch-canvas";
 import { CiUndo, CiRedo } from "react-icons/ci";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { RxEraser } from "react-icons/rx";
 
-function debounce<T extends (...args: unknown[]) => unknown>(
-  func: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  
-  return function(...args: Parameters<T>) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  };
-}
-
+import { IoCheckmarkOutline } from "react-icons/io5";
+import { CiEdit } from "react-icons/ci";
 interface StickyCanvasProps {
   id: string;
   initialText?: string;
@@ -64,6 +55,11 @@ export default function StickyCanvas({
     canvasRef.current.redo();
   }
 
+  const eraserMode = () => {
+    if (!canvasRef.current) return;
+    canvasRef.current.eraseMode(true);
+  }
+
 
 
 
@@ -74,12 +70,13 @@ export default function StickyCanvas({
       {/* Top Bar */}
 
       <div 
-        className="h-12 absolute top-0 right-0 width-full flex rounded-full p-1 bg-[#0a1929]/80 mb-1 gap-1"
+        className="h-12 absolute top-0 right-0 width-full flex rounded-full p-1 bg-[#0a1929]/80 m-2"
       > 
         <Button 
-          className="pointer-events-auto rounded-full h-10 w-10" 
-          onClick={() => {console.log("save")}}
-          >save
+          className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
+          onClick={() => setEditCanvas(!editCanvas)}
+          variant="plain"
+          >{editCanvas ? <IoCheckmarkOutline size={24} /> : <CiEdit size={24} />}
         </Button>
       </div>
       <ReactSketchCanvas
@@ -87,13 +84,15 @@ export default function StickyCanvas({
         strokeWidth={2}
         strokeColor="white"
         style={{ border: "none" }}
-        className="w-full h-full border-none"
+        className={`w-full h-full border-none ${editCanvas ? "pointer-events-auto" : "pointer-events-none"}`}
         onStroke={saveCanvas}
         onChange={saveCanvas}
         canvasColor="rgba(255, 255, 255, 0)"
       />
 
       {/* Bottom Toolbar */}
+
+      {editCanvas &&
       <motion.div 
         className="h-12 absolute bottom-0 left-1/2 -translate-x-1/2 flex rounded-full p-1 bg-[#0a1929]/80 mb-1 gap-1"
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -108,20 +107,30 @@ export default function StickyCanvas({
             value={"#fff"}
             onChange={(e) => console.log("change color")}
           />
+          <Button 
+            className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
+            onClick={eraserMode}
+            variant="plain"
+            >
+              <RxEraser size={24} />
+          </Button>
         
           <Button 
             className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
             onClick={undoStroke}
+            variant="plain"
             >
               <CiUndo size={24} />
           </Button>
           <Button 
             className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
             onClick={redoStroke}
+            variant="plain"
             >
               <CiRedo size={24} />
           </Button>
       </motion.div>
+  }
     </div>
   );
 }

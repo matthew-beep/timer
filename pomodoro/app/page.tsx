@@ -30,7 +30,7 @@ export default function Home() {
           ))}
         </div>
         
-        <div className="w-full flex flex-col items-center h-full justify-center z-0 ">
+        <div className="w-full flex flex-col items-center h-full justify-center z-0  ">
           <Pet />
           <Timer />
         </div>
