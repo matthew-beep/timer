@@ -3,7 +3,7 @@
 import clsx from "clsx";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "glass";
+  variant?: "primary" | "secondary" | "ghost" | "glass" | "plain";
 }
 
 export function Button({
@@ -24,6 +24,7 @@ export function Button({
           "bg-transparent text-current hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50":
             variant === "ghost",
           "glass":variant === "glass",
+          "text-white/50 hover:bg-white/10 hover:text-white transition-all duration-150":variant === "plain",
         },
         className
       )}

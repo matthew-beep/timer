@@ -14,6 +14,7 @@ import StickyCanvas  from "./StickyCanvas";
 import { HiOutlinePencil } from "react-icons/hi2";
 import { RxText } from "react-icons/rx";
 
+
 interface StickyNoteProps {
   id: string;
   text?: string;
@@ -112,7 +113,7 @@ export default function StickyNote({
         >
           <div className="flex items-center gap-1 bg-black/20 rounded-lg p-1">
             <button 
-              className={`w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'draw' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
+              className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'draw' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
               onClick={
                 () => {
                   updateNote(id, { mode: "draw" }) 
@@ -122,7 +123,7 @@ export default function StickyNote({
                 <HiOutlinePencil size={14} />
             </button> 
             <button 
-              className={`w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'text' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
+              className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'text' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
               onClick={
                 () => {
                   updateNote(id, { mode: "text" }) 
@@ -135,16 +136,17 @@ export default function StickyNote({
                 />
             </button>  
           </div>
-          <div className="bg-black/20 p-1 rounded-lg">
-            <button 
-              className="w-8 h-full flex items-center justify-center transition-all duration-150 hover:bg-white/10 rounded-sm text-white/40 hover:text-white/70" 
+
+            <Button
+              className="w-8 h-8 flex items-center justify-center transition-all duration-150 rounded-full" 
               onClick={() => deleteNote(id)}
+              variant="plain"
             >
               <IoIosClose 
                 size={24} 
                 />
-            </button>
-          </div>
+            </Button>
+
         </div>
 
         {/* Content */}
