@@ -8,7 +8,7 @@ import { useNotesStore } from "@/store/useNotes";
 import { MdDraw } from "react-icons/md";
 import { Button } from "./Button";
 import type { CanvasPath } from "react-sketch-canvas";
-
+import Tiptap from "./Tiptap";
 
 
 interface StickyTextProps {
@@ -30,11 +30,18 @@ export default function StickyText({
   }
 
   return (
+
+
+    /*
     <textarea
       value={text}
       onChange={(e) => saveText(e.target.value)}
       className="bg-transparent w-full h-full resize-none outline-none p-3 text-white text-sm"
       placeholder="Enter text..."
-    />
+    />*/
+    <div className="flex-1 min-h-0 p-3">
+      <Tiptap content={text} />
+    </div>
+
   );
 }
