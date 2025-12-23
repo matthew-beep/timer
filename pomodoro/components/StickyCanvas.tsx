@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { useNotesStore } from "@/store/useNotes";
 import { Button } from "./Button";
@@ -36,12 +36,30 @@ export default function StickyCanvas({
 
   const [editCanvas, setEditCanvas] = useState<boolean>(false);
 
+  useEffect(() => { 
+    if (canvasRef.current && paths.length > 0) {
+      canvasRef.current.loadPaths(paths);
+    }
+  }, []);
 
-  const saveCanvas = async () => {
+
+  const saveEditCanvas = async (editMode:boolean) => {
     if (!canvasRef.current) return;
-    const paths = await canvasRef.current.exportPaths();
+
+    if (editMode) {
+      try {
+        const paths = await canvasRef.current.exportPaths();
+        console.log("Saved paths: ", paths);
+        updateNote(id, { paths });
+        setEditCanvas(false);
+      } catch {
+        console.error("Error saving canvas paths");
+      }
+    } else {
+      setEditCanvas(true);
+    }
+
     
-    console.log("Saved paths: ", paths);
     //updateNote(id, { paths });
   };
 
@@ -74,7 +92,7 @@ export default function StickyCanvas({
       > 
         <Button 
           className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
-          onClick={() => setEditCanvas(!editCanvas)}
+          onClick={() => saveEditCanvas(editCanvas)}
           variant="plain"
           >{editCanvas ? <IoCheckmarkOutline size={24} /> : <CiEdit size={24} />}
         </Button>
@@ -85,8 +103,6 @@ export default function StickyCanvas({
         strokeColor="white"
         style={{ border: "none" }}
         className={`w-full h-full border-none ${editCanvas ? "pointer-events-auto" : "pointer-events-none"}`}
-        onStroke={saveCanvas}
-        onChange={saveCanvas}
         canvasColor="rgba(255, 255, 255, 0)"
       />
 

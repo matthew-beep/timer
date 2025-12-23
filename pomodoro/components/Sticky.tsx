@@ -44,27 +44,6 @@ export default function StickyNote({
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
 
-  const saveCanvas = async () => {
-    if (!canvasRef.current) return;
-    const paths = await canvasRef.current.exportPaths();
-    
-    console.log("Saved paths: ", paths);
-    updateNote(id, { paths });
-  };
-
-  const undoStroke = () => {
-    if (!canvasRef.current) return;
-    canvasRef.current.undo();
-  }
-
-  const redoStroke = () => {
-    if (!canvasRef.current) return;
-    canvasRef.current.redo();
-  }
-
-
-
-
   
   return (
   <Rnd
