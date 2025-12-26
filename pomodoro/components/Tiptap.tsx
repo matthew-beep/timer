@@ -20,9 +20,13 @@ const Tiptap = ({content}: {content: string}) => {
     })
 
     return (
-        <div>
+        <div className='h-full flex flex-col relative'>
             <EditorContent editor={editor} className="h-full"/>
-            {editor && <MenuBar editor={editor} />}
+            {editor && (
+                <div className='absolute bottom-0 left-0 w-full'>
+                    <MenuBar editor={editor} />
+                </div>
+            )}
         </div>
         
     )

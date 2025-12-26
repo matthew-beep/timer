@@ -1,14 +1,32 @@
 import { Editor } from '@tiptap/react'
 import { EditorContent, useEditor, useEditorState } from '@tiptap/react'
+import { get } from 'http';
 
 interface MenuBarProps {
   editor: Editor | null
 }
 
+
+const options = [{
+  name: 'bold',
+  action: (editor: Editor) => editor.chain().focus().toggleBold().run(),
+}, {
+  name: 'italic',
+  action: (editor: Editor) => editor.chain().focus().toggleItalic().run(),
+}, {
+  name: 'strike',
+  action: (editor: Editor) => editor.chain().focus().toggleStrike().run(),
+}, {
+  name: 'code',
+  action: (editor: Editor) => editor.chain().focus().toggleCode().run(),  
+}];
+
 export default function MenuBar({ editor }: MenuBarProps) {
   // Read the current editor's state, and re-render the component when it changes
   if (!editor) return null;
-  
+
+  const getJSON = () => console.log(JSON.stringify(editor.getJSON()));
+
   const editorState = useEditorState({
     editor,
     selector: ctx => {
@@ -42,6 +60,19 @@ export default function MenuBar({ editor }: MenuBarProps) {
   return (
     <div className="control-group">
       <div className="button-group flex flex-wrap gap-2">
+
+
+        {options.map((option, i) => (
+          <button
+            key={i}
+            onClick={() => option.action(editor)}
+            className="border-2"
+          >
+            {option.name}
+          </button>
+        ))}
+
+        {/*
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}
           disabled={!editorState.canBold}
@@ -145,6 +176,10 @@ export default function MenuBar({ editor }: MenuBarProps) {
         <button onClick={() => editor.chain().focus().redo().run()} disabled={!editorState.canRedo}>
           Redo
         </button>
+        <button onClick={() => getJSON()}>
+          Save
+        </button>
+        */}
       </div>
     </div>
   )
