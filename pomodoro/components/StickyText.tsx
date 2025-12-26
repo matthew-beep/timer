@@ -1,33 +1,23 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect } from "react";
-import { Rnd } from "react-rnd";
-import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
-import { IoIosClose } from "react-icons/io";
+import { useState } from "react";
 import { useNotesStore } from "@/store/useNotes";
-import { MdDraw } from "react-icons/md";
-import { Button } from "./Button";
-import type { CanvasPath } from "react-sketch-canvas";
 import Tiptap from "./Tiptap";
-
+import { JSONContent } from '@tiptap/core';
 
 interface StickyTextProps {
   id: string;
-  initialText: string;
+  initialText: JSONContent;
 }
 
 export default function StickyText({
   id = "",
-  initialText = "",
+  initialText = {},
 
 }: StickyTextProps) {
   const [text, setText] = useState(initialText);
   const updateNote = useNotesStore((s) => s.updateNote);
 
-  const saveText = (newText: string) => {
-    setText(newText);
-    updateNote(id, { text: newText });
-  }
 
   return (
 
@@ -39,8 +29,8 @@ export default function StickyText({
       className="bg-transparent w-full h-full resize-none outline-none p-3 text-white text-sm"
       placeholder="Enter text..."
     />*/
-    <div className="flex-1 min-h-0 p-3 border-2">
-      <Tiptap content={text} />
+    <div className="flex-1 min-h-0 p-3">
+      <Tiptap content={text} id={id} />
     </div>
 
   );

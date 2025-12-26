@@ -1,31 +1,64 @@
 import { Editor } from '@tiptap/react'
 import { EditorContent, useEditor, useEditorState } from '@tiptap/react'
 import { get } from 'http';
+import { Button } from '@/components/Button';
+import { BsTypeBold, BsTypeItalic, BsTypeStrikethrough, BsCodeSlash, BsListUl } from "react-icons/bs";
+import { LuHeading1, LuHeading2, LuHeading3 } from "react-icons/lu";
 
 interface MenuBarProps {
-  editor: Editor | null
+  editor: Editor;
 }
 
+type MenuOption = {
+  name: string
+  action: (editor: Editor) => void
+  isActive?: (editor: Editor) => boolean
+  canRun?: (editor: Editor) => boolean
+  icon?: React.ReactNode
+}
 
-const options = [{
-  name: 'bold',
-  action: (editor: Editor) => editor.chain().focus().toggleBold().run(),
-}, {
-  name: 'italic',
-  action: (editor: Editor) => editor.chain().focus().toggleItalic().run(),
-}, {
-  name: 'strike',
-  action: (editor: Editor) => editor.chain().focus().toggleStrike().run(),
-}, {
-  name: 'code',
-  action: (editor: Editor) => editor.chain().focus().toggleCode().run(),  
-}];
+const options: MenuOption[] = [{
+    name: 'bold',
+    action: (editor: Editor) => editor.chain().focus().toggleBold().run(),
+    isActive: editor => editor.isActive('bold'),
+    canRun: editor => editor.can().chain().toggleBold().run(),
+    icon: <BsTypeBold />
+  }, {
+    name: 'italic',
+    action: (editor: Editor) => editor.chain().focus().toggleItalic().run(),
+    isActive: editor => editor.isActive('italic'),
+    canRun: editor => editor.can().chain().toggleItalic().run(),
+    icon: <BsTypeItalic />
+  }, {
+    name: 'strike',
+    action: (editor: Editor) => editor.chain().focus().toggleStrike().run(),
+    isActive: editor => editor.isActive('strike'),
+    canRun: editor => editor.can().chain().toggleStrike().run(),
+    icon: <BsTypeStrikethrough />
+  }, {
+    name: 'code',
+    action: (editor: Editor) => editor.chain().focus().toggleCode().run(),  
+    isActive: editor => editor.isActive('code'),
+    canRun: editor => editor.can().chain().toggleCode().run(),
+    icon: <BsCodeSlash />
+  },
+  {
+    name: 'heading1',
+    action: (editor: Editor) => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+    isActive: editor => editor.isActive('heading', { level: 1 }),
+    icon: <LuHeading1 />
+  },
+  {
+    name: 'list',
+    action: (editor: Editor) => editor.chain().focus().toggleBulletList().run(),
+    isActive: editor => editor.isActive('bulletList'),
+    icon: <BsListUl />
+  }
+];
 
 export default function MenuBar({ editor }: MenuBarProps) {
   // Read the current editor's state, and re-render the component when it changes
-  if (!editor) return null;
 
-  const getJSON = () => console.log(JSON.stringify(editor.getJSON()));
 
   const editorState = useEditorState({
     editor,
@@ -59,17 +92,17 @@ export default function MenuBar({ editor }: MenuBarProps) {
 
   return (
     <div className="control-group">
-      <div className="button-group flex flex-wrap gap-2">
-
-
-        {options.map((option, i) => (
-          <button
-            key={i}
+      <div className="button-group flex flex-wrap gap-1 bg-[#0a1929]/80 rounded-full p-1">
+        {options.map((option) => (
+          <Button
+            key={option.name}
             onClick={() => option.action(editor)}
-            className="border-2"
+            className={`${option.isActive?.(editor) ? 'bg-white/10 text-white' : ''} w-8 h-8 flex items-center justify-center rounded-full`}
+            disabled={option.canRun ? !option.canRun(editor) : false}
+            variant='plain'
           >
-            {option.name}
-          </button>
+            {option.icon ? option.icon : option.name}
+          </Button>
         ))}
 
         {/*

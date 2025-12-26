@@ -23,7 +23,7 @@ export function Button({
             variant === "secondary",
           "bg-transparent text-current hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50":
             variant === "ghost",
-          "hover:scale-105 text-cyan-400 bg-cyan-500/20 border-cyan-500/30 border":variant === "glass",
+          "hover:scale-105 text-work bg-cyan-500/20 border-cyan-500/30 border":variant === "glass",
           "text-white/50 hover:bg-white/10 hover:text-white ":variant === "plain",
         },
         className

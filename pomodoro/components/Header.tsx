@@ -27,7 +27,7 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
         const lastNoteY = notes.length > 0 ? notes[notes.length - 1].y + 20: 0;
 
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: "", color: 'yellow', zIndex: 1, width:noteWidth, height:noteHeight, mode: "text" });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: {}, color: 'yellow', zIndex: 1, width:noteWidth, height:noteHeight, mode: "text" });
     }
 
     return (

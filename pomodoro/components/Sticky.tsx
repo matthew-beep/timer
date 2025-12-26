@@ -1,23 +1,23 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { Rnd } from "react-rnd";
-import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
+import {  ReactSketchCanvasRef } from "react-sketch-canvas";
 import { IoIosClose } from "react-icons/io";
 import { useNotesStore } from "@/store/useNotes";
-import { MdDraw } from "react-icons/md";
 import { Button } from "./Button";
 import type { CanvasPath } from "react-sketch-canvas";
 import StickyText  from "./StickyText";
 import StickyCanvas  from "./StickyCanvas";
 
-import { HiOutlinePencil } from "react-icons/hi2";
 import { RxText } from "react-icons/rx";
 import { BiPaint } from "react-icons/bi";
+import { JSONContent } from '@tiptap/core';
+import { motion, AnimatePresence } from "motion/react";
 
 interface StickyNoteProps {
   id: string;
-  text?: string;
+  text?: JSONContent;
   color?: string;
   x?: number;
   y?: number;
@@ -25,11 +25,12 @@ interface StickyNoteProps {
   height?: number;
   mode?: "draw" | "text";
   paths?: CanvasPath[]; // <-- important
+
 }
 
 export default function StickyNote({
   id = "",
-  text = "",
+  text = {},
   color = "#00b8db",
   x = 100,
   y = 100,
@@ -43,6 +44,7 @@ export default function StickyNote({
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
+
 
   
   return (
@@ -69,14 +71,17 @@ export default function StickyNote({
       display: "flex",
     }}   // important for stretch
   >
-      <div
+    <AnimatePresence>
+      <motion.div
         className="w-full h-full flex flex-col rounded-sm hover:scale-105 shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         style={{
           backgroundColor: 'rgba(10, 25, 41, 0.5)', 
           border: `1px solid ${color}`,
         }}  
       >
-
         <div
           className="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay"
           style={{
@@ -128,15 +133,16 @@ export default function StickyNote({
 
         </div>
 
-        {/* Content */}
-        {draw ? 
-        (<StickyCanvas id={id} color={color} paths={paths} />) 
-        : 
-        (<StickyText id={id} initialText={text} />)
-        }
+          {/* Content */}
+          {draw ? 
+          (<StickyCanvas id={id} color={color} paths={paths} />) 
+          : 
+          (<StickyText id={id} initialText={text} />)
+          }
 
 
-      </div>
+        </motion.div>
+      </AnimatePresence>
     </Rnd>
   );
 }

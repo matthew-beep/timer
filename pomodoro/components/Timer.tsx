@@ -2,18 +2,27 @@ import { useTimer } from "@/store/useTimer";
 import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
-import { motion, AnimatePresence } from "motion/react";
+import { useEffect } from "react"; 
 
 export default function Timer() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
   const mode = useTimer((s) => s.mode);
   const setMode = useTimer((s) => s.setMode);
+  const isRunning = useTimer((s) => s.isRunning);
 
   const minutes = Math.floor(timeRemaining / 60)
     .toString()
     .padStart(2, "0");
 
   const seconds = (timeRemaining % 60).toString().padStart(2, "0");
+
+  useEffect(() => { 
+    if (timeRemaining <= 0 && !isRunning) { 
+      const audio = new Audio('/sounds/small-dog.wav');
+      audio.play();
+    }
+
+  }, [timeRemaining, isRunning]);
 
   return (
     <div className="w-full max-w-sm text-[var(--timer-fg)] p-6 space-y-6 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border rounded-3xl">
@@ -42,8 +51,6 @@ export default function Timer() {
           {minutes}:{seconds}
         </h3>
       </div>
-
-
 
       {/* Controls + Timer Logic */}
       <TimerController />

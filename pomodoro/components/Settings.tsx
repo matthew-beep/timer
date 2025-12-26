@@ -52,7 +52,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                     value={durations.short / 60}
                     onChange={(e) => setDurationValue("short", Number(e.target.value))}
                     placeholder="Type here"
-                    className="border-2 rounded-md p-2"
+                    className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#181818] rounded-full border border-[#313131] outline-none"
                 />
               </div>
             <input
