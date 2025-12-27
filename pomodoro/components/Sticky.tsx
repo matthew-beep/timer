@@ -49,7 +49,7 @@ export default function StickyNote({
   const updateNote = useNotesStore((s) => s.updateNote);
   const bringNoteToFront = useNotesStore((s) => s.bringNoteToFront);
   const [cursor, setCursor] = useState<string>("grab");
-  
+  const [scale, setScale] = useState<number>(1);
   return (
   <Rnd
     position={{ x, y }}
@@ -72,19 +72,20 @@ export default function StickyNote({
     className="pointer-events-auto"
     style={{ 
       display: "flex",
-      zIndex: zIndex
+      zIndex: zIndex,
     }}   // important for stretch
     onMouseDown={() => bringNoteToFront(id)}
   >
     <AnimatePresence>
       <motion.div
-        className="w-full h-full flex flex-col rounded-sm hover:scale-105 shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
+        className="w-full h-full flex flex-col rounded-sm shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         style={{
           backgroundColor: 'rgba(10, 25, 41, 0.5)', 
           border: `1px solid ${color}`,
+          scale: scale
         }} 
       >
         <div
@@ -100,7 +101,11 @@ export default function StickyNote({
             font-semibold border-b border-white/5 bg-white/5 h-12 p-2
           "
           style={{ cursor: cursor }}
-          onMouseDown={() => setCursor("grabbing")}
+          onMouseEnter={() => setScale(1.05)}
+          onMouseLeave={() => setScale(1)}
+          onMouseDown={() => {
+            setCursor("grabbing");
+          }}
           onMouseUp={() => setCursor("grab")}
         >
           <div className="flex items-center gap-1 bg-black/20 rounded-lg p-1">

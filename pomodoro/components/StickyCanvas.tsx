@@ -78,6 +78,11 @@ export default function StickyCanvas({
     canvasRef.current.eraseMode(true);
   }
 
+    const eraserModeOff = () => {
+    if (!canvasRef.current) return;
+    canvasRef.current.eraseMode(false);
+  }
+
 
 
 
@@ -92,7 +97,10 @@ export default function StickyCanvas({
       > 
         <Button 
           className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
-          onClick={() => saveEditCanvas(editCanvas)}
+          onClick={() => {
+            saveEditCanvas(editCanvas);
+            eraserModeOff();
+          }}
           variant="plain"
           >{editCanvas ? <IoCheckmarkOutline size={24} /> : <CiEdit size={24} />}
         </Button>

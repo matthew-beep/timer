@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNotesStore } from '@/store/useNotes';
 import { Button } from './Button';
 import { v4 as uuidv4 } from 'uuid';
-import { IoSettingsOutline } from 'react-icons/io5';
+import { IoSettingsOutline, IoAddOutline } from 'react-icons/io5';
 import { RiStickyNoteAddLine } from "react-icons/ri";
 
 
@@ -38,12 +38,19 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
 
             <h1 className="text-5xl font-bold">Study Space</h1>
             <div className='flex relative gap-2'>    
-                <Button className="flex items-center justify-center p-2 rounded-full" onClick={addSticky}>
-                    <RiStickyNoteAddLine size={32}/>
+                <Button 
+                    className="flex items-center justify-center p-2 rounded-full" 
+                    onClick={addSticky}
+                    variant='glass'
+                >
+                    <IoAddOutline size={32} strokeWidth={0.5}/>
                 </Button>
                 <Button 
-                className="flex items-center justify-center p-2 rounded-full" onClick={() => setShowSettings(!settingsOpen)}>
-                    <IoSettingsOutline size={32}/>
+                    className="flex items-center justify-center p-2 rounded-full" 
+                    onClick={() => setShowSettings(!settingsOpen)}
+                    variant='glass'
+                >
+                    <IoSettingsOutline size={32} strokeWidth={0.5}/>
                 </Button>
             </div>
 
