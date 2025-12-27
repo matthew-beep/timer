@@ -26,8 +26,6 @@ interface StickyCanvasProps {
 
 export default function StickyCanvas({
   id = "",
-
-  color = "#FFF476",
   paths= [],
 }: StickyCanvasProps) {
 
@@ -35,12 +33,24 @@ export default function StickyCanvas({
   const updateNote = useNotesStore((s) => s.updateNote);
 
   const [editCanvas, setEditCanvas] = useState<boolean>(false);
+  const activeNoteId = useNotesStore(s => s.activeNoteId);
+  const isActive = activeNoteId === id;
+
 
   useEffect(() => { 
     if (canvasRef.current && paths.length > 0) {
       canvasRef.current.loadPaths(paths);
     }
   }, []);
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    console.log("isActive changed: ", isActive, " for note id: ", id);
+    if (!isActive) {
+      console.log("disabling edit mode for note id: ", id);
+      canvasRef.current.eraseMode(false);
+    }
+  }, [isActive]);
 
 
   const saveEditCanvas = async (editMode:boolean) => {

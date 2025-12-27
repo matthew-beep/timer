@@ -48,6 +48,8 @@ export default function StickyNote({
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
   const bringNoteToFront = useNotesStore((s) => s.bringNoteToFront);
+  const setActiveNote = useNotesStore(s => s.setActiveNote);
+
   const [cursor, setCursor] = useState<string>("grab");
   const [scale, setScale] = useState<number>(1);
   return (
@@ -105,6 +107,7 @@ export default function StickyNote({
           onMouseLeave={() => setScale(1)}
           onMouseDown={() => {
             setCursor("grabbing");
+            setActiveNote(id);
           }}
           onMouseUp={() => setCursor("grab")}
         >

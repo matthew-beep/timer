@@ -21,6 +21,7 @@ type NotesStore = {
   addNote: (note: StickyNote) => void;
   updateNote: (id: string, updates: Partial<StickyNote>) => void;
   deleteNote: (id: string) => void;
+  setActiveNote: (id: string) => void;
   noteWidth: number;
   noteHeight: number;
   bringNoteToFront: (id: string) => void;
@@ -33,6 +34,7 @@ export const useNotesStore = create<NotesStore>()(
       notes: [],
       noteWidth: 220,
       noteHeight: 300,
+      setActiveNote: (id) => set({ activeNoteId: id }),
       addNote: (note) =>
         set((state) => ({ notes: [...state.notes, note] })),
 
