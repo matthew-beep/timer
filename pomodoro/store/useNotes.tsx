@@ -21,9 +21,10 @@ type NotesStore = {
   addNote: (note: StickyNote) => void;
   updateNote: (id: string, updates: Partial<StickyNote>) => void;
   deleteNote: (id: string) => void;
-  MAX_Z: number;
   noteWidth: number;
   noteHeight: number;
+  bringNoteToFront: (id: string) => void;
+  activeNoteId?: string;
 };
 
 export const useNotesStore = create<NotesStore>()(
@@ -46,7 +47,29 @@ export const useNotesStore = create<NotesStore>()(
         set((state) => ({
           notes: state.notes.filter((note) => note.id !== id),
         })),
-        MAX_Z: 1000,
+
+      bringNoteToFront: (id: string) => {
+        const MAX_Z = 1000;
+        set((state) => {
+          let notes = [...state.notes];
+          const maxZIndex = Math.max(...notes.map(n => n.zIndex));
+          console.log("Bringing note to front. Current max zIndex: ", maxZIndex + ", id: ", id);
+          notes = notes.map(note => {
+            if (maxZIndex >= MAX_Z) {
+              return { ...note, zIndex: note.zIndex - maxZIndex };
+            }
+            return note;
+          });
+
+          return {
+            notes: notes.map(note =>
+              note.id === id
+                ? { ...note, zIndex: Math.max(...notes.map(n => n.zIndex)) + 1 }
+                : note
+            )
+          };
+        });
+      }
     }),
     
     {

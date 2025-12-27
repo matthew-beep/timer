@@ -26,8 +26,11 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
         const lastNoteX = notes.length > 0 ? notes[notes.length - 1].x + 20 : 0;
         const lastNoteY = notes.length > 0 ? notes[notes.length - 1].y + 20: 0;
 
+        const maxZ = notes.length > 0
+        ? Math.max(...notes.map(n => n.zIndex))
+        : 0;
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: {}, color: 'yellow', zIndex: 1, width:noteWidth, height:noteHeight, mode: "text" });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: {}, color: 'yellow', zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text" });
     }
 
     return (
@@ -47,8 +50,3 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
         </div>
     );
 }
-
-
-/*            <AnimatePresence>
-                {settingsOpen && <Settings onClose={() => setSettingsOpen(false)} />}
-            </AnimatePresence>*/

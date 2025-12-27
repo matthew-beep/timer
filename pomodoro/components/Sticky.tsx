@@ -15,6 +15,7 @@ import { BiPaint } from "react-icons/bi";
 import { JSONContent } from '@tiptap/core';
 import { motion, AnimatePresence } from "motion/react";
 
+
 interface StickyNoteProps {
   id: string;
   text?: JSONContent;
@@ -25,6 +26,7 @@ interface StickyNoteProps {
   height?: number;
   mode?: "draw" | "text";
   paths?: CanvasPath[]; // <-- important
+  zIndex?: number;
 
 }
 
@@ -38,14 +40,15 @@ export default function StickyNote({
   height = 220,
   mode = "text",
   paths= [],
+  zIndex = 1,
 }: StickyNoteProps) {
   
   const [draw, setDraw] = useState(mode === "draw" ? true : false);
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
-
-
+  const bringNoteToFront = useNotesStore((s) => s.bringNoteToFront);
+  const [cursor, setCursor] = useState<string>("grab");
   
   return (
   <Rnd
@@ -69,7 +72,9 @@ export default function StickyNote({
     className="pointer-events-auto"
     style={{ 
       display: "flex",
+      zIndex: zIndex
     }}   // important for stretch
+    onMouseDown={() => bringNoteToFront(id)}
   >
     <AnimatePresence>
       <motion.div
@@ -80,7 +85,7 @@ export default function StickyNote({
         style={{
           backgroundColor: 'rgba(10, 25, 41, 0.5)', 
           border: `1px solid ${color}`,
-        }}  
+        }} 
       >
         <div
           className="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay"
@@ -89,11 +94,14 @@ export default function StickyNote({
           }}
         />
         {/* Header / Handle */}
-        <div
+        <motion.div
           className="
-            sticky-handle cursor-move flex justify-between items-center 
+            sticky-handle flex justify-between items-center 
             font-semibold border-b border-white/5 bg-white/5 h-12 p-2
           "
+          style={{ cursor: cursor }}
+          onMouseDown={() => setCursor("grabbing")}
+          onMouseUp={() => setCursor("grab")}
         >
           <div className="flex items-center gap-1 bg-black/20 rounded-lg p-1">
             <button 
@@ -120,7 +128,6 @@ export default function StickyNote({
                 />
             </button>  
           </div>
-
             <Button
               className="w-8 h-8 flex items-center justify-center transition-all duration-150 rounded-full" 
               onClick={() => deleteNote(id)}
@@ -131,13 +138,13 @@ export default function StickyNote({
                 />
             </Button>
 
-        </div>
+        </motion.div>
 
           {/* Content */}
           {draw ? 
-          (<StickyCanvas id={id} color={color} paths={paths} />) 
-          : 
-          (<StickyText id={id} initialText={text} />)
+            (<StickyCanvas id={id} color={color} paths={paths} />) 
+            : 
+            (<StickyText id={id} initialText={text} />)
           }
 
 
