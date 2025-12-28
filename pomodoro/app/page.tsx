@@ -5,28 +5,23 @@ import Header from "@/components/Header";
 import { useNotesStore } from "@/store/useNotes";
 import StickyNote from "@/components/Sticky";
 import Pet from "@/components/Pet";
-import { useEffect } from "react";
 import ProgressBar from "@/components/Progress";
 import Settings from "@/components/Settings";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-
+import { useModeSync } from "@/hooks/useModeSync";
 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
   const [showSettings, setShowSettings] = useState(false);
-
-  useEffect(() => {
-    console.log("notes: ", localStorage.getItem("notes"));
-  }, []);
-
+  useModeSync();
   return (
     <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh">
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
       <div className="relative h-full">
         <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-hidden">
           {notes.map((note) => (
-            <StickyNote key={note.id} mode={note.mode} text={note.text} id={note.id} x={note.x} y={note.y} width={note.width} height={note.height} paths={note.paths} zIndex={note.zIndex}/>
+            <StickyNote key={note.id} mode={note.mode} text={note.text} id={note.id} x={note.x} y={note.y} width={note.width} height={note.height} paths={note.paths} zIndex={note.zIndex} inlineSvg={note.inlineSvg}/>
           ))}
         </div>
         

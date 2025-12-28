@@ -7,22 +7,24 @@
   --timer-bg: #ffffff;
   --card: #eaeaea;
   --text: #ffffff;
-  --button-primary: #1976D2;
+  --button-primary: #586674;
   --work: #00d3f2;
+  --break: #d80707;
   --code: #2E2B29;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-test: var(--test);
-  --color-card:var(--bg);
+  --color-test: var(--test); 
+  --color-card:var(--test);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-text: var(--text);
   --color-button-primary: var(--button-primary);
   --color-work: var(--work);
   --color-code: var(--code);
+  --color-active: var(--work);
 }
 
 /*
@@ -37,7 +39,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
 }
 
 input[type="color" i] {

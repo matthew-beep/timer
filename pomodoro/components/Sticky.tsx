@@ -27,6 +27,7 @@ interface StickyNoteProps {
   mode?: "draw" | "text";
   paths?: CanvasPath[]; // <-- important
   zIndex?: number;
+  inlineSvg?: string;
 
 }
 
@@ -41,10 +42,10 @@ export default function StickyNote({
   mode = "text",
   paths= [],
   zIndex = 1,
+  inlineSvg = "",
 }: StickyNoteProps) {
   
   const [draw, setDraw] = useState(mode === "draw" ? true : false);
-  const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const updateNote = useNotesStore((s) => s.updateNote);
   const bringNoteToFront = useNotesStore((s) => s.bringNoteToFront);
@@ -52,6 +53,7 @@ export default function StickyNote({
 
   const [cursor, setCursor] = useState<string>("grab");
   const [scale, setScale] = useState<number>(1);
+
   return (
   <Rnd
     position={{ x, y }}
@@ -76,7 +78,7 @@ export default function StickyNote({
       display: "flex",
       zIndex: zIndex,
     }}   // important for stretch
-    onMouseDown={() => bringNoteToFront(id)}
+    onMouseDown={() => bringNoteToFront(id, zIndex)}
   >
     <AnimatePresence>
       <motion.div
@@ -150,7 +152,7 @@ export default function StickyNote({
 
           {/* Content */}
           {draw ? 
-            (<StickyCanvas id={id} color={color} paths={paths} />) 
+            (<StickyCanvas id={id} color={color} paths={paths} inlineSvg={inlineSvg}/>) 
             : 
             (<StickyText id={id} initialText={text} />)
           }

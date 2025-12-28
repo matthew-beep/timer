@@ -61,11 +61,17 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
             value={bgColor}
             onChange={(e) => {
                 const newColor = e.target.value;
+
                 setBgColor(newColor);
-                document.documentElement.style.setProperty("--button-primary", newColor);
+                console.log(newColor);
+                document.documentElement.style.setProperty("--test", newColor);
+                console.log("new val", document.documentElement.style.getPropertyValue("--test"));
             }}
             />
             </div>
+
+            <div className="w-8 h-8 bg-card"></div>
+            <div className="w-8 h-8"></div>
       </div>
     </Draggable>
   );

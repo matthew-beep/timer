@@ -1,6 +1,7 @@
+'use client'
 import { motion } from 'motion/react';
 import { useTimer } from '@/store/useTimer';
-
+import { useState } from 'react';
 
 
 export default function ProgressBar() {
@@ -13,6 +14,7 @@ export default function ProgressBar() {
       const timerActive = useTimer((s) => s.isRunning);
       
       const mode = useTimer((s) => s.mode);
+      const [showText, setShowText] = useState(false);
 
     return (
       <div
@@ -26,18 +28,28 @@ export default function ProgressBar() {
         </div>
         <div 
           className="w-full h-5 hover:h-8 transition-all duration-300 
-          bg-gray-500 py-3 relative">
+          bg-gray-500 py-3 relative"
+          onMouseEnter={() => setShowText(true)}
+          onMouseLeave={() => setShowText(false)}
+          >
           <motion.div
             className={`h-full ${mode === 'focus' ? 'bg-work' : 'bg-black'} origin-left absolute left-0 w-full bottom-0`}
             animate={{ scaleX: progress }}
             transition={{ ease: "linear", duration: 0.1 }}
           />
-          <div className={`absolute top-0 left-0 w-full h-full flex justify-center items-center text-white font-bold`}>
+          {showText &&
+          <motion.div 
+            className={`absolute top-0 left-0 w-full h-full flex justify-center items-center text-white font-bold`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+          >
               {timerActive ?
                 <span>Pomodoro {Math.floor(progress * 100)}% complete</span> :
                 <span>Timer Stopped</span>
               }
-          </div>
+          </motion.div>
+          }
         </div>
       </div>
     );

@@ -14,6 +14,7 @@ export type StickyNote = {
   height: number;
   mode?: "draw" | "text"
   paths?: CanvasPath[]; // for drawing paths
+  inlineSvg?: string; // for storing SVG representation
 };
 
 type NotesStore = {
@@ -24,7 +25,7 @@ type NotesStore = {
   setActiveNote: (id: string) => void;
   noteWidth: number;
   noteHeight: number;
-  bringNoteToFront: (id: string) => void;
+  bringNoteToFront: (id: string, z:number) => void;
   activeNoteId?: string;
 };
 
@@ -50,11 +51,20 @@ export const useNotesStore = create<NotesStore>()(
           notes: state.notes.filter((note) => note.id !== id),
         })),
 
-      bringNoteToFront: (id: string) => {
+      bringNoteToFront: (id: string, z: number) => {
         const MAX_Z = 1000;
         set((state) => {
+
           let notes = [...state.notes];
           const maxZIndex = Math.max(...notes.map(n => n.zIndex));
+          console.log("current z: " + z);
+
+          if (z >= maxZIndex) {
+            console.log("Note is already at the front.");
+            return { notes };
+          }
+   
+          
           console.log("Bringing note to front. Current max zIndex: ", maxZIndex + ", id: ", id);
           notes = notes.map(note => {
             if (maxZIndex >= MAX_Z) {
