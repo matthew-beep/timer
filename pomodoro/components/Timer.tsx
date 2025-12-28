@@ -12,9 +12,12 @@ export default function Timer() {
   const isRunning = useTimer((s) => s.isRunning);
 
 
-    //const mode = useModeStore((s) => s.mode);
-  const toggleMode = useModeStore((s) => s.toggleMode);
 
+  const toggleMode = () => {
+
+    document.documentElement.style.setProperty("--work", "#ffffff");
+    console.log("new val", document.documentElement.style.getPropertyValue("--work"));
+  }
   const minutes = Math.floor(timeRemaining / 60)
     .toString()
     .padStart(2, "0");
