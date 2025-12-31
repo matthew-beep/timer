@@ -10,14 +10,23 @@ import Settings from "@/components/Settings";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTimer } from "@/store/useTimer";
+import { useThemeStore } from "@/store/useTheme";
 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
   const [showSettings, setShowSettings] = useState(false);
   const mode = useTimer((s) => s.mode);
-
+  const colors = useThemeStore((s) => s.colors);
+  
   useEffect(() => { 
     console.log("Mode changed to:", mode);
+    if (mode === "focus") {
+      document.documentElement.style.setProperty("--primary", colors.work);
+    } else {
+      document.documentElement.style.setProperty("--primary", colors.break);
+    }
+    console.log("Colors are:", colors);
+
   }, [mode]);
 
   return (

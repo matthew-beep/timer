@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Work_Sans, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
-import { ModeSync } from "@/components/ModeSync";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,7 +40,6 @@ export default function RootLayout({
       <body
         className={`${cormorantGaramond.variable} antialiased`}
       >
-        <ModeSync />
         {children}
       </body>
     </html>

@@ -9,8 +9,9 @@
   --text: #ffffff;
   --button-primary: #586674;
   --work: #00d3f2;
-  --break: #d80707;
+  --break: #f6339a;
   --code: #2E2B29;
+  --primary: #1a1b0c;
 }
 
 @theme inline {
@@ -24,7 +25,7 @@
   --color-button-primary: var(--button-primary);
   --color-work: var(--work);
   --color-code: var(--code);
-  --color-active: var(--work);
+  --color-active: var(--primary);
 }
 
 /*

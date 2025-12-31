@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface ModeStore {
+interface ThemeStore {
   mode: 'work' | 'break';
   colors: {
     work: string;
@@ -13,13 +13,13 @@ interface ModeStore {
   toggleMode: () => void;
 }
 
-export const useModeStore = create<ModeStore>()(
-  persist(
+export const useThemeStore = create<ThemeStore>()(
+
     (set) => ({
       mode: 'work',
       colors: {
-        work: '#0066cc',
-        break: '#22c55e',
+        work: '#00d3f2',
+        break: '#f6339a',
       },
       setMode: (mode) => set({ mode }),
       updateColor: (mode, color) =>
@@ -31,6 +31,5 @@ export const useModeStore = create<ModeStore>()(
           mode: state.mode === 'work' ? 'break' : 'work',
         })),
     }),
-    { name: 'mode-settings' }
-  )
+
 );
