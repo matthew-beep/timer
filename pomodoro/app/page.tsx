@@ -8,13 +8,18 @@ import Pet from "@/components/Pet";
 import ProgressBar from "@/components/Progress";
 import Settings from "@/components/Settings";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { useModeSync } from "@/hooks/useModeSync";
+import { useEffect, useState } from "react";
+import { useTimer } from "@/store/useTimer";
 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
   const [showSettings, setShowSettings] = useState(false);
-  useModeSync();
+  const mode = useTimer((s) => s.mode);
+
+  useEffect(() => { 
+    console.log("Mode changed to:", mode);
+  }, [mode]);
+
   return (
     <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh">
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
