@@ -14,7 +14,7 @@ interface ThemeStore {
 }
 
 export const useThemeStore = create<ThemeStore>()(
-
+    // default work": "#00d3f2", "break": "#f6339a"
     (set) => ({
       mode: 'work',
       colors: {

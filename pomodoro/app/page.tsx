@@ -19,15 +19,9 @@ export default function Home() {
   const colors = useThemeStore((s) => s.colors);
   
   useEffect(() => { 
-    console.log("Mode changed to:", mode);
-    if (mode === "focus") {
-      document.documentElement.style.setProperty("--primary", colors.work);
-    } else {
-      document.documentElement.style.setProperty("--primary", colors.break);
-    }
-    console.log("Colors are:", colors);
-
-  }, [mode]);
+    const activeColor = mode === "focus" ? colors.work : colors.break;
+    document.documentElement.style.setProperty("--primary", activeColor);
+  }, [mode, colors.work, colors.break]);
 
   return (
     <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh">

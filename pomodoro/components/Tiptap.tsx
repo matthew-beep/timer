@@ -35,9 +35,9 @@ const Tiptap = ({content, id}: {content: JSONContent, id:string}) => {
 
     return (
         <div className='h-full flex flex-col relative'>
-            <EditorContent editor={editor} className="h-full overflow-auto"/>
+            <EditorContent editor={editor} className="h-full overflow-auto px-3"/>
             {editor && (
-                <div className='absolute bottom-0 left-0 w-full'>
+                <div className='w-full'>
                     <MenuBar editor={editor} />
                 </div>
             )}

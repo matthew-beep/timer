@@ -3,7 +3,7 @@
 import clsx from "clsx";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "glass" | "plain";
+  variant?: "primary" | "secondary" | "ghost" | "glass" | "plain" | "glassPlain";
 }
 
 export function Button({
@@ -23,8 +23,9 @@ export function Button({
             variant === "secondary",
           "bg-transparent text-current hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50":
             variant === "ghost",
-          "hover:scale-105 text-work bg-work/20 border-cyan-500/30 border":variant === "glass",
+          "hover:scale-105 text-active bg-active/20 border-active/30 border":variant === "glass",
           "text-white/50 hover:bg-white/10 hover:text-white ":variant === "plain",
+          "hover:scale-105 text-white border-white border ":variant === "glassPlain",
         },
         className
       )}

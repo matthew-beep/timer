@@ -41,14 +41,14 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
                 <Button 
                     className="flex items-center justify-center p-2 rounded-full" 
                     onClick={addSticky}
-                    variant='glass'
+                    variant='glassPlain'
                 >
                     <IoAddOutline size={32} strokeWidth={0.5}/>
                 </Button>
                 <Button 
                     className="flex items-center justify-center p-2 rounded-full" 
                     onClick={() => setShowSettings(!settingsOpen)}
-                    variant='glass'
+                    variant='glassPlain'
                 >
                     <IoSettingsOutline size={32} strokeWidth={0.5}/>
                 </Button>

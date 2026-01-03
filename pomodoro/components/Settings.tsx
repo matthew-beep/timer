@@ -5,6 +5,7 @@ import Draggable from "react-draggable";
 import { useTimer } from "@/store/useTimer";
 import { IoIosClose } from "react-icons/io";
 import { Button } from "./Button";
+import { useThemeStore } from "@/store/useTheme";
 
 
 // TODO: Refactor to use react-rnd instead of draggable
@@ -15,6 +16,10 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
   const setDurationValue = useTimer((s) => s.setDurationValue);
   const nodeRef = useRef<HTMLDivElement>(null);
 
+  const workColor = useThemeStore((s) => s.colors.work);
+  const breakColor = useThemeStore((s) => s.colors.break);
+  const updateColor = useThemeStore((s) => s.updateColor);
+  
   return (
     // Pass nodeRef to Draggable and attach the ref to the actual DOM node child
     <Draggable 
@@ -58,20 +63,13 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
             <input
             type="color"
             className="w-10 h-10 cursor-pointer"
-            value={bgColor}
+            value={workColor}
             onChange={(e) => {
-                const newColor = e.target.value;
-
-                setBgColor(newColor);
-                console.log(newColor);
-                document.documentElement.style.setProperty("--test", newColor);
-                console.log("new val", document.documentElement.style.getPropertyValue("--test"));
+              updateColor("work", e.target.value);
             }}
             />
             </div>
 
-            <div className="w-8 h-8 bg-card"></div>
-            <div className="w-8 h-8"></div>
       </div>
     </Draggable>
   );

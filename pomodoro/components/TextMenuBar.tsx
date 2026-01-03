@@ -4,6 +4,7 @@ import { get } from 'http';
 import { Button } from '@/components/Button';
 import { BsTypeBold, BsTypeItalic, BsTypeStrikethrough, BsCodeSlash, BsListUl } from "react-icons/bs";
 import { LuHeading1, LuHeading2, LuHeading3 } from "react-icons/lu";
+import { Tooltip } from '@mui/material';
 
 interface MenuBarProps {
   editor: Editor;
@@ -92,17 +93,18 @@ export default function MenuBar({ editor }: MenuBarProps) {
 
   return (
     <div className="control-group">
-      <div className="button-group flex flex-wrap gap-1 bg-[#0a1929]/80 rounded-full p-1">
+      <div className="button-group flex flex-wrap gap-1 bg-[#0a1929]/80 p-1">
         {options.map((option) => (
-          <Button
-            key={option.name}
-            onClick={() => option.action(editor)}
-            className={`${option.isActive?.(editor) ? 'bg-white/10 text-white' : ''} w-8 h-8 flex items-center justify-center rounded-full`}
-            disabled={option.canRun ? !option.canRun(editor) : false}
-            variant='plain'
-          >
-            {option.icon ? option.icon : option.name}
-          </Button>
+          <Tooltip key={option.name} title={option.name.charAt(0).toUpperCase() + option.name.slice(1)}>
+            <Button
+              onClick={() => option.action(editor)}
+              className={`${option.isActive?.(editor) ? 'bg-white/10 text-white' : ''} w-8 h-8 flex items-center justify-center rounded-full`}
+              disabled={option.canRun ? !option.canRun(editor) : false}
+              variant='plain'
+            >
+              {option.icon ? option.icon : option.name}
+            </Button>
+          </Tooltip>
         ))}
 
         {/*
