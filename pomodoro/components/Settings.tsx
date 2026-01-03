@@ -10,8 +10,6 @@ import { useThemeStore } from "@/store/useTheme";
 
 // TODO: Refactor to use react-rnd instead of draggable
 export default function Settings({ onClose, showSettings, setShowSettings }: { onClose?: () => void, showSettings: boolean, setShowSettings: (show: boolean) => void }) {
-  // Use a nodeRef to avoid react-dom.findDOMNode (not available/allowed in some React runtimes)
-  const [bgColor, setBgColor] = useState("#a2d2ff");
   const durations = useTimer((s) => s.durations);
   const setDurationValue = useTimer((s) => s.setDurationValue);
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -61,12 +59,20 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                 />
               </div>
             <input
-            type="color"
-            className="w-10 h-10 cursor-pointer"
-            value={workColor}
-            onChange={(e) => {
-              updateColor("work", e.target.value);
-            }}
+              type="color"
+              className="w-10 h-10 cursor-pointer"
+              value={workColor}
+              onChange={(e) => {
+                updateColor("work", e.target.value);
+              }}
+            />
+            <input
+              type="color"
+              className="w-10 h-10 cursor-pointer"
+              value={breakColor}
+              onChange={(e) => {
+                updateColor("break", e.target.value);
+              }}
             />
             </div>
 

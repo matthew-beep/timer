@@ -35,12 +35,10 @@ export default function StickyCanvas({
 
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const updateNote = useNotesStore((s) => s.updateNote);
-  const [strokeWidth, setStrokeWidth] = useState<number>(2);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editCanvas, setEditCanvas] = useState<boolean>(false);
-  const activeNoteId = useNotesStore(s => s.activeNoteId);
-  const isActive = activeNoteId === id;
   const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");  
+  const [eraserMode, setEraserMode] = useState<boolean>(false);
 
   useEffect(() => { 
     if (canvasRef.current && paths.length > 0) {
@@ -94,14 +92,16 @@ export default function StickyCanvas({
     canvasRef.current.redo();
   }
 
-  const eraserMode = () => {
+  const eraserModeOn = () => {
     if (!canvasRef.current) return;
     canvasRef.current.eraseMode(true);
+    setEraserMode(true);
   }
 
     const eraserModeOff = () => {
     if (!canvasRef.current) return;
     canvasRef.current.eraseMode(false);
+    setEraserMode(false);
   }
 
 
@@ -150,7 +150,6 @@ export default function StickyCanvas({
         transition={{ duration: 0.3, delay: 0.2 }}
       
       > 
-
           <input
             type="color"
             className="h-10 w-10 border-amber-600 cursor-pointer"
@@ -160,20 +159,20 @@ export default function StickyCanvas({
           <Button 
             className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center relative" 
             variant="plain"
-            onMouseEnter={() => setShowModal(true)}
-            onMouseLeave={() => setShowModal(false)}
+            onClick={() => setShowModal(!showModal)}
             >
-              {showModal && <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#0a1929]/90 rounded-xl flex flex-col items-center w-96"><Slider /></div>}
+              {showModal && <div onClick={(e) => e.stopPropagation()}className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#0a1929]/90 rounded-xl flex flex-col items-center w-96"><Slider /></div>}
               |
           </Button>
-          <Button 
-            className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
-            onClick={eraserMode}
-            variant="plain"
-            >
-              <RxEraser size={24} />
-          </Button>
-        
+          <div className={`flex items-center gap-1 h-10 w-10 ${eraserMode ? 'bg-white/10 rounded-full' : ''}`}>
+            <Button 
+              className="pointer-events-auto rounded-full h-full w-full flex items-center justify-center" 
+              onClick={eraserMode ? eraserModeOff : eraserModeOn}
+              variant="plain"
+              >
+                <RxEraser size={24} />
+            </Button>
+          </div>
           <Button 
             className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
             onClick={undoStroke}

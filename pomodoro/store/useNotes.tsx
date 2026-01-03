@@ -33,7 +33,7 @@ export const useNotesStore = create<NotesStore>()(
   persist(
     (set) => ({
       notes: [],
-      noteWidth: 220,
+      noteWidth: 300,
       noteHeight: 300,
       setActiveNote: (id) => set({ activeNoteId: id }),
       addNote: (note) =>

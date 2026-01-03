@@ -37,7 +37,7 @@ export default function StickyNote({
   color = "#00b8db",
   x = 100,
   y = 100,
-  width = 220,
+  width = 300,
   height = 220,
   mode = "text",
   paths= [],
@@ -67,8 +67,8 @@ export default function StickyNote({
         y: position.y,
       });
     }}
-    minWidth={200}
-    minHeight={160}
+    minWidth={300}
+    minHeight={200}
     maxWidth={600}
     maxHeight={600}
     dragHandleClassName="sticky-handle"
@@ -100,7 +100,7 @@ export default function StickyNote({
           }}
         />
         */}
-        
+
         {/* Header / Handle */}
         <motion.div
           className="
