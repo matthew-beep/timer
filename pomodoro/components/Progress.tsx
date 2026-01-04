@@ -33,7 +33,7 @@ export default function ProgressBar() {
           onMouseLeave={() => setShowText(false)}
           >
           <motion.div
-            className={`h-full ${mode === 'focus' ? 'bg-work' : 'bg-black'} origin-left absolute left-0 w-full bottom-0`}
+            className={`h-full bg-active/80 origin-left absolute left-0 w-full bottom-0`}
             animate={{ scaleX: progress }}
             transition={{ ease: "linear", duration: 0.1 }}
           />
@@ -45,7 +45,7 @@ export default function ProgressBar() {
             transition={{ duration: 0.4 }}
           >
               {timerActive ?
-                <span>Pomodoro {Math.floor(progress * 100)}% complete</span> :
+                <span>{mode === 'focus' ? 'Pomodoro' : 'Break'} {Math.floor(progress * 100)}% complete</span> :
                 <span>Timer Stopped</span>
               }
           </motion.div>

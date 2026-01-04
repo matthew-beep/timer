@@ -14,6 +14,7 @@ import { RxText } from "react-icons/rx";
 import { BiPaint } from "react-icons/bi";
 import { JSONContent } from '@tiptap/core';
 import { motion, AnimatePresence } from "motion/react";
+import { PiDotsThree } from "react-icons/pi";
 
 
 interface StickyNoteProps {
@@ -141,6 +142,16 @@ export default function StickyNote({
                 />
             </button>  
           </div>
+          <div className="flex items-center">
+            <Button
+              className="w-8 h-8 flex items-center justify-center transition-all duration-150 rounded-full" 
+              onClick={() => console.log("More options")}
+              variant="plain"
+            >
+              <PiDotsThree
+                size={24} 
+                />
+            </Button>
             <Button
               className="w-8 h-8 flex items-center justify-center transition-all duration-150 rounded-full" 
               onClick={() => deleteNote(id)}
@@ -150,7 +161,7 @@ export default function StickyNote({
                 size={24} 
                 />
             </Button>
-
+          </div>
         </motion.div>
 
           {/* Content */}
