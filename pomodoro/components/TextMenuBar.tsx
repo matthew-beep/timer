@@ -93,12 +93,12 @@ export default function MenuBar({ editor }: MenuBarProps) {
 
   return (
     <div className="control-group">
-      <div className="button-group flex flex-wrap gap-1 bg-[#0a1929]/80 p-1">
+      <div className="button-group flex flex-wrap justify-between gap-1 bg-[#0a1929]/80 p-1">
         {options.map((option) => (
           <Tooltip key={option.name} title={option.name.charAt(0).toUpperCase() + option.name.slice(1)}>
             <Button
               onClick={() => option.action(editor)}
-              className={`${option.isActive?.(editor) ? 'bg-white/10 text-white' : ''} w-8 h-8 flex items-center justify-center rounded-full`}
+              className={`${option.isActive?.(editor) ? 'bg-white/10 text-white' : ''} w-10 h-10 flex items-center justify-center rounded-full`}
               disabled={option.canRun ? !option.canRun(editor) : false}
               variant='plain'
             >

@@ -14,7 +14,6 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
   const durations = useTimer((s) => s.durations);
   const setDurationValue = useTimer((s) => s.setDurationValue);
   const nodeRef = useRef<HTMLDivElement>(null);
-
   const workColor = useThemeStore((s) => s.colors.work);
   const breakColor = useThemeStore((s) => s.colors.break);
   const updateColor = useThemeStore((s) => s.updateColor);
@@ -22,38 +21,13 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
   const [breakTimerLength, setBreakTimerLength] = useState("");
 
   const applyTheme = (theme: Theme) => {
-    //setSelectedTheme(theme.name)
-    console.log("applying theme", theme)
-    console.log("applying theme colors", theme.colors.c1)
-      const body = document.body
-  body.style.setProperty('--c-0', theme.colors.c0)
-  body.style.setProperty('--c-1', theme.colors.c1)
-  body.style.setProperty('--c-2', theme.colors.c2)
-  body.style.setProperty('--c-3', theme.colors.c3)
-  body.style.setProperty('--c-4', theme.colors.c4)
-  body.style.setProperty('--c-5', theme.colors.c5)
-    /*
-    const root = document.documentElement
-
-    console.log("current c-1", getComputedStyle(root).getPropertyValue('--c-1'));
-    root.style.setProperty('--c-0', theme.colors.c0)
-    root.style.setProperty('--c-1', theme.colors.c1)
-    root.style.setProperty('--c-2', theme.colors.c2)
-    root.style.setProperty('--c-3', theme.colors.c3)
-    root.style.setProperty('--c-4', theme.colors.c4)
-    root.style.setProperty('--c-5', theme.colors.c5)
-
-    
-    const style = document.createElement('style')
-    style.textContent = `
-      .animate-gradient-bg {
-        background-color: ${theme.colors.bg} !important;
-      }
-    `
-    const oldStyle = document.getElementById('dynamic-theme-style')
-    if (oldStyle) oldStyle.remove()
-    style.id = 'dynamic-theme-style'
-    document.head.appendChild(style)*/
+    const body = document.body
+    body.style.setProperty('--c-0', theme.colors.c0)
+    body.style.setProperty('--c-1', theme.colors.c1)
+    body.style.setProperty('--c-2', theme.colors.c2)
+    body.style.setProperty('--c-3', theme.colors.c3)
+    body.style.setProperty('--c-4', theme.colors.c4)
+    body.style.setProperty('--c-5', theme.colors.c5)
   }
 
   return (
