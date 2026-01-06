@@ -42,7 +42,7 @@ export default function ProgressBar() {
             className={`absolute top-0 left-0 w-full h-full flex justify-center items-center text-white font-bold`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
+            transition={{ ease: "linear", duration: 1 }}
           >
               {timerActive ?
                 <span>{mode === 'focus' ? 'Pomodoro' : 'Break'} {Math.floor(progress * 100)}% complete</span> :

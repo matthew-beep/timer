@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import {  ReactSketchCanvasRef } from "react-sketch-canvas";
 import { IoIosClose } from "react-icons/io";
@@ -51,6 +51,10 @@ export default function StickyNote({
   const updateNote = useNotesStore((s) => s.updateNote);
   const bringNoteToFront = useNotesStore((s) => s.bringNoteToFront);
   const setActiveNote = useNotesStore(s => s.setActiveNote);
+  
+
+
+
 
   const [cursor, setCursor] = useState<string>("grab");
   const [scale, setScale] = useState<number>(1);
@@ -83,7 +87,7 @@ export default function StickyNote({
   >
     <AnimatePresence>
       <motion.div
-        className="w-full h-full flex flex-col rounded-sm overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
+        className="w-full h-full flex flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
@@ -104,11 +108,11 @@ export default function StickyNote({
 
         {/* Header / Handle */}
         <motion.div
-          className="
+          className={`
             sticky-handle flex justify-between items-center 
             font-semibold border-b border-white/5 bg-white/5 h-12 p-2
-          "
-          style={{ cursor: cursor }}
+          `}
+          style={{ cursor: cursor, }}
           onMouseEnter={() => setScale(1.05)}
           onMouseLeave={() => setScale(1)}
           onMouseDown={() => {
@@ -165,12 +169,13 @@ export default function StickyNote({
         </motion.div>
 
           {/* Content */}
+          <div onMouseDown={() => setActiveNote(id)} className="w-full h-full flex">
           {draw ? 
-            (<StickyCanvas id={id} color={color} paths={paths} inlineSvg={inlineSvg}/>) 
+            (<StickyCanvas id={id} color={color} paths={paths} inlineSvg={inlineSvg} />) 
             : 
-            (<StickyText id={id} initialText={text} />)
+            (<StickyText id={id} initialText={text} height={height} />)
           }
-
+          </div>
 
         </motion.div>
       </AnimatePresence>

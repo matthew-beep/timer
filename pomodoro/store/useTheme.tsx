@@ -4,6 +4,9 @@ import { persist } from 'zustand/middleware';
 
 interface ThemeStore {
   mode: 'work' | 'break';
+  defaultWork: string;
+  defaultBreak: string;
+  selectedGradient: string;
   colors: {
     work: string;
     break: string;
@@ -14,9 +17,12 @@ interface ThemeStore {
 }
 
 export const useThemeStore = create<ThemeStore>()(
-    // default work": "#00d3f2", "break": "#f6339a"
+  persist(
     (set) => ({
       mode: 'work',
+      defaultWork: '#00d3f2',
+      defaultBreak: '#f6339a',
+      selectedGradient: 'Default',
       colors: {
         work: '#00d3f2',
         break: '#f6339a',
@@ -31,5 +37,8 @@ export const useThemeStore = create<ThemeStore>()(
           mode: state.mode === 'work' ? 'break' : 'work',
         })),
     }),
-
+    {
+      name: 'theme-storage', // unique name for localStorage key
+    }
+  )
 );

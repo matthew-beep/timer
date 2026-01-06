@@ -5,9 +5,12 @@ import StarterKit from '@tiptap/starter-kit'
 import MenuBar from './TextMenuBar'
 import { useNotesStore } from "@/store/useNotes";
 import { JSONContent } from '@tiptap/core';
-const Tiptap = ({content, id}: {content: JSONContent, id:string}) => {
-    const updateNote = useNotesStore((s) => s.updateNote);
 
+const Tiptap = ({content, id, height}: {content: JSONContent, id:string, height: number}) => {
+    const updateNote = useNotesStore((s) => s.updateNote);
+    const activeNoteId = useNotesStore(s => s.activeNoteId);
+    const activeNote = activeNoteId === id;
+    const setActiveNote = useNotesStore(s => s.setActiveNote);
     const editor = useEditor({
         extensions: [StarterKit.configure({
             heading: {
@@ -25,9 +28,7 @@ const Tiptap = ({content, id}: {content: JSONContent, id:string}) => {
         onUpdate: ({ editor }) => {
             // You can handle content updates here if needed
             const json: JSONContent = editor.getJSON();
-            // console.log('Editor content updated:', json);
-            console.log('Editor content updated:', editor.getHTML());
-            console.log('Editor content updated (JSON):', JSON.stringify(json));
+            console.log("updating note content: ", json);
             updateNote(id, { text: json });
         }
 
@@ -36,7 +37,7 @@ const Tiptap = ({content, id}: {content: JSONContent, id:string}) => {
     return (
         <div className='h-full flex flex-col relative'>
             <EditorContent editor={editor} className="h-full overflow-auto px-3"/>
-            {editor && (
+            {editor && activeNote && height > 250 && (
                 <div className='w-full'>
                     <MenuBar editor={editor} />
                 </div>

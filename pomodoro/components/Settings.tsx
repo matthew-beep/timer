@@ -49,7 +49,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
             </div>
             <div className="gap-4 flex flex-col px-6 text-xs">
               <div className="flex flex-col gap-2">            
-                <label htmlFor="work-timer">WORK DURATION:</label>
+                <label htmlFor="work-timer" className="tracking-wider text-xs text-white font-medium">WORK DURATION:</label>
                 <input
                     id="work-timer"
                     type="text"
@@ -60,7 +60,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                 />
               </div>
               <div className="flex flex-col gap-2">            
-                <label htmlFor="break-timer">BREAK DURATION:</label>
+                <label htmlFor="break-timer" className="tracking-wider text-xs text-white font-medium">BREAK DURATION:</label>
                 <input
                     id="break-timer"
                     type="text"
@@ -70,9 +70,10 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                     className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#252527] placeholder:text-[#A9A9AB] text-white rounded-full border border-[#4C4B53] outline-none"
                 />
               </div>
+              <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mt-2" />
             <div>
-              <div className="space-y-3">
-                <label className="text-xs font-medium text-white/60 tracking-wider">
+              <div className="space-y-3 flex flex-col gap-1">
+                <label className="text-xs font-medium text-white tracking-wider">
                   COLOR THEME
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -105,7 +106,48 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                   ))}
                 </div>
               </div>
-              <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+              {/* custom color 
+              <div className="flex w-full justify-between">
+                <input
+                  type="color"
+                  id="work-color"
+                  className="w-8 h-8 cursor-pointer"
+                  value={workColor}
+                  onChange={(e) => {
+                    updateColor("work", e.target.value);
+                  }}
+                />
+                <input
+                  type="color"
+                  id="work-color"
+                  className="w-8 h-8 cursor-pointer"
+                  value={workColor}
+                  onChange={(e) => {
+                    updateColor("work", e.target.value);
+                  }}
+                />
+                <input
+                  type="color"
+                  id="work-color"
+                  className="w-8 h-8 cursor-pointer"
+                  value={workColor}
+                  onChange={(e) => {
+                    updateColor("work", e.target.value);
+                  }}
+                />
+                <input
+                  type="color"
+                  id="work-color"
+                  className="w-8 h-8 cursor-pointer"
+                  value={workColor}
+                  onChange={(e) => {
+                    updateColor("work", e.target.value);
+                  }}
+                />
+            </div>
+            */}
+            <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mt-5" />
+
             </div>
               <div className="flex items-center w-full justify-between">
                 <label htmlFor="work-color" className="mr-2">Work Color</label>

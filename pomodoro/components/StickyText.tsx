@@ -8,17 +8,15 @@ import { JSONContent } from '@tiptap/core';
 interface StickyTextProps {
   id: string;
   initialText: JSONContent;
+  height: number;
 }
 
 export default function StickyText({
   id = "",
-  initialText = {},
+  initialText = { type: 'doc', content: [{ type: 'text', text: '' }] },
+  height,
 
 }: StickyTextProps) {
-  const [text, setText] = useState(initialText);
-  const updateNote = useNotesStore((s) => s.updateNote);
-
-
   return (
 
 
@@ -30,7 +28,7 @@ export default function StickyText({
       placeholder="Enter text..."
     />*/
     <div className="flex-1 min-h-0 pt-3">
-      <Tiptap content={text} id={id} />
+      <Tiptap content={initialText} id={id} height={height} />
     </div>
 
   );

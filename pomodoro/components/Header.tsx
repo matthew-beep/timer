@@ -3,7 +3,8 @@ import { useNotesStore } from '@/store/useNotes';
 import { Button } from './Button';
 import { v4 as uuidv4 } from 'uuid';
 import { IoSettingsOutline, IoAddOutline } from 'react-icons/io5';
-import { RiStickyNoteAddLine } from "react-icons/ri";
+
+const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
 
 
 export default function Header({showSettings, setShowSettings}: {showSettings: boolean, setShowSettings: (show: boolean) => void}) {
@@ -30,7 +31,7 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
         ? Math.max(...notes.map(n => n.zIndex))
         : 0;
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: {}, color: 'yellow', zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text" });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: 'yellow', zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text" });
     }
 
     return (
