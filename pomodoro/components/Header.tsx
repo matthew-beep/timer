@@ -14,12 +14,9 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
     const noteWidth = useNotesStore((s) => s.noteWidth);
     const noteHeight = useNotesStore((s) => s.noteHeight);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-    const [bgColor, setBgColor] = useState("#a2d2ff");
 
 
-    useEffect(() => {
-        document.documentElement.style.setProperty("--background", bgColor);
-    }, []);
+
 
     const addSticky = () => {
         const id = uuidv4();

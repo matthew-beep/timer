@@ -20,11 +20,16 @@ export default function ProgressBar() {
       <div
       className="w-screen bottom-0 flex flex-col left-0 h-auto absolute overflow-hidden"
       >
-        <div className='flex  items-center p-2 gap-2'>
-          <div className='w-4 h-4 bg-black rounded-full'></div>
-          <div className='w-4 h-4 bg-black rounded-full'></div>
-          <div className='w-4 h-4 bg-black rounded-full'></div>
-          <div className='w-4 h-4 bg-black rounded-full'></div>
+        <div className="flex justify-between items-center">
+          <div className='flex items-center p-2 gap-2'>
+            <div className='w-4 h-4 bg-black rounded-full'></div>
+            <div className='w-4 h-4 bg-black rounded-full'></div>
+            <div className='w-4 h-4 bg-black rounded-full'></div>
+            <div className='w-4 h-4 bg-black rounded-full'></div>
+          </div>
+          <div className='bg-[#0a1929]/60 border-white/10 rounded-md shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl text-xs p-1 mx-2'>
+            Spotify coming soon 
+          </div>
         </div>
         <div 
           className="w-full h-5 hover:h-8 transition-all duration-300 

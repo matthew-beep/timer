@@ -17,6 +17,8 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const mode = useTimer((s) => s.mode);
   const colors = useThemeStore((s) => s.colors);
+
+  
   
   useEffect(() => { 
     const activeColor = mode === "focus" ? colors.work : colors.break;

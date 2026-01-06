@@ -17,6 +17,9 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
   const workColor = useThemeStore((s) => s.colors.work);
   const breakColor = useThemeStore((s) => s.colors.break);
   const updateColor = useThemeStore((s) => s.updateColor);
+  const selectedGradient = useThemeStore((s) => s.selectedGradient);
+  const updateSelectedGradient = useThemeStore((s) => s.updateSelectedGradient);
+
   const [workTimerLength, setWorkTimerLength] = useState("");
   const [breakTimerLength, setBreakTimerLength] = useState("");
 
@@ -28,6 +31,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
     body.style.setProperty('--c-3', theme.colors.c3)
     body.style.setProperty('--c-4', theme.colors.c4)
     body.style.setProperty('--c-5', theme.colors.c5)
+    updateSelectedGradient(theme.name);
   }
 
   return (
