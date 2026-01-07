@@ -58,6 +58,7 @@ export default function StickyNote({
 
   const [cursor, setCursor] = useState<string>("grab");
   const [scale, setScale] = useState<number>(1);
+  const [currHeight, setCurrHeight] = useState<number>(height);
 
   return (
   <Rnd
@@ -71,6 +72,10 @@ export default function StickyNote({
         x: position.x,
         y: position.y,
       });
+    }}
+
+    onResize={(e, direction, ref, delta, position) => {
+      setCurrHeight(ref.offsetHeight);
     }}
     minWidth={300}
     minHeight={200}
@@ -173,7 +178,7 @@ export default function StickyNote({
           {draw ? 
             (<StickyCanvas id={id} color={color} paths={paths} inlineSvg={inlineSvg} />) 
             : 
-            (<StickyText id={id} initialText={text} height={height} />)
+            (<StickyText id={id} initialText={text} height={currHeight} />)
           }
           </div>
 

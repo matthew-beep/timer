@@ -25,6 +25,7 @@ interface TimerState {
   tick: () => void;
 
   pomodoroCount: number;
+  updatePomodoroCount: () => void;
 }
 
 export const useTimer = create<TimerState>((set, get) => ({
@@ -89,4 +90,5 @@ export const useTimer = create<TimerState>((set, get) => ({
   },
 
   pomodoroCount: 0,
+  updatePomodoroCount: () => set((state) => ({ pomodoroCount: state.pomodoroCount + 1})),
 }));

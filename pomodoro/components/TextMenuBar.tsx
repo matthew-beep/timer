@@ -92,8 +92,8 @@ export default function MenuBar({ editor }: MenuBarProps) {
   })
 
   return (
-    <div className="control-group">
-      <div className="button-group flex flex-wrap justify-start gap-1 bg-[#0a1929]/80 p-1">
+    <div className="h-full">
+      <div className="flex flex-wrap justify-start gap-1 bg-[#0a1929]/80 p-1">
         {options.map((option) => (
           <Tooltip key={option.name} title={option.name.charAt(0).toUpperCase() + option.name.slice(1)}>
             <Button

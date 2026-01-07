@@ -3,6 +3,7 @@ import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
 import { useEffect } from "react"; 
+import { useNotesStore } from "@/store/useNotes";
 
 export default function Timer() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
@@ -11,27 +12,24 @@ export default function Timer() {
   const isRunning = useTimer((s) => s.isRunning);
   const start = useTimer((s) => s.start);
 
- 
-  const toggleMode = () => {
-
-    document.documentElement.style.setProperty("--work", "#f6339a");
-    console.log("new val", document.documentElement.style.getPropertyValue("--work"));
-  }
+  const pomodoroCount = useTimer((s) => s.pomodoroCount);
+  const updatePomodoroCount = useTimer((s) => s.updatePomodoroCount);
 
   const minutes = Math.floor(timeRemaining / 60)
     .toString()
     .padStart(2, "0");
 
   const seconds = (timeRemaining % 60).toString().padStart(2, "0");
-
+  
 
 
   useEffect(() => { 
-
-
     if (timeRemaining <= 0 && !isRunning) { 
       const audio = new Audio('/sounds/small-dog.wav');
 
+      if (mode === "focus") {
+        updatePomodoroCount(); // No more dependency on 'pomodoroCount'
+      }
 
       audio.addEventListener('ended', () => {
         console.log('Audio finished playing!');
@@ -42,9 +40,10 @@ export default function Timer() {
       });
 
       audio.play();
+      
     }
 
-  }, [timeRemaining, isRunning, mode, setMode, start]);
+  }, [timeRemaining, isRunning, mode, setMode, start, updatePomodoroCount]);
 
   return (
     <div className="w-full max-w-sm p-6 space-y-6 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-active rounded-3xl">

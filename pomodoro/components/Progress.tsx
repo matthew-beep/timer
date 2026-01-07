@@ -15,6 +15,7 @@ export default function ProgressBar() {
       
       const mode = useTimer((s) => s.mode);
       const [showText, setShowText] = useState(false);
+      const pomodoroCount = useTimer((s) => s.pomodoroCount);
 
     return (
       <div
@@ -22,10 +23,10 @@ export default function ProgressBar() {
       >
         <div className="flex justify-between items-center">
           <div className='flex items-center p-2 gap-2'>
-            <div className='w-4 h-4 bg-black rounded-full'></div>
-            <div className='w-4 h-4 bg-black rounded-full'></div>
-            <div className='w-4 h-4 bg-black rounded-full'></div>
-            <div className='w-4 h-4 bg-black rounded-full'></div>
+            <div className={`w-4 h-4 ${pomodoroCount >= 1 ? 'bg-active' : 'bg-gray-500 opacity-25'} rounded-full`}></div>
+            <div className={`w-4 h-4 ${pomodoroCount >= 2 ? 'bg-active' : 'bg-gray-500 opacity-25'} rounded-full`}></div>
+            <div className={`w-4 h-4 ${pomodoroCount >= 3 ? 'bg-active' : 'bg-gray-500 opacity-25'} rounded-full`}></div>
+            <div className={`w-4 h-4 ${pomodoroCount >= 4 ? 'bg-active' : 'bg-gray-500 opacity-25'} rounded-full`}></div>
           </div>
           <div className='bg-[#0a1929]/60 border-white/10 rounded-md shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl text-xs p-1 mx-2'>
             Spotify coming soon 
