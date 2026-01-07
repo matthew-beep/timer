@@ -59,6 +59,7 @@ export default function StickyNote({
   const [cursor, setCursor] = useState<string>("grab");
   const [scale, setScale] = useState<number>(1);
   const [currHeight, setCurrHeight] = useState<number>(height);
+  const resizeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   return (
   <Rnd
@@ -74,8 +75,14 @@ export default function StickyNote({
       });
     }}
 
-    onResize={(e, direction, ref, delta, position) => {
-      setCurrHeight(ref.offsetHeight);
+    onResize={(e, direction, ref) => {
+      if (resizeTimeout.current) {
+        clearTimeout(resizeTimeout.current);
+      }
+
+      resizeTimeout.current = setTimeout(() => {
+        setCurrHeight(ref.offsetHeight);
+      }, 100); // ← adjust debounce delay (ms)
     }}
     minWidth={300}
     minHeight={200}

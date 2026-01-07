@@ -38,21 +38,22 @@ const Tiptap = ({content, id, height}: {content: JSONContent, id:string, height:
     useEffect(() => { console.log(height)}, [height]);
 
     return (
-        <div className="h-full flex flex-col relative min-h-0">
-            <div className="flex-1 min-h-0 overflow-hidden">
-                <EditorContent
-                editor={editor}
-                className="h-full overflow-auto px-3"
-                />
-            </div>
+        <div className="relative h-full min-h-0">
+        {/* Editor layer */}
+        <div className="absolute inset-0 min-h-0 pl-3">
+            <EditorContent
+            editor={editor}
+            className="h-full min-h-0 overflow-auto"
+            />
+        </div>
 
+        {/* Menu overlay */}
         {editor && activeNote && height > 250 && (
-            <div className="absolute bottom-0 left-0 w-full z-10">
+            <div className="absolute bottom-0 left-0 w-full z-20 pointer-events-auto">
             <MenuBar editor={editor} />
             </div>
         )}
         </div>
-        
     )
 }
 
