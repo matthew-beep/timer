@@ -22,6 +22,7 @@ export default function Home() {
 
   const applyTheme = (themeIndex: number) => {
     const theme = themes[themeIndex];
+    console.log("gradient object: ", theme);
     const body = document.body;
     body.style.setProperty('--c-0', theme.colors.c0)
     body.style.setProperty('--c-1', theme.colors.c1)
