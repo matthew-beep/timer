@@ -32,12 +32,12 @@ export default function Home() {
 
   }
   
-  /*
+  
   useEffect(() => { 
     const activeColor = mode === "focus" ? colors.work : colors.break;
     document.documentElement.style.setProperty("--primary", activeColor);
   }, [mode, colors.work, colors.break]);
-*/
+
   useEffect(() => {
     console.log("selectedGradient changed: ", selectedGradient);
     applyTheme(selectedGradient);
