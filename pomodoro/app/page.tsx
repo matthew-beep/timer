@@ -26,7 +26,7 @@ export default function Home() {
   }, [mode, colors.work, colors.break]);
 
   return (
-    <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh">
+    <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh test">
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
       <div className="relative h-full">
         <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-hidden">
@@ -35,7 +35,7 @@ export default function Home() {
           ))}
         </div>
         
-        <div className="w-full flex flex-col items-center h-full justify-center z-0  ">
+        <div className="w-full flex flex-col items-center h-full justify-start z-0">
           <Pet />
           <Timer />
         </div>

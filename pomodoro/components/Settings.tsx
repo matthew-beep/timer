@@ -24,7 +24,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
   const [breakTimerLength, setBreakTimerLength] = useState("");
 
   const applyTheme = (theme: Theme) => {
-    const body = document.body
+    const body = document.body;
     body.style.setProperty('--c-0', theme.colors.c0)
     body.style.setProperty('--c-1', theme.colors.c1)
     body.style.setProperty('--c-2', theme.colors.c2)

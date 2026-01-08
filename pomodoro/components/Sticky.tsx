@@ -51,7 +51,8 @@ export default function StickyNote({
   const updateNote = useNotesStore((s) => s.updateNote);
   const bringNoteToFront = useNotesStore((s) => s.bringNoteToFront);
   const setActiveNote = useNotesStore(s => s.setActiveNote);
-  
+  const activeNoteId = useNotesStore(s => s.activeNoteId);
+  const activeNote = activeNoteId === id;
 
 
 
@@ -105,7 +106,7 @@ export default function StickyNote({
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         style={{
           backgroundColor: 'rgba(10, 25, 41, 0.5)', 
-          border: `1px solid ${color}`,
+          border: `${activeNote ? '1px' : '0px'} solid ${color}`,
           scale: scale
         }} 
       >

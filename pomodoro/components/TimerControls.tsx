@@ -3,13 +3,46 @@ import { useTimer } from "@/store/useTimer";
 import { Button } from "@/components/Button";
 import { FaPlay, FaPause } from "react-icons/fa";
 import { motion, AnimatePresence } from "motion/react";
+import { useState, useEffect } from "react";
+import { BsFullscreen } from "react-icons/bs";
+import { MdOutlineRestartAlt } from "react-icons/md";
+
+
 export function TimerControls() {
   const start = useTimer((s) => s.start);
   const pause = useTimer((s) => s.pause);
   const isRunning = useTimer((s) => s.isRunning);
+  const reset = useTimer((s) => s.reset);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [])
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen()
+      } else {
+        await document.exitFullscreen()
+      }
+    } catch (err) {
+      console.error('Error toggling fullscreen:', err)
+    }
+  }
+
 
   return (
-    <div className="flex gap-4 w-full items-center justify-center ">
+    <div className="flex gap-4 w-full items-center justify-center">
+        <Button onClick={reset} variant = "plain"className="p-2 rounded-full flex items-center justify-center">
+          <MdOutlineRestartAlt size={24}/>
+        </Button>
   
         <Button
           onClick={() => {
@@ -63,7 +96,9 @@ export function TimerControls() {
             )}
           </AnimatePresence>
         </Button>
-      
+        <Button onClick={toggleFullscreen} variant = "plain"className="p-2 rounded-full flex items-center justify-center">
+          <BsFullscreen size={24}/>
+        </Button>
     </div>
   );
 }

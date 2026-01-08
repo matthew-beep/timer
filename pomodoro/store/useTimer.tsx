@@ -23,7 +23,6 @@ interface TimerState {
   pause: () => void;
   reset: () => void;
   tick: () => void;
-
   pomodoroCount: number;
   updatePomodoroCount: () => void;
 }
@@ -72,7 +71,6 @@ export const useTimer = create<TimerState>((set, get) => ({
 
   start: () => set({ isRunning: true }),
   pause: () => set({ isRunning: false }),
-
   reset: () =>
     set((state) => ({
       timeRemaining: state.duration,

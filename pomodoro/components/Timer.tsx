@@ -2,7 +2,7 @@ import { useTimer } from "@/store/useTimer";
 import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
-import { useEffect } from "react"; 
+import { useEffect, useState } from "react"; 
 import { useNotesStore } from "@/store/useNotes";
 
 export default function Timer() {
@@ -21,8 +21,6 @@ export default function Timer() {
 
   const seconds = (timeRemaining % 60).toString().padStart(2, "0");
   
-
-
   useEffect(() => { 
     if (timeRemaining <= 0 && !isRunning) { 
       const audio = new Audio('/sounds/small-dog.wav');
@@ -46,7 +44,7 @@ export default function Timer() {
   }, [timeRemaining, isRunning, mode, setMode, start, updatePomodoroCount]);
 
   return (
-    <div className="w-full max-w-sm p-6 space-y-6 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] border border-active rounded-3xl">
+    <div className="flex flex-col w-full max-w-sm p-6 space-y-6 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-3xl">
       
       {/* Mode Buttons */}
       <div className="grid grid-cols-2 gap-2">
@@ -75,7 +73,9 @@ export default function Timer() {
 
       {/* Controls + Timer Logic */}
       <TimerController />
+
       <TimerControls />
+      
     </div>
   );
 }
