@@ -41,7 +41,13 @@ export default function Home() {
 
   useEffect(() => {
     console.log("selectedGradient changed: ", selectedGradient);
-    applyTheme(selectedGradient);
+
+    if (typeof selectedGradient === "string") {
+      applyTheme(0);
+    } else {
+      applyTheme(selectedGradient);
+    }
+    
   }, [selectedGradient]);
 
   return (
