@@ -45,7 +45,7 @@ const Tiptap = ({content, id, height}: {content: JSONContent, id:string, height:
         <div 
             className="absolute inset-0 min-h-0 pl-3"
             style={{
-                paddingBottom: '50px'
+                paddingBottom: `${height < 250 || !activeNote ? "5px" : "50px"}`
             }}
         >
             <EditorContent

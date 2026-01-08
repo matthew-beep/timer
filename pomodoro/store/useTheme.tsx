@@ -6,7 +6,7 @@ interface ThemeStore {
   mode: 'work' | 'break';
   defaultWork: string;
   defaultBreak: string;
-  selectedGradient: string;
+  selectedGradient: number;
   colors: {
     work: string;
     break: string;
@@ -14,7 +14,7 @@ interface ThemeStore {
   setMode: (mode: 'work' | 'break') => void;
   updateColor: (mode: 'work' | 'break', color: string) => void;
   toggleMode: () => void;
-  updateSelectedGradient: (gradientName: string) => void;
+  updateSelectedGradient: (gradientIndex: number) => void;
 }
 
 export const useThemeStore = create<ThemeStore>()(
@@ -23,7 +23,7 @@ export const useThemeStore = create<ThemeStore>()(
       mode: 'work',
       defaultWork: '#00d3f2',
       defaultBreak: '#f6339a',
-      selectedGradient: 'Default',
+      selectedGradient: 0,
       colors: {
         work: '#00d3f2',
         break: '#f6339a',
@@ -37,8 +37,8 @@ export const useThemeStore = create<ThemeStore>()(
         set((state) => ({
           mode: state.mode === 'work' ? 'break' : 'work',
         })),
-        updateSelectedGradient: (gradientName: string) =>
-          set({ selectedGradient: gradientName }),
+        updateSelectedGradient: (gradientIndex: number) =>
+          set({ selectedGradient: gradientIndex }),
         }),
     {
       name: 'theme-storage', // unique name for localStorage key

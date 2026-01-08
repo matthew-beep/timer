@@ -23,16 +23,6 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
   const [workTimerLength, setWorkTimerLength] = useState("");
   const [breakTimerLength, setBreakTimerLength] = useState("");
 
-  const applyTheme = (theme: Theme) => {
-    const body = document.body;
-    body.style.setProperty('--c-0', theme.colors.c0)
-    body.style.setProperty('--c-1', theme.colors.c1)
-    body.style.setProperty('--c-2', theme.colors.c2)
-    body.style.setProperty('--c-3', theme.colors.c3)
-    body.style.setProperty('--c-4', theme.colors.c4)
-    body.style.setProperty('--c-5', theme.colors.c5)
-    updateSelectedGradient(theme.name);
-  }
 
   return (
     // Pass nodeRef to Draggable and attach the ref to the actual DOM node child
@@ -87,7 +77,7 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                       className={`relative flex flex-col justify-center group p-3 rounded-xl border transition-all border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20`}
                       onClick={() => {
                         console.log("applying theme", theme.name)
-                        applyTheme(theme)
+                        updateSelectedGradient(themes.indexOf(theme));
                       }}
                     >
                       <div className="flex gap-1 mb-2">

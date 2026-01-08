@@ -10,7 +10,7 @@ export default function Pet() {
 
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="200px" height="200px" viewBox="0 0 64 64" aria-hidden="true" role="img" className="iconify iconify--emojione" preserveAspectRatio="xMidYMid meet">
+    <svg xmlns="http://www.w3.org/2000/svg" width="150px" height="150px" viewBox="0 0 64 64" aria-hidden="true" role="img" className="iconify iconify--emojione" preserveAspectRatio="xMidYMid meet">
 
       <path d="M14.1 46.2C8 45.7 3 38 3 38c0 9.5 8.4 13 12.2 11.7c3.4-1.1-1.1-3.5-1.1-3.5z" fill="#947151">
 

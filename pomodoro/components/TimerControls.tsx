@@ -4,8 +4,10 @@ import { Button } from "@/components/Button";
 import { FaPlay, FaPause } from "react-icons/fa";
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
-import { BsFullscreen } from "react-icons/bs";
-import { MdOutlineRestartAlt } from "react-icons/md";
+import { GoScreenFull } from "react-icons/go";
+
+import { CiUndo } from "react-icons/ci";
+
 
 
 export function TimerControls() {
@@ -41,7 +43,7 @@ export function TimerControls() {
   return (
     <div className="flex gap-4 w-full items-center justify-center">
         <Button onClick={reset} variant = "plain"className="p-2 rounded-full flex items-center justify-center">
-          <MdOutlineRestartAlt size={24}/>
+          <CiUndo size={24}/>
         </Button>
   
         <Button
@@ -97,7 +99,7 @@ export function TimerControls() {
           </AnimatePresence>
         </Button>
         <Button onClick={toggleFullscreen} variant = "plain"className="p-2 rounded-full flex items-center justify-center">
-          <BsFullscreen size={24}/>
+          <GoScreenFull size={24}/>
         </Button>
     </div>
   );

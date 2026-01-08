@@ -11,19 +11,37 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTimer } from "@/store/useTimer";
 import { useThemeStore } from "@/store/useTheme";
+import { Theme, themes } from "@/components/Themes";
 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
   const [showSettings, setShowSettings] = useState(false);
   const mode = useTimer((s) => s.mode);
   const colors = useThemeStore((s) => s.colors);
+  const selectedGradient = useThemeStore((s) => s.selectedGradient);
 
+  const applyTheme = (themeIndex: number) => {
+    const theme = themes[themeIndex];
+    const body = document.body;
+    body.style.setProperty('--c-0', theme.colors.c0)
+    body.style.setProperty('--c-1', theme.colors.c1)
+    body.style.setProperty('--c-2', theme.colors.c2)
+    body.style.setProperty('--c-3', theme.colors.c3)
+    body.style.setProperty('--c-4', theme.colors.c4)
+    body.style.setProperty('--c-5', theme.colors.c5)
+
+  }
   
   
   useEffect(() => { 
     const activeColor = mode === "focus" ? colors.work : colors.break;
     document.documentElement.style.setProperty("--primary", activeColor);
   }, [mode, colors.work, colors.break]);
+
+  useEffect(() => {
+    console.log("selectedGradient changed: ", selectedGradient);
+    applyTheme(selectedGradient);
+  }, [selectedGradient]);
 
   return (
     <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh test">
@@ -35,9 +53,9 @@ export default function Home() {
           ))}
         </div>
         
-        <div className="w-full flex flex-col items-center h-full justify-start z-0">
-          <Pet />
-          <Timer />
+        <div className="w-full flex flex-col items-center justify-center h-full z-0">
+            <Pet /> 
+            <Timer />
         </div>
 
               <AnimatePresence>

@@ -155,7 +155,10 @@ export default function StickyCanvas({
             className="h-10 w-10 border-amber-600 cursor-pointer"
             value={strokeColor}
             onChange={(e) => setStrokeColor(e.target.value)}
+            onClick={eraserModeOff}
           />
+
+          {/* Bottom Toolbar 
           <Button 
             className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center relative" 
             variant="plain"
@@ -164,6 +167,7 @@ export default function StickyCanvas({
               {showModal && <div onClick={(e) => e.stopPropagation()}className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#0a1929]/90 rounded-xl flex flex-col items-center w-96"><Slider /></div>}
               |
           </Button>
+          */}
           <div className={`flex items-center gap-1 h-10 w-10 ${eraserMode ? 'bg-white/10 rounded-full' : ''}`}>
             <Button 
               className="pointer-events-auto rounded-full h-full w-full flex items-center justify-center" 
