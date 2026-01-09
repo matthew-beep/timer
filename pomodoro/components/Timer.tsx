@@ -4,6 +4,7 @@ import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
 import { useEffect, useState } from "react"; 
 import { useNotesStore } from "@/store/useNotes";
+import { Tooltip } from "@mui/material";
 
 export default function Timer() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
@@ -44,7 +45,7 @@ export default function Timer() {
   }, [timeRemaining, isRunning, mode, setMode, start, updatePomodoroCount]);
 
   return (
-    <div className="flex flex-col w-full max-w-sm p-6 space-y-6 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-3xl">
+    <div className="flex flex-col w-full max-w-sm p-6 space-y-4 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-3xl">
       
       {/* Mode Buttons */}
       <div className="grid grid-cols-2 gap-2">
@@ -70,7 +71,14 @@ export default function Timer() {
           {minutes}:{seconds}
         </h3>
       </div>
-
+      <div className='flex items-center p-2 gap-2 justify-center'>
+        <Tooltip title="Pomodoros Completed" arrow>
+          <div className={`w-2 h-2 ${pomodoroCount >= 1 ? 'bg-active' : 'bg-gray-500 opacity-25'} rounded-full`}></div>
+        </Tooltip>
+        <div className={`w-2 h-2 ${pomodoroCount >= 2 ? 'bg-active' : 'bg-gray-500 opacity-25'} rounded-full`}></div>
+        <div className={`w-2 h-2 ${pomodoroCount >= 3 ? 'bg-active' : 'bg-gray-500 opacity-25'} rounded-full`}></div>
+        <div className={`w-2 h-2 ${pomodoroCount >= 4 ? 'bg-active' : 'bg-gray-500 opacity-25'} rounded-full`}></div>
+      </div>
       {/* Controls + Timer Logic */}
       <TimerController />
 
