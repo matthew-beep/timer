@@ -98,8 +98,9 @@ export default function MenuBar({ editor }: MenuBarProps) {
           <Tooltip key={option.name} title={option.name.charAt(0).toUpperCase() + option.name.slice(1)}>
             <Button
               onClick={() => option.action(editor)}
-              className={`${option.isActive?.(editor) ? 'bg-white/10 text-white' : ''} w-10 h-10 flex items-center justify-center rounded-full`}
+              className={`w-10 h-10 flex items-center justify-center rounded-full`}
               disabled={option.canRun ? !option.canRun(editor) : false}
+              isActive={option.isActive ? option.isActive(editor) : false}
               variant='plain'
             >
               {option.icon ? option.icon : option.name}

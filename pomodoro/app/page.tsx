@@ -11,57 +11,72 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTimer } from "@/store/useTimer";
 import { useThemeStore } from "@/store/useTheme";
-import { Theme, themes } from "@/components/Themes";
-
+import { Theme, theme1 } from "@/components/Themes";
+import NotesList from "@/components/NotesList"; 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
   const [showSettings, setShowSettings] = useState(false);
   const mode = useTimer((s) => s.mode);
   const colors = useThemeStore((s) => s.colors);
   const selectedGradient = useThemeStore((s) => s.selectedGradient);
+  const setActiveNote = useNotesStore(s => s.setActiveNote);
+  const viewMode = useNotesStore((s) => s.viewMode);
+
 
   const applyTheme = (themeIndex: number) => {
-    const theme = themes[themeIndex];
+    const theme = theme1[themeIndex];
     console.log("gradient object: ", theme);
-    const body = document.body;
-    body.style.setProperty('--c-0', theme.colors.c0)
-    body.style.setProperty('--c-1', theme.colors.c1)
-    body.style.setProperty('--c-2', theme.colors.c2)
-    body.style.setProperty('--c-3', theme.colors.c3)
-    body.style.setProperty('--c-4', theme.colors.c4)
-    body.style.setProperty('--c-5', theme.colors.c5)
-
+    const gradientElement = document.querySelector('.gradient-2') as HTMLElement;
+    gradientElement.style.setProperty('--bg', theme.colors.bg)
+    gradientElement.style.setProperty('--c-0', theme.colors.c0)
+    gradientElement.style.setProperty('--c-1', theme.colors.c1)
+    gradientElement.style.setProperty('--c-2', theme.colors.c2)
+    gradientElement.style.setProperty('--c-3', theme.colors.c3)
+    gradientElement.style.setProperty('--c-4', theme.colors.c4)
+    gradientElement.style.setProperty('--c-5', theme.colors.c5)
   }
   
   
   useEffect(() => { 
     const activeColor = mode === "focus" ? colors.work : colors.break;
+    console.log("current color: ", document.documentElement.style.getPropertyValue("--primary"));
     document.documentElement.style.setProperty("--primary", activeColor);
   }, [mode, colors.work, colors.break]);
-
+  
   useEffect(() => {
-    console.log("selectedGradient changed: ", selectedGradient);
+    // Small delay ensures localStorage has been read
 
+    console.log("selectedGradient changed: ", selectedGradient);
+    
     if (typeof selectedGradient === "string") {
       applyTheme(0);
     } else {
       applyTheme(selectedGradient);
     }
-    
+
+
+
   }, [selectedGradient]);
 
   return (
-    <div className="h-screen flex flex-col font-sans text-[var(--text)] mesh test">
+    <div className="h-screen flex flex-col font-sans text-white test gradient-2">
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
       <div className="relative h-full">
+
+
         <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-hidden">
-          {notes.map((note) => (
+          {viewMode === 'grid' ? 
+          notes.map((note) => (
             <StickyNote key={note.id} mode={note.mode} text={note.text} id={note.id} x={note.x} y={note.y} width={note.width} height={note.height} paths={note.paths} zIndex={note.zIndex} inlineSvg={note.inlineSvg}/>
-          ))}
+          ))
+          : <NotesList />
+          }
         </div>
         
-        <div className="w-full flex flex-col items-center justify-center h-full z-0">
-            <Pet /> 
+        <div 
+          className="w-full flex flex-col items-center justify-center h-full z-0"
+          >
+            {false && <Pet />} 
             <Timer />
         </div>
 

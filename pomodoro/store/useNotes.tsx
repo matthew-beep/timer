@@ -27,6 +27,8 @@ type NotesStore = {
   noteHeight: number;
   bringNoteToFront: (id: string, z:number) => void;
   activeNoteId?: string;
+  viewMode: "list" | "grid";
+  updateViewMode: (mode: "list" | "grid") => void;
 };
 
 export const useNotesStore = create<NotesStore>()(
@@ -35,6 +37,8 @@ export const useNotesStore = create<NotesStore>()(
       notes: [],
       noteWidth: 300,
       noteHeight: 300,
+      viewMode: "grid",
+      updateViewMode: (mode) => set({ viewMode: mode }),
       setActiveNote: (id) => set({ activeNoteId: id }),
       addNote: (note) =>
         set((state) => ({ notes: [...state.notes, note] })),

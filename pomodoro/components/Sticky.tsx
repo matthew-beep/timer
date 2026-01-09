@@ -96,7 +96,11 @@ export default function StickyNote({
       display: "flex",
       zIndex: zIndex,
     }}   // important for stretch
-    onMouseDown={() => bringNoteToFront(id, zIndex)}
+    onMouseDown={() => {
+
+      bringNoteToFront(id, zIndex)
+
+    }}
   >
     <AnimatePresence>
       <motion.div
@@ -106,7 +110,7 @@ export default function StickyNote({
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         style={{
           backgroundColor: 'rgba(10, 25, 41, 0.5)', 
-          border: `${activeNote ? '1px' : '0px'} solid ${color}`,
+          border: `1px solid ${color}`,
           scale: scale
         }} 
       >
@@ -134,7 +138,9 @@ export default function StickyNote({
           }}
           onMouseUp={() => setCursor("grab")}
         >
-          <div className="flex items-center gap-1 bg-black/20 rounded-lg p-1">
+          <div 
+            className="flex items-center gap-1 bg-black/20 rounded-lg p-1"
+            >
             <button 
               className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'draw' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
               onClick={

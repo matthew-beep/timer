@@ -32,7 +32,7 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
     }
 
     return (
-        <div className="rounded-md flex justify-between p-10 relative z-10 border-2">
+        <div className="rounded-md flex justify-between p-10 relative z-10">
             <h1 className="text-3xl font-bold">Study Space</h1>
             <div className='flex relative gap-2'>    
                 <Button 
@@ -40,14 +40,14 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
                     onClick={addSticky}
                     variant='glassPlain'
                 >
-                    <IoAddOutline size={32} strokeWidth={0.5}/>
+                    <IoAddOutline size={18} strokeWidth={0.5}/>
                 </Button>
                 <Button 
                     className="flex items-center justify-center p-2 rounded-full" 
                     onClick={() => setShowSettings(!settingsOpen)}
                     variant='glassPlain'
                 >
-                    <IoSettingsOutline size={32} strokeWidth={0.5}/>
+                    <IoSettingsOutline size={18} strokeWidth={0.5}/>
                 </Button>
             </div>
 

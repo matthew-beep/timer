@@ -6,7 +6,7 @@ import { useTimer } from "@/store/useTimer";
 import { IoIosClose } from "react-icons/io";
 import { Button } from "./Button";
 import { useThemeStore } from "@/store/useTheme";
-import { Theme, themes } from "@/components/Themes";
+import { Theme, theme1 as themes } from "@/components/Themes";
 
 
 // TODO: Refactor to use react-rnd instead of draggable
