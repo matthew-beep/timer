@@ -35,7 +35,12 @@ const Tiptap = ({content, id, height}: {content: JSONContent, id:string, height:
 
     })
 
-    useEffect(() => { console.log(height)}, [height]);
+    useEffect(() => { 
+        console.log("height changing: ", height);
+        if (height< 250) {
+            console.log("Menu disappear, padding change");
+        }
+    }, [height]);
 
     return (
         <div 
