@@ -2,7 +2,7 @@ import { useTimer } from "@/store/useTimer";
 import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
-import { useEffect, useState } from "react"; 
+import { useEffect, useRef } from "react"; 
 import { useNotesStore } from "@/store/useNotes";
 import { Tooltip } from "@mui/material";
 
@@ -12,7 +12,7 @@ export default function Timer() {
   const setMode = useTimer((s) => s.setMode);
   const isRunning = useTimer((s) => s.isRunning);
   const start = useTimer((s) => s.start);
-
+  const audioRef = useRef<HTMLAudioElement>(null)
   const pomodoroCount = useTimer((s) => s.pomodoroCount);
   const updatePomodoroCount = useTimer((s) => s.updatePomodoroCount);
 
@@ -30,15 +30,13 @@ export default function Timer() {
         updatePomodoroCount(); // No more dependency on 'pomodoroCount'
       }
 
-      audio.addEventListener('ended', () => {
-        console.log('Audio finished playing!');
-        // Call your function here
-        // handleAudioComplete();
-        setMode(mode === "focus" ? "short" : "focus");
-        start();
-      });
 
-      audio.play();
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0
+        audioRef.current.play().catch(err => {
+          console.log('Audio play failed:', err)
+        })
+      }
       
     }
 
@@ -81,6 +79,16 @@ export default function Timer() {
       </div>
       {/* Controls + Timer Logic */}
       <TimerController />
+      <audio 
+        ref={audioRef} src="/sounds/small-dog.wav" 
+        onEnded={() => {
+          console.log('Audio finished playing!');
+          // Call your function here
+          // handleAudioComplete();
+          setMode(mode === "focus" ? "short" : "focus");
+          start();
+        }}
+      />
 
       <TimerControls />
       
