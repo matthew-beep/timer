@@ -77,7 +77,7 @@ export default function ListNote ({index, text, color, lastEdited} : ListNotePro
           >
             <div 
               className="text-sm overflow-auto prose prose-sm prose-invert tiptap"
-              dangerouslySetInnerHTML={{ __html: generateHTML(text, [StarterKit]) }}
+              dangerouslySetInnerHTML={{ __html: htmlContent}}
             >
             </div>
             {lastEdited && (
