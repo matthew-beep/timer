@@ -22,12 +22,12 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
         console.log("add sticky: ", id);
         const lastNoteX = notes.length > 0 ? notes[notes.length - 1].x + 20 : 0;
         const lastNoteY = notes.length > 0 ? notes[notes.length - 1].y + 20: 0;
-
+        const now = new Date().toISOString();
         const maxZ = notes.length > 0
         ? Math.max(...notes.map(n => n.zIndex))
         : 0;
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: workColor, zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text" });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: workColor, zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text", dateCreated: now });
     }
 
     return (

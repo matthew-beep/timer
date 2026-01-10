@@ -38,7 +38,7 @@ interface StickyNoteProps {
 */
 export default function StickyNote({
   id = "",
-  text = {},
+  text = { type: 'doc', content: [{ type: 'paragraph' }] },
   color,
   x = 100,
   y = 100,

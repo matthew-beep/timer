@@ -28,7 +28,7 @@ export function Button({
           "hover:scale-105 text-active bg-active/20 border-active/30 border":variant === "glass",
           "text-white/50 hover:bg-white/10 hover:text-white ":variant === "plain" && !isActive,
           "text-white bg-white/10":variant === "plain" && isActive,
-          "hover:scale-105 text-white border-white/10 border bg-white/10 backdrop-blur-md hover:bg-white/20 shadow-md hover:shadow-2xl transition-all duration-150":variant === "glassPlain",
+          "hover:scale-105 text-white border-white/10 border bg-[#0a1929]/60 backdrop-blur-md hover:bg-white/20 shadow-md hover:shadow-2xl transition-all duration-150":variant === "glassPlain",
         },
         className
       )}

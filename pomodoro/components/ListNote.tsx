@@ -6,7 +6,7 @@ import { useNotesStore } from '@/store/useNotes';
 import { generateHTML } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { JSONContent } from '@tiptap/core';
-import { useEffect } from 'react';
+import { useMemo} from 'react';
 import {StickyNote } from '@/store/useNotes';
 interface ListNoteProps extends StickyNote {
 
@@ -14,7 +14,45 @@ interface ListNoteProps extends StickyNote {
 
 }
 
+
+const normalizeNoteText = (text: unknown): JSONContent => {
+  // If it's already a valid TipTap document, return it
+  if (text && typeof text === 'object' && 'type' in text && text.type === 'doc' && 'content' in text) {
+    return text as JSONContent;
+  }
+  
+  // If it's an empty object or invalid, return empty TipTap doc
+  if (!text || (typeof text === 'object' && Object.keys(text).length === 0)) {
+    return { type: 'doc', content: [{ type: 'paragraph' }] };
+  }
+  
+  // If it's a string (legacy format), wrap it in TipTap structure
+  if (typeof text === 'string') {
+    return {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: text ? [{ type: 'text', text }] : []
+        }
+      ]
+    };
+  }
+  
+  // Fallback to empty doc
+  return { type: 'doc', content: [{ type: 'paragraph' }] };
+};
 export default function ListNote ({index, text, color, lastEdited} : ListNoteProps) {
+
+    const htmlContent = useMemo(() => {
+    try {
+      const normalizedText = normalizeNoteText(text);
+      return generateHTML(normalizedText, [StarterKit]);
+    } catch (error) {
+      console.error('Error generating HTML for note:', error);
+      return '<p></p>'; // Fallback empty paragraph
+    }
+  }, [text]);
 
   return (
 

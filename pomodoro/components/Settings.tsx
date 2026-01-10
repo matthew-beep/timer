@@ -29,9 +29,10 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
     <Draggable 
       handle=".settings-handle" 
       nodeRef={nodeRef as React.RefObject<HTMLElement>}
+      
     >
-      <div ref={nodeRef} className="fixed top-20 right-4 bg-[#1C1C1E]/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl space-6 pb-6 overflow-hidden">
-            <div className="settings-handle flex justify-between items-center mb-4 cursor-move py-3 px-6 text-white bg-white/5 hover:bg-white/10">
+      <div ref={nodeRef} className="fixed top-20 right-4 bg-[#1C1C1E]/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden w-80">
+            <div className="settings-handle flex justify-between items-center cursor-move py-3 px-6 text-white bg-white/5 hover:bg-white/10">
               <h2 className="text-xl font-semibold">Settings</h2>
               <Button
                 onClick={() => {setShowSettings(!showSettings)}}
@@ -41,31 +42,34 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                 <IoIosClose size={24} />
               </Button>
             </div>
-            <div className="gap-4 flex flex-col px-6 text-xs">
-              <div className="flex flex-col gap-2">            
-                <label htmlFor="work-timer" className="tracking-wider text-xs text-white font-medium">WORK DURATION:</label>
-                <input
-                    id="work-timer"
-                    type="text"
-                    value={workTimerLength}
-                    onChange={(e) => {setWorkTimerLength(e.target.value); setDurationValue("focus", Number(e.target.value))}}
-                    placeholder={`${durations.focus / 60}`}
-                    className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#252527] placeholder:text-[#A9A9AB] text-white rounded-full border border-[#4C4B53] outline-none"
-                />
+            <div className="flex flex-col gap-6 overflow-y-auto max-h-[70vh] py-4 px-6 text-xs">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">            
+                  <label htmlFor="work-timer" className="tracking-wider text-xs text-white font-medium">WORK DURATION:</label>
+                  <input
+                      id="work-timer"
+                      type="text"
+                      value={workTimerLength}
+                      onChange={(e) => {setWorkTimerLength(e.target.value); setDurationValue("focus", Number(e.target.value))}}
+                      placeholder={`${durations.focus / 60}`}
+                      className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#252527] placeholder:text-[#A9A9AB] text-white rounded-full border border-[#4C4B53] outline-none"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">            
+                  <label htmlFor="break-timer" className="tracking-wider text-xs text-white font-medium">BREAK DURATION:</label>
+                  <input
+                      id="break-timer"
+                      type="text"
+                      value={breakTimerLength}
+                      onChange={(e) => {setBreakTimerLength(e.target.value); setDurationValue("short", Number(e.target.value))}}
+                      placeholder={`${durations.short / 60}`}
+                      className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#252527] placeholder:text-[#A9A9AB] text-white rounded-full border border-[#4C4B53] outline-none"
+                  />
+                </div>
               </div>
-              <div className="flex flex-col gap-2">            
-                <label htmlFor="break-timer" className="tracking-wider text-xs text-white font-medium">BREAK DURATION:</label>
-                <input
-                    id="break-timer"
-                    type="text"
-                    value={breakTimerLength}
-                    onChange={(e) => {setBreakTimerLength(e.target.value); setDurationValue("short", Number(e.target.value))}}
-                    placeholder={`${durations.short / 60}`}
-                    className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#252527] placeholder:text-[#A9A9AB] text-white rounded-full border border-[#4C4B53] outline-none"
-                />
-              </div>
-              <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mt-2" />
-            <div>
+
+              <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
               <div className="space-y-3 flex flex-col gap-1">
                 <label className="text-xs font-medium text-white tracking-wider">
                   COLOR THEME
@@ -100,74 +104,36 @@ export default function Settings({ onClose, showSettings, setShowSettings }: { o
                   ))}
                 </div>
               </div>
-              {/* custom color 
-              <div className="flex w-full justify-between">
-                <input
-                  type="color"
-                  id="work-color"
-                  className="w-8 h-8 cursor-pointer"
-                  value={workColor}
-                  onChange={(e) => {
-                    updateColor("work", e.target.value);
-                  }}
-                />
-                <input
-                  type="color"
-                  id="work-color"
-                  className="w-8 h-8 cursor-pointer"
-                  value={workColor}
-                  onChange={(e) => {
-                    updateColor("work", e.target.value);
-                  }}
-                />
-                <input
-                  type="color"
-                  id="work-color"
-                  className="w-8 h-8 cursor-pointer"
-                  value={workColor}
-                  onChange={(e) => {
-                    updateColor("work", e.target.value);
-                  }}
-                />
-                <input
-                  type="color"
-                  id="work-color"
-                  className="w-8 h-8 cursor-pointer"
-                  value={workColor}
-                  onChange={(e) => {
-                    updateColor("work", e.target.value);
-                  }}
-                />
-            </div>
-            */}
-            <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent mt-5" />
 
-            </div>
-              <div className="flex items-center w-full justify-between">
-                <label htmlFor="work-color" className="mr-2">Work Color</label>
-                <input
-                  type="color"
-                  id="work-color"
-                  className="w-8 h-8 cursor-pointer"
-                  value={workColor}
-                  onChange={(e) => {
-                    updateColor("work", e.target.value);
-                  }}
-                />
+              <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center w-full justify-between">
+                  <label htmlFor="work-color" className="mr-2">Work Color</label>
+                  <input
+                    type="color"
+                    id="work-color"
+                    className="w-8 h-8 cursor-pointer"
+                    value={workColor}
+                    onChange={(e) => {
+                      updateColor("work", e.target.value);
+                    }}
+                  />
+                </div>
+                <div className="flex items-center w-full justify-between">
+                  <label htmlFor="break-color" className="mr-2">Break Color</label>
+                  <input
+                    type="color"
+                    id="break-color"
+                    className="w-8 h-8 cursor-pointer"
+                    value={breakColor}
+                    onChange={(e) => {
+                      updateColor("break", e.target.value);
+                    }}
+                  />
+                </div>
               </div>
-              <div className="flex items-center w-full justify-between">
-                <label htmlFor="break-color" className="mr-2">Break Color</label>
-                <input
-                  type="color"
-                  id="break-color"
-                  className="w-8 h-8 cursor-pointer"
-                  value={breakColor}
-                  onChange={(e) => {
-                    updateColor("break", e.target.value);
-                  }}
-                />
-            </div>
-          </div>
+            </div> 
       </div>
     </Draggable>
   );
