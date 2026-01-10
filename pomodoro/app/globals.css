@@ -280,3 +280,23 @@ background-blend-mode: screen, screen, screen, screen, screen, normal;
     /* Smooth transition when swapping themes */
     transition: background-color 0.5s ease, background-image 0.5s ease;
 }
+
+
+.sprite-layer {
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  
+  /* Apply scale here so we can grow him via React */
+  transform: scale(var(--pixel-scale, 1));
+  transform-origin: bottom center; 
+
+  /* Ensure linear timing for crisp frame jumps */
+  animation: play-sprite var(--speed) steps(var(--frames)) infinite linear;
+}
+
+@keyframes play-sprite {
+  from { background-position-x: 0px; }
+  /* Using -100% is more flexible than pixels if the backgroundSize is set correctly */
+  to { background-position-x: -100%; } 
+}

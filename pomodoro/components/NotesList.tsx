@@ -1,35 +1,64 @@
 "use client";
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useNotesStore } from '@/store/useNotes';
+import { useMemo } from 'react';
 import ListNote from '@/components/ListNote';
-
-export default function NotesList() {
+import Modal, {ModalSection} from "@/components/Modal";
+import { IoAddOutline } from 'react-icons/io5';
+import { Button } from "@/components/Button"
+export default function NotesList({showList, setShowList}: {showList: boolean, setShowList: (mode: "grid" | "list") => void}) {
   const notes = useNotesStore((s) => s.notes);
+
+  const sortedNotes = useMemo(() => {
+    return [...notes].sort((a, b) => {
+      const dateA = a.lastEdited ? new Date(a.lastEdited).getTime() : 0;
+      const dateB = b.lastEdited ? new Date(b.lastEdited).getTime() : 0;
+      return dateB - dateA; // Most recent first
+    });
+  }, [notes]);
 
   return (
     // Pass nodeRef to Draggable and attach the ref to the actual DOM node child
-  
-    <motion.div 
-      className="top-0 left-0 absolute border-2 z-10 flex-1 flex flex-col h-full p-4 pointer-events-none bg-[#0a1929]/50 backdrop-blur-2xl border-l border-white/10 gap-3"
-      initial={{
-        opacity: 0,
-        x: -300,
-      }}
-      animate={{
-        opacity: 1,
-        x: 0,
-      }}
-      exit={{
-        opacity: 0,
-        x: 300,
-      }}
-      transition={{ type: 'tween', damping: 25, stiffness: 300 }}
-      >
-        
-        {notes.map((note, index) => (
-          <ListNote key={note.id} id={note.id} x={note.x} y={note.y} index={index} zIndex={note.zIndex} height={note.height} width={note.width} text={note.text} color={note.color} dateCreated={note.dateCreated} lastEdited={note.lastEdited}/>
-        ))}
 
-    </motion.div>
+<AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, x: -300 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -300 }}
+        transition={{ type: 'tween', duration: 0.3 }}
+        className="absolute top-0 left-0 z-50 pointer-events-auto h-full"
+      >
+        <Modal
+          title="Notes"
+          isOpen={showList}
+          onClose={() => setShowList("grid")}
+          width="w-80"
+          className='h-10/12'
+        >
+          <ModalSection>
+            <Button variant="plain" className="w-8 h-8 shrink justify-center items-center rounded-md p-1"><IoAddOutline size={24} className="text-white/60"/></Button>
+          </ModalSection>
+          <ModalSection>
+            {sortedNotes.map((note, index) => (
+              <ListNote 
+                key={note.id} 
+                id={note.id} 
+                x={note.x} 
+                y={note.y} 
+                index={index} 
+                zIndex={note.zIndex} 
+                height={note.height} 
+                width={note.width} 
+                text={note.text} 
+                color={note.color} 
+                dateCreated={note.dateCreated} 
+                lastEdited={note.lastEdited}
+              />
+            ))}
+          </ModalSection>
+        </Modal>
+      </motion.div>
+    </AnimatePresence>
+    
   );
 }

@@ -4,7 +4,7 @@ import Timer from "@/components/Timer";
 import Header from "@/components/Header";
 import { useNotesStore } from "@/store/useNotes";
 import StickyNote from "@/components/Sticky";
-import Pet from "@/components/Pet";
+import { PetRenderer } from "@/components/Pet";
 import ProgressBar from "@/components/Progress";
 import Settings from "@/components/Settings";
 import { AnimatePresence, motion } from "framer-motion";
@@ -21,6 +21,13 @@ export default function Home() {
   const selectedGradient = useThemeStore((s) => s.selectedGradient);
   const setActiveNote = useNotesStore(s => s.setActiveNote);
   const viewMode = useNotesStore((s) => s.viewMode);
+  const updateViewMode = useNotesStore((s) => s.updateViewMode);
+  
+
+  // 1. Only track X position
+const [petX, setPetX] = useState(100);
+const [isFlipped, setIsFlipped] = useState(false); // For turning around
+
 
 
   const applyTheme = (themeIndex: number) => {
@@ -58,26 +65,29 @@ export default function Home() {
 
   }, [selectedGradient]);
 
+  
+
   return (
     <div className="h-screen flex flex-col font-sans text-white test gradient-2">
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
       <div className="relative h-full">
-
-
         <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-hidden">
-          {viewMode === 'grid' ? 
+          {viewMode === 'grid' &&
           notes.map((note) => (
             <StickyNote key={note.id} mode={note.mode} text={note.text} id={note.id} color={note.color} x={note.x} y={note.y} width={note.width} height={note.height} paths={note.paths} zIndex={note.zIndex} inlineSvg={note.inlineSvg} dateCreated={note.dateCreated} lastEdited={note.lastEdited}/>
           ))
-          : <NotesList />
+
           }
         </div>
         
         <div 
-          className="w-full flex flex-col items-center justify-center h-full z-0"
+          className="w-full flex flex-col items-center justify-center h-full z-0 relative"
           >
-            {false && <Pet />} 
+
+            <PetRenderer />
             <Timer />
+            {viewMode === 'list' &&
+            <NotesList showList={viewMode === "list"} setShowList={updateViewMode}/>}
         </div>
 
               <AnimatePresence>

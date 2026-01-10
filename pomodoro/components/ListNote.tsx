@@ -56,36 +56,37 @@ export default function ListNote ({index, text, color, lastEdited} : ListNotePro
 
   return (
 
-          <motion.div 
-            className={`p-2 w-auto flex flex-col rounded-xl`}
-            style={{
-              backgroundColor: `${color}30`,
-              border: `1px solid ${color}`,
+    <motion.div 
+      className={`p-2 w-auto flex flex-col rounded-xl`}
+      style={{
+        backgroundColor: `${color}30`,
+        border: `1px solid ${color}`,
 
-            }}
-            initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                delay: index * 0.05,
-              }}
-          >
-            <div 
-              className="text-sm overflow-auto prose prose-sm prose-invert tiptap"
-              dangerouslySetInnerHTML={{ __html: htmlContent}}
-            >
-            </div>
-            {lastEdited && (
-              <div className="text-xs text-gray-400">
-                Last edited: {new Date(lastEdited).toLocaleString()}
-              </div>
-            )}
-          </motion.div>
+      }}
+      initial={{
+          opacity: 0,
+          y: 20,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          delay: index * 0.05,
+        }}
+    >
+      <header className="font-bold text-lg mb-2">Header</header>
+      <div 
+        className="text-sm overflow-auto prose prose-sm prose-invert tiptap"
+        dangerouslySetInnerHTML={{ __html: htmlContent}}
+      >
+      </div>
+      {lastEdited && (
+        <div className="text-xs text-gray-400">
+          Last edited: {new Date(lastEdited).toLocaleString()}
+        </div>
+      )}
+    </motion.div>
 
 
 

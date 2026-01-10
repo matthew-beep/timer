@@ -21,6 +21,23 @@ export default function Timer() {
     .padStart(2, "0");
 
   const seconds = (timeRemaining % 60).toString().padStart(2, "0");
+
+
+  useEffect(() => {
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = timeRemaining % 60;
+    const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    
+    document.title = `${formattedTime} | Study Space`;
+    
+    // Reset title when component unmounts
+    return () => {
+      document.title = 'Study Space';
+    };
+  }, [timeRemaining, isRunning, mode]);
+
+
   
   useEffect(() => { 
     if (timeRemaining <= 0 && !isRunning) { 
