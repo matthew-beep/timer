@@ -14,7 +14,7 @@ interface ListNoteProps extends StickyNote {
 
 }
 
-export default function ListNote ({index, text, color} : ListNoteProps) {
+export default function ListNote ({index, text, color, lastEdited} : ListNoteProps) {
 
   return (
 
@@ -38,10 +38,15 @@ export default function ListNote ({index, text, color} : ListNoteProps) {
               }}
           >
             <div 
-              className="ml-2 text-sm  overflow-auto prose prose-sm prose-invert tiptap"
+              className="text-sm overflow-auto prose prose-sm prose-invert tiptap"
               dangerouslySetInnerHTML={{ __html: generateHTML(text, [StarterKit]) }}
             >
             </div>
+            {lastEdited && (
+              <div className="text-xs text-gray-400">
+                Last edited: {new Date(lastEdited).toLocaleString()}
+              </div>
+            )}
           </motion.div>
 
 
