@@ -27,7 +27,7 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
         ? Math.max(...notes.map(n => n.zIndex))
         : 0;
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: workColor, zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text", dateCreated: now });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: workColor, zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text", dateCreated: now, lastEdited: now });
     }
 
     return (

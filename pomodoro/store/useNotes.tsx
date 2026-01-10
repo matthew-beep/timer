@@ -48,9 +48,7 @@ export const useNotesStore = create<NotesStore>()(
           notes: [
             ...state.notes,
             {
-              ...note,
-              dateCreated: now,
-              lastEdited: now,
+              ...note,              
             },
           ],
         }));
