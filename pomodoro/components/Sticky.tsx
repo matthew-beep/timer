@@ -15,8 +15,9 @@ import { BiPaint } from "react-icons/bi";
 import { JSONContent } from '@tiptap/core';
 import { motion, AnimatePresence } from "motion/react";
 import { PiDotsThree } from "react-icons/pi";
+import { StickyNote as StickyNoteProps } from "@/store/useNotes";
 
-
+/*
 interface StickyNoteProps {
   id: string;
   text?: JSONContent;
@@ -25,6 +26,8 @@ interface StickyNoteProps {
   y?: number;
   width?: number;
   height?: number;
+  dateCreated?: string;
+  lastEdited?: string;
   mode?: "draw" | "text";
   paths?: CanvasPath[]; // <-- important
   zIndex?: number;
@@ -32,6 +35,7 @@ interface StickyNoteProps {
 
 }
 
+*/
 export default function StickyNote({
   id = "",
   text = {},
@@ -43,7 +47,7 @@ export default function StickyNote({
   mode = "text",
   paths= [],
   zIndex = 1,
-  inlineSvg = "",
+  inlineSvg = ""
 }: StickyNoteProps) {
   
   const [draw, setDraw] = useState(mode === "draw" ? true : false);

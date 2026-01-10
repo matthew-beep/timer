@@ -15,6 +15,8 @@ export type StickyNote = {
   mode?: "draw" | "text"
   paths?: CanvasPath[]; // for drawing paths
   inlineSvg?: string; // for storing SVG representation
+  dateCreated: string;
+  lastEdited: string;
 };
 
 type NotesStore = {
@@ -40,13 +42,30 @@ export const useNotesStore = create<NotesStore>()(
       viewMode: "grid",
       updateViewMode: (mode) => set({ viewMode: mode }),
       setActiveNote: (id) => set({ activeNoteId: id }),
-      addNote: (note) =>
-        set((state) => ({ notes: [...state.notes, note] })),
+      addNote: (note) => {
+        const now = new Date().toISOString();
+        set((state) => ({
+          notes: [
+            ...state.notes,
+            {
+              ...note,
+              dateCreated: now,
+              lastEdited: now,
+            },
+          ],
+        }));
+      },
 
       updateNote: (id, updates) =>
         set((state) => ({
           notes: state.notes.map((note) =>
-            note.id === id ? { ...note, ...updates } : note
+            note.id === id
+              ? {
+                  ...note,
+                  ...updates,
+                  lastEdited: new Date().toISOString(), // Auto-update on any change
+                }
+              : note
           ),
         })),
 
