@@ -3,6 +3,7 @@ import { useNotesStore } from '@/store/useNotes';
 import { Button } from './Button';
 import { v4 as uuidv4 } from 'uuid';
 import { IoSettingsOutline, IoAddOutline } from 'react-icons/io5';
+import { useThemeStore } from '@/store/useTheme';
 
 const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
 
@@ -14,9 +15,7 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
     const noteWidth = useNotesStore((s) => s.noteWidth);
     const noteHeight = useNotesStore((s) => s.noteHeight);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-
-
-
+    const workColor = useThemeStore((s) => s.colors.work);
 
     const addSticky = () => {
         const id = uuidv4();
@@ -28,7 +27,7 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
         ? Math.max(...notes.map(n => n.zIndex))
         : 0;
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: 'yellow', zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text" });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: workColor, zIndex: maxZ + 1, width:noteWidth, height:noteHeight, mode: "text" });
     }
 
     return (

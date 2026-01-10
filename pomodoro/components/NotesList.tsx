@@ -1,11 +1,8 @@
 "use client";
 import { motion } from 'framer-motion'
 import { useNotesStore } from '@/store/useNotes';
-// TODO: Refactor to use react-rnd instead of draggable
+import ListNote from '@/components/ListNote';
 
-import { useMemo } from 'react'
-import { generateHTML } from '@tiptap/core'
-import StarterKit from '@tiptap/starter-kit'
 export default function NotesList() {
   const notes = useNotesStore((s) => s.notes);
 
@@ -27,18 +24,8 @@ export default function NotesList() {
       }}
       transition={{ type: 'tween', damping: 25, stiffness: 300 }}
       >
-        {notes.map((note) => (
-          <div 
-            key={note.id}
-            className="p-2 border-2 w-auto flex border-white/10 flex-col"
-          >
-            <p className="text-sm border-2">{note.id}</p>
-            <div 
-              className="ml-2 text-sm border-2 overflow-auto max-h-32 prose prose-sm prose-invert tiptap"
-              dangerouslySetInnerHTML={{ __html: generateHTML(note.text, [StarterKit]) }}
-            >
-            </div>
-          </div>
+        {notes.map((note, index) => (
+          <ListNote key={note.id} index={index} text={note.text} color={note.color} />
         ))}
 
     </motion.div>

@@ -20,7 +20,7 @@ import { PiDotsThree } from "react-icons/pi";
 interface StickyNoteProps {
   id: string;
   text?: JSONContent;
-  color?: string;
+  color: string;
   x?: number;
   y?: number;
   width?: number;
@@ -35,7 +35,7 @@ interface StickyNoteProps {
 export default function StickyNote({
   id = "",
   text = {},
-  color = "#00b8db",
+  color,
   x = 100,
   y = 100,
   width = 300,
@@ -54,6 +54,10 @@ export default function StickyNote({
   const activeNoteId = useNotesStore(s => s.activeNoteId);
   const activeNote = activeNoteId === id;
 
+
+  useEffect(() => {
+    console.log("sticky color: ", color);
+  }, []); // only on mount
 
 
 
