@@ -35,7 +35,7 @@ export default function Modal({
     >
       <div 
         ref={nodeRef} 
-        className={` bg-[#0a1929]/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-2xl overflow-hidden ${width} ${className}`}
+        className={` bg-[#0a1929]/80 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden ${width} ${className}`}
       >
         {/* Header */}
         <div className="modal-handle flex justify-between items-center cursor-move py-3 px-6 text-white bg-white/5 hover:bg-white/10 transition-colors">
@@ -50,7 +50,9 @@ export default function Modal({
         </div>
 
         {/* Content */}
-        <div className={`flex flex-col gap-6 overflow-y-auto ${maxHeight} py-4 px-6`}>
+        <div 
+          className={`flex flex-col gap-6 overflow-y-auto ${maxHeight} py-4 px-6`}
+          >
           {children}
         </div>
       </div>

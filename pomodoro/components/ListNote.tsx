@@ -57,7 +57,7 @@ export default function ListNote ({index, text, color, lastEdited} : ListNotePro
   return (
 
     <motion.div 
-      className={`p-2 w-auto flex flex-col rounded-xl`}
+      className={`p-2 w-auto flex flex-col rounded-xl h-32`}
       style={{
         backgroundColor: `${color}30`,
         border: `1px solid ${color}`,
@@ -76,16 +76,19 @@ export default function ListNote ({index, text, color, lastEdited} : ListNotePro
         }}
     >
       <header className="font-bold text-lg mb-2">Header</header>
-      <div 
-        className="text-sm overflow-auto prose prose-sm prose-invert tiptap"
-        dangerouslySetInnerHTML={{ __html: htmlContent}}
-      >
-      </div>
-      {lastEdited && (
-        <div className="text-xs text-gray-400">
-          Last edited: {new Date(lastEdited).toLocaleString()}
+      <div className="flex-1 flex flex-col overflow-hidden justify-between">
+        <div 
+          className="text-sm overflow-auto prose prose-sm prose-invert tiptap"
+          dangerouslySetInnerHTML={{ __html: htmlContent}}
+        >
         </div>
-      )}
+        {lastEdited && (
+          <div className="text-xs text-gray-400">
+            Last edited: {new Date(lastEdited).toLocaleString()}
+          </div>
+        )}
+      </div>
+
     </motion.div>
 
 

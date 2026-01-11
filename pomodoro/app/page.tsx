@@ -81,11 +81,13 @@ const [isFlipped, setIsFlipped] = useState(false); // For turning around
         </div>
         
         <div 
-          className="w-full flex flex-col items-center justify-center h-full z-0 relative"
+          className="w-fit mx-auto flex flex-col items-center justify-center h-full z-0 relative p-10"
           >
-
-            <PetRenderer />
+            <div className="w-full h-full relative">
+              <PetRenderer />
+            </div>
             <Timer />
+            <div className="w-full h-full"></div>
             {viewMode === 'list' &&
             <NotesList showList={viewMode === "list"} setShowList={updateViewMode}/>}
         </div>

@@ -5,7 +5,7 @@ import { useTimer } from "@/store/useTimer";
 import { useThemeStore } from "@/store/useTheme";
 import { theme1 as themes } from "@/components/Themes";
 import Modal, { ModalSection, ModalDivider } from "@/components/Modal";
-
+import { Button } from "@/components/Button";
 export default function Settings({ 
   onClose, 
   showSettings, 
@@ -21,7 +21,8 @@ export default function Settings({
   const breakColor = useThemeStore((s) => s.colors.break);
   const updateColor = useThemeStore((s) => s.updateColor);
   const updateSelectedGradient = useThemeStore((s) => s.updateSelectedGradient);
-
+  const selectedTheme = useThemeStore((s) => s.theme);
+  const updateTheme = useThemeStore((s) => s.updateTheme);
   const [workTimerLength, setWorkTimerLength] = useState("");
   const [breakTimerLength, setBreakTimerLength] = useState("");
 
@@ -77,8 +78,28 @@ export default function Settings({
         <label className="text-xs font-medium text-white tracking-wider">
           COLOR THEME
         </label>
+        <div
+          className="glass-plain rounded-md flex items-center gap-1 p-1"
+        >
+          <Button
+            variant='plain'
+            className={`p-2 rounded-lg w-full`}
+            onClick={() => updateTheme("dark")}
+            isActive={selectedTheme === "dark"}
+          >
+            Dark
+          </Button>
+          <Button
+            variant='plain'
+            className={`p-2 rounded-lg w-full`}
+            onClick={() => updateTheme("light")}
+            isActive={selectedTheme === "light"}
+          >
+            Light
+          </Button>
+        </div>
         <div className="grid grid-cols-2 gap-3">
-          {themes.map((theme) => (
+          {themes.filter((theme) => theme.mode === selectedTheme).map((theme) => (
             <button
               key={theme.name}
               className="relative flex flex-col justify-center group p-3 rounded-xl border transition-all border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"

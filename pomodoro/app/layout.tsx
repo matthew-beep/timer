@@ -1,6 +1,6 @@
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Work_Sans, Cormorant_Garamond } from "next/font/google";
+import { Geist, Geist_Mono, Work_Sans, Cormorant_Garamond, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -10,6 +10,12 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const dmSerifDisplay = DM_Serif_Display({
+  weight: ["400"],
+  variable: "--font-dm-serif-display",
   subsets: ["latin"],
 });
 
@@ -36,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={workSans.className}>
+    <html lang="en" className={dmSerifDisplay.className}>
       <body
         className={`${cormorantGaramond.variable} antialiased`}
       >

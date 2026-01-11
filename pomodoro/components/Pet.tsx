@@ -12,7 +12,7 @@ export const PetRenderer = () => {
   const animation = pet.animations[currentAction] || pet.animations["idle"];
 
   useEffect(() => {
-    setPetX(400);
+    setPetX(300);
     const timer = setTimeout(() => {
       setIsMoving(false);
     }, 5000); 
@@ -24,10 +24,10 @@ export const PetRenderer = () => {
 
   return (
     <motion.div
-      initial={{ x: -100 }}
+      initial={{ x: 0 }}
       animate={{ x: petX }}
       transition={{ duration: 5, ease: "linear" }}
-      className="absolute bottom-20"
+      className="absolute bottom-0"
     >
  <div 
   key={currentAction} 
@@ -38,10 +38,10 @@ export const PetRenderer = () => {
     backgroundRepeat: 'no-repeat',
     imageRendering: 'pixelated',
     backgroundSize: `${totalWidthPx}px ${pet.size}px`,
-    
+    y: '-1px',
     // --- SIZE LOGIC ---
     // This makes him 2x or 3x bigger without breaking the animation
-    transform: `scale(3)`, 
+    transform: `scale(2)`, 
     // This ensures he stays on the "floor" and doesn't float when he grows
     transformOrigin: 'bottom center', 
     

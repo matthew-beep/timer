@@ -81,7 +81,7 @@ export default function Timer() {
       </div>
 
       {/* Timer Display */}
-      <div className="flex justify-center">
+      <div className="flex justify-center px-5">
         <h3 className="text-9xl font-bold tabular-nums tracking-tight">
           {minutes}:{seconds}
         </h3>
