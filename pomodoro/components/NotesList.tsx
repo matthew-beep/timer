@@ -21,11 +21,12 @@ export default function NotesList({showList, setShowList}: {showList: boolean, s
     // Pass nodeRef to Draggable and attach the ref to the actual DOM node child
 
 <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, x: -300 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -300 }}
-        transition={{ type: 'tween', duration: 0.3 }}
+  {showList &&  
+  <motion.div
+    initial={{ opacity: 0, x: -300 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -300 }}
+    transition={{ type: 'tween', duration: 0.3 }}
         className="absolute top-0 left-0 z-50 pointer-events-auto h-full"
       >
         <Modal
@@ -33,7 +34,7 @@ export default function NotesList({showList, setShowList}: {showList: boolean, s
           isOpen={showList}
           onClose={() => setShowList("grid")}
           width="w-80"
-          className='h-10/12'
+          className='h-10/12 ml-5'
         >
           <ModalSection>
             <Button variant="plain" className="w-8 h-8 shrink justify-center items-center rounded-md p-1"><IoAddOutline size={24} className="text-white/60"/></Button>
@@ -58,6 +59,7 @@ export default function NotesList({showList, setShowList}: {showList: boolean, s
           </ModalSection>
         </Modal>
       </motion.div>
+}
     </AnimatePresence>
     
   );

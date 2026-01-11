@@ -72,12 +72,13 @@ const [isFlipped, setIsFlipped] = useState(false); // For turning around
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
       <div className="relative h-full">
         <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-hidden">
-          {viewMode === 'grid' &&
-          notes.map((note) => (
-            <StickyNote key={note.id} mode={note.mode} text={note.text} id={note.id} color={note.color} x={note.x} y={note.y} width={note.width} height={note.height} paths={note.paths} zIndex={note.zIndex} inlineSvg={note.inlineSvg} dateCreated={note.dateCreated} lastEdited={note.lastEdited}/>
-          ))
-
-          }
+          {viewMode === 'grid' ? (
+            notes.map((note) => (
+              <StickyNote key={note.id} mode={note.mode} text={note.text} id={note.id} color={note.color} x={note.x} y={note.y} width={note.width} height={note.height} paths={note.paths} zIndex={note.zIndex} inlineSvg={note.inlineSvg} dateCreated={note.dateCreated} lastEdited={note.lastEdited}/>
+            ))
+          ) : (
+            <NotesList showList={viewMode === "list"} setShowList={updateViewMode}/>
+          )}
         </div>
         
         <div 
@@ -88,8 +89,7 @@ const [isFlipped, setIsFlipped] = useState(false); // For turning around
             </div>
             <Timer />
             <div className="w-full h-full"></div>
-            {viewMode === 'list' &&
-            <NotesList showList={viewMode === "list"} setShowList={updateViewMode}/>}
+
         </div>
 
               <AnimatePresence>

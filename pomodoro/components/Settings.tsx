@@ -102,7 +102,7 @@ export default function Settings({
           {themes.filter((theme) => theme.mode === selectedTheme).map((theme) => (
             <button
               key={theme.name}
-              className="relative flex flex-col justify-center group p-3 rounded-xl border transition-all border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
+              className="relative flex flex-col justify-center items-center group p-3 rounded-xl border transition-all border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
               onClick={() => {
                 console.log("applying theme", theme.name);
                 updateSelectedGradient(themes.indexOf(theme));
