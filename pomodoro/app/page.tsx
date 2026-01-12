@@ -107,6 +107,8 @@ export default function Home() {
         >
           <source src={`${BACKGROUND_CONFIGS[selectedBackground].path}`} type="video/mp4" />
         </video>
+
+        <div className="absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-background/30 to-transparent pointer-events-none" />
       </div>
 }
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
