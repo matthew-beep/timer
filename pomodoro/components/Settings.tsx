@@ -6,6 +6,7 @@ import { useThemeStore } from "@/store/useTheme";
 import { theme1 as themes } from "@/components/Themes";
 import Modal, { ModalSection, ModalDivider } from "@/components/Modal";
 import { Button } from "@/components/Button";
+
 export default function Settings({ 
   onClose, 
   showSettings, 
@@ -17,12 +18,15 @@ export default function Settings({
 }) {
   const durations = useTimer((s) => s.durations);
   const setDurationValue = useTimer((s) => s.setDurationValue);
+
   const workColor = useThemeStore((s) => s.colors.work);
   const breakColor = useThemeStore((s) => s.colors.break);
   const updateColor = useThemeStore((s) => s.updateColor);
   const updateSelectedGradient = useThemeStore((s) => s.updateSelectedGradient);
   const selectedTheme = useThemeStore((s) => s.theme);
   const updateTheme = useThemeStore((s) => s.updateTheme);
+  const [settingsTheme, setSettingsTheme] = useState(selectedTheme);
+
   const [workTimerLength, setWorkTimerLength] = useState("");
   const [breakTimerLength, setBreakTimerLength] = useState("");
 
@@ -38,7 +42,7 @@ export default function Settings({
       {/* Timer Duration Section */}
       <ModalSection>
         <div className="flex flex-col gap-2">
-          <label htmlFor="work-timer" className="tracking-wider text-xs text-white font-medium">
+          <label htmlFor="work-timer" className="tracking-wider text-xs font-medium">
             WORK DURATION:
           </label>
           <input
@@ -54,7 +58,7 @@ export default function Settings({
           />
         </div>
         <div className="flex flex-col gap-2">
-          <label htmlFor="break-timer" className="tracking-wider text-xs text-white font-medium">
+          <label htmlFor="break-timer" className="tracking-wider text-xs font-medium">
             BREAK DURATION:
           </label>
           <input
@@ -75,7 +79,7 @@ export default function Settings({
 
       {/* Theme Selector Section */}
       <ModalSection>
-        <label className="text-xs font-medium text-white tracking-wider">
+        <label className="text-xs font-medium tracking-wider">
           COLOR THEME
         </label>
         <div
@@ -84,28 +88,36 @@ export default function Settings({
           <Button
             variant='plain'
             className={`p-2 rounded-lg w-full`}
-            onClick={() => updateTheme("dark")}
-            isActive={selectedTheme === "dark"}
+            onClick={() => {
+              setSettingsTheme("dark");
+              // Only update the filter, don't apply gradient
+            }}
+            isActive={settingsTheme === "dark"}
           >
             Dark
           </Button>
           <Button
             variant='plain'
             className={`p-2 rounded-lg w-full`}
-            onClick={() => updateTheme("light")}
-            isActive={selectedTheme === "light"}
+            onClick={() => {
+              setSettingsTheme("light");
+              // Only update the filter, don't apply gradient
+            }}
+            isActive={settingsTheme === "light"}
           >
             Light
           </Button>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          {themes.filter((theme) => theme.mode === selectedTheme).map((theme) => (
+          {themes.filter((theme) => theme.mode === settingsTheme).map((theme) => (
             <button
               key={theme.name}
-              className="relative flex flex-col justify-center items-center group p-3 rounded-xl border transition-all border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
+              className="relative flex flex-col justify-center items-center group p-3 rounded-xl border border-border transition-all bg-white/5 hover:bg-white/10 hover:border-white/20"
               onClick={() => {
                 console.log("applying theme", theme.name);
+                // Apply both the gradient AND the light/dark mode
                 updateSelectedGradient(themes.indexOf(theme));
+                updateTheme(settingsTheme); // Use the current filter selection
               }}
             >
               <div className="flex gap-1 mb-2">
@@ -118,7 +130,7 @@ export default function Settings({
                 ))}
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-white/70 font-medium">
+                <span className="text-xs text-text/70 font-medium">
                   {theme.name}
                 </span>
               </div>

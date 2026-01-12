@@ -35,8 +35,9 @@ export default function ProgressBar() {
           <div className='bg-[#0a1929]/60 border-white/10 rounded-md shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl text-xs p-1 mx-2'>
             Spotify coming soon 
           </div>
+        {/* Notes Toggle */}
         <div
-          className="glass-plain rounded-md flex items-center gap-1 p-1"
+          className="glass-plain rounded-md flex items-center gap-1 p-1 mr-5"
         >
           <Button
             onClick={() => updateViewMode("grid")}

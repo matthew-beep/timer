@@ -17,25 +17,6 @@ import { motion, AnimatePresence } from "motion/react";
 import { PiDotsThree } from "react-icons/pi";
 import { StickyNote as StickyNoteProps } from "@/store/useNotes";
 
-/*
-interface StickyNoteProps {
-  id: string;
-  text?: JSONContent;
-  color: string;
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-  dateCreated?: string;
-  lastEdited?: string;
-  mode?: "draw" | "text";
-  paths?: CanvasPath[]; // <-- important
-  zIndex?: number;
-  inlineSvg?: string;
-
-}
-
-*/
 export default function StickyNote({
   id = "",
   text = { type: 'doc', content: [{ type: 'paragraph' }] },
@@ -112,24 +93,15 @@ export default function StickyNote({
   >
     <AnimatePresence>
       <motion.div
-        className="w-full h-full flex flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
+        className="w-full h-full flex bg-cardBg flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         style={{
-          backgroundColor: 'rgba(10, 25, 41, 0.5)', 
           border: `1px solid ${color}`,
           scale: scale
         }} 
       >
-        {/* texture overlay 
-        <div
-          className="absolute inset-0 opacity-20 pointer-events-none mix-blend-overlay"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-          }}
-        />
-        */}
 
         {/* Header / Handle */}
         <motion.div

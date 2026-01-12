@@ -98,7 +98,7 @@ export function TimerControls() {
             )}
           </AnimatePresence>
         </Button>
-        <Button onClick={toggleFullscreen} variant = "plain"className="p-2 rounded-full flex items-center justify-center">
+        <Button onClick={toggleFullscreen} variant = "plain" className="p-2 rounded-full flex items-center justify-center">
           <GoScreenFull size={24}/>
         </Button>
     </div>

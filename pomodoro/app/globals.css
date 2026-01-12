@@ -1,32 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #000000;
   --foreground: #171717;
   --test: #00cda1;
   --timer-bg: #ffffff;
   --card: #eaeaea;
-  --text: #ffffff;
   --button-primary: #586674;
   --work: #00d3f2;
   --break: #f6339a;
   --code: #2E2B29;
+  --primaryMode: #00d3f2;
+  
+  /* Theme variables that will be updated */
+  --background: #000000;
+  --cardBg: #0a1929;
+  --text: #ffffff;
   --primary: #00d3f2;
-
+  --secondary: #f6339a;
+  --border: rgba(0, 0, 0, 0.1);
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-cardBg: var(--cardBg);
+  --color-text: var(--text);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
   --color-test: var(--test); 
-  --color-card:var(--test);
+  --color-card: var(--test);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-text: var(--text);
   --color-button-primary: var(--button-primary);
   --color-work: var(--work);
   --color-code: var(--code);
-  --color-active: var(--primary);
+  --color-active: var(--primaryMode);
 }
 
 /*
@@ -100,13 +109,13 @@ input[type="color" i]::-moz-color-swatch {
 }
 
 
-
-
 /* Basic editor styles */
 .tiptap {
   :first-child {
     margin-top: 0;
   }
+
+  color: var(--text);
 
   /* List styles */
   ul {

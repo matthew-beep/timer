@@ -35,10 +35,10 @@ export default function Modal({
     >
       <div 
         ref={nodeRef} 
-        className={` bg-[#0a1929]/80 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden ${width} ${className}`}
+        className={`bg-cardBg backdrop-blur-xl rounded-3xl border border-border shadow-2xl overflow-hidden ${width} ${className}`}
       >
         {/* Header */}
-        <div className="modal-handle flex justify-between items-center cursor-move py-3 px-6 text-white bg-white/5 hover:bg-white/10 transition-colors">
+        <div className="modal-handle flex justify-between items-center cursor-move py-3 px-6 text-text bg-white/5 hover:bg-white/10 transition-colors">
           <h2 className="text-xl font-semibold">{title}</h2>
           <Button
             onClick={onClose}
@@ -62,7 +62,7 @@ export default function Modal({
 
 // Optional: Export helper components for consistent styling
 export const ModalSection = ({ children, className = "" }: { children: ReactNode; className?: string }) => (
-  <div className={`flex flex-col gap-4 ${className}`}>
+  <div className={`flex flex-col gap-4 text-text ${className}`}>
     {children}
   </div>
 );

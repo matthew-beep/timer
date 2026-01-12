@@ -31,8 +31,8 @@ export default function Header({showSettings, setShowSettings}: {showSettings: b
     }
 
     return (
-        <div className="rounded-md flex justify-between p-10 relative z-10">
-            <h1 className="text-3xl font-bold">Study Space</h1>
+        <div className="rounded-md flex justify-between py-10 px-5 relative z-10">
+            <h1 className="text-3xl font-bold text-text">Study Space</h1>
             <div className='flex relative gap-2'>    
                 <Button 
                     className="flex items-center justify-center p-2 rounded-full" 

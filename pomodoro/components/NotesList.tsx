@@ -34,12 +34,12 @@ export default function NotesList({showList, setShowList}: {showList: boolean, s
           isOpen={showList}
           onClose={() => setShowList("grid")}
           width="w-80"
-          className='h-10/12 ml-5'
+          className='h-10/12 ml-5 p-0'
         >
           <ModalSection>
             <Button variant="plain" className="w-8 h-8 shrink justify-center items-center rounded-md p-1"><IoAddOutline size={24} className="text-white/60"/></Button>
           </ModalSection>
-          <ModalSection>
+          <ModalSection className=' w-full overflow-y-auto'>
             {sortedNotes.map((note, index) => (
               <ListNote 
                 key={note.id} 

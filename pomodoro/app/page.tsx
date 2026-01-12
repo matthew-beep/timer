@@ -11,7 +11,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTimer } from "@/store/useTimer";
 import { useThemeStore } from "@/store/useTheme";
-import { Theme, theme1 } from "@/components/Themes";
+import { Theme, theme1, themes} from "@/components/Themes";
+
 import NotesList from "@/components/NotesList"; 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
@@ -19,17 +20,9 @@ export default function Home() {
   const mode = useTimer((s) => s.mode);
   const colors = useThemeStore((s) => s.colors);
   const selectedGradient = useThemeStore((s) => s.selectedGradient);
-  const setActiveNote = useNotesStore(s => s.setActiveNote);
   const viewMode = useNotesStore((s) => s.viewMode);
   const updateViewMode = useNotesStore((s) => s.updateViewMode);
-  
-
-  // 1. Only track X position
-const [petX, setPetX] = useState(100);
-const [isFlipped, setIsFlipped] = useState(false); // For turning around
-
-
-
+  const colorTheme = useThemeStore((s) => s.theme);
   const applyTheme = (themeIndex: number) => {
     const theme = theme1[themeIndex];
     console.log("gradient object: ", theme);
@@ -46,8 +39,8 @@ const [isFlipped, setIsFlipped] = useState(false); // For turning around
   
   useEffect(() => { 
     const activeColor = mode === "focus" ? colors.work : colors.break;
-    console.log("current color: ", document.documentElement.style.getPropertyValue("--primary"));
-    document.documentElement.style.setProperty("--primary", activeColor);
+    console.log("current color: ", document.documentElement.style.getPropertyValue("--primaryMode"));
+    document.documentElement.style.setProperty("--primaryMode", activeColor);
   }, [mode, colors.work, colors.break]);
   
   useEffect(() => {
@@ -64,6 +57,24 @@ const [isFlipped, setIsFlipped] = useState(false); // For turning around
 
 
   }, [selectedGradient]);
+  
+  const applyColorTheme = (themeMode: 'light' | 'dark') => {
+    const currentTheme = themes[themeMode];
+    const root = document.documentElement;
+    
+    Object.entries(currentTheme).forEach(([key, value]) => {
+      root.style.setProperty(`--${key}`, value);
+    });
+  };
+
+  useEffect(() => {
+    applyColorTheme(colorTheme);
+    console.log("switching mode: ", colorTheme);
+
+  }, [colorTheme]);
+
+
+
 
   
 

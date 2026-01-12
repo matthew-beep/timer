@@ -14,6 +14,29 @@ export type Theme = {
 };
 
 
+// lib/themes.ts
+export const themes = {
+  light: {
+    background: '#ffffff',
+    text: '#04060A',
+    primary: '#ffffff',
+    secondary: '#f6339a',
+    cardBg: 'rgba(255, 255, 255, 0.5)',
+    border: 'rgba(209, 213, 219, 0.3)',
+  },
+  dark: {
+    background: '#000000',
+    text: '#ffffff',
+    primary: '#0a1929',
+    secondary: '#f6339a',
+    cardBg: 'rgba(10, 25, 41, 0.8)',
+    border: 'rgba(255, 255, 255, 0.2)',
+  },
+} as const;
+
+export type ThemeMode = keyof typeof themes;
+
+
 export const theme1:Theme[] = [
   // Dark Themes
   {

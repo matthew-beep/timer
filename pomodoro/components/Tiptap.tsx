@@ -55,14 +55,14 @@ const Tiptap = ({content, id, height}: {content: JSONContent, id:string, height:
         >
             <EditorContent
             editor={editor}
-            className="h-full min-h-0 overflow-auto"
+            className="h-full min-h-0 overflow-auto text-text"
             />
         </div>
 
         {/* Menu overlay */}
         {editor && activeNote && height > 250 && (
             <div className="bottom-0 left-0 w-full z-20 pointer-events-auto">
-            <MenuBar editor={editor} />
+                <MenuBar editor={editor} />
             </div>
         )}
         </div>

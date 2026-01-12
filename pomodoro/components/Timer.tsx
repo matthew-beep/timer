@@ -58,7 +58,7 @@ export default function Timer() {
   }, [timeRemaining, isRunning, mode, setMode, start, updatePomodoroCount]);
 
   return (
-    <div className="flex flex-col w-full  p-6 space-y-4 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-3xl">
+    <div className="flex flex-col w-full  p-6 space-y-4 bg-cardBg shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-3xl">
       
       {/* Mode Buttons */}
       <div className="grid grid-cols-3 gap-2">
@@ -87,7 +87,7 @@ export default function Timer() {
 
       {/* Timer Display */}
       <div className="flex justify-center px-5">
-        <h3 className="text-9xl font-bold tabular-nums tracking-tight">
+        <h3 className="text-9xl font-bold tabular-nums tracking-tight text-text">
           {minutes}:{seconds}
         </h3>
       </div>

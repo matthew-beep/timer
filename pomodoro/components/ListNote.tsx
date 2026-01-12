@@ -43,7 +43,9 @@ const normalizeNoteText = (text: unknown): JSONContent => {
   // Fallback to empty doc
   return { type: 'doc', content: [{ type: 'paragraph' }] };
 };
-export default function ListNote ({index, text, color, lastEdited} : ListNoteProps) {
+export default function ListNote ({index, text, color, lastEdited, id} : ListNoteProps) {
+
+    const deleteNote = useNotesStore((s) => s.deleteNote);
 
     const htmlContent = useMemo(() => {
     try {
@@ -76,19 +78,23 @@ export default function ListNote ({index, text, color, lastEdited} : ListNotePro
           delay: index * 0.05,
         }}
     >
-      <header className="font-bold text-lg mb-2">Header</header>
-      <div className="flex-1 flex flex-col overflow-hidden justify-between">
-        <div 
-          className="text-sm overflow-auto prose prose-sm prose-invert tiptap"
-          dangerouslySetInnerHTML={{ __html: htmlContent}}
-        >
-        </div>
-        {lastEdited && (
-          <div className="text-xs text-gray-400">
-            Last edited: {new Date(lastEdited).toLocaleString()}
+      <div className='flex h-full'>
+        
+        <div className="flex-1 flex flex-col overflow-hidden justify-between h-full">
+          <div 
+            className="text-sm overflow-auto prose prose-sm prose-invert tiptap h-full grow flex-1"
+            dangerouslySetInnerHTML={{ __html: htmlContent}}
+          >
           </div>
-        )}
+          {lastEdited && (
+            <div className="text-xs text-gray-400">
+              Last edited: {new Date(lastEdited).toLocaleString()}
+            </div>
+          )}
+        </div>
+        <Button className='w-4 h-4 hover:text-red-600 rounded-full flex items-center justify-center' variant='plain' onClick={() => deleteNote(id)}><IoTrashOutline /></Button>
       </div>
+
 
     </motion.div>
 
