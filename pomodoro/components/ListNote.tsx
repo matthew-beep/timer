@@ -82,7 +82,7 @@ export default function ListNote ({index, text, color, lastEdited, id} : ListNot
         
         <div className="flex-1 flex flex-col overflow-hidden justify-between h-full">
           <div 
-            className="text-sm overflow-auto prose prose-sm prose-invert tiptap h-full grow flex-1"
+            className="text-sm overflow-auto prose prose-sm prose-invert tiptap h-full grow flex-1 text-text"
             dangerouslySetInnerHTML={{ __html: htmlContent}}
           >
           </div>

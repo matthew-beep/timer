@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useTimer } from "@/store/useTimer";
 import { useThemeStore } from "@/store/useTheme";
 import { Theme, theme1, themes} from "@/components/Themes";
+import { BACKGROUND_CONFIGS } from "@/config/BackgroundConfig";
 
 import NotesList from "@/components/NotesList"; 
 export default function Home() {
@@ -23,6 +24,10 @@ export default function Home() {
   const viewMode = useNotesStore((s) => s.viewMode);
   const updateViewMode = useNotesStore((s) => s.updateViewMode);
   const colorTheme = useThemeStore((s) => s.theme);
+
+  const selectedBackground = useThemeStore((s) => s.selectedBackground);  
+  const backgroundMode = useThemeStore((s) => s.backgroundMode);
+
   const applyTheme = (themeIndex: number) => {
     const theme = theme1[themeIndex];
     console.log("gradient object: ", theme);
@@ -36,7 +41,11 @@ export default function Home() {
     gradientElement.style.setProperty('--c-5', theme.colors.c5)
   }
   
-  
+  useEffect(() => { 
+    console.log(backgroundMode)
+    console.log("selectedBackground: ", selectedBackground);
+  },[backgroundMode]);
+
   useEffect(() => { 
     const activeColor = mode === "focus" ? colors.work : colors.break;
     console.log("current color: ", document.documentElement.style.getPropertyValue("--primaryMode"));
@@ -47,16 +56,20 @@ export default function Home() {
     // Small delay ensures localStorage has been read
 
     console.log("selectedGradient changed: ", selectedGradient);
-    
-    if (typeof selectedGradient === "string") {
-      applyTheme(0);
-    } else {
-      applyTheme(selectedGradient);
+
+
+    if (backgroundMode == "mesh") {
+          console.log("switch to gradient: ");
+
+      if (typeof selectedGradient === "string") {
+        applyTheme(0);
+      } else {
+        applyTheme(selectedGradient);
+      }
     }
 
 
-
-  }, [selectedGradient]);
+  }, [selectedGradient, backgroundMode]);
   
   const applyColorTheme = (themeMode: 'light' | 'dark') => {
     const currentTheme = themes[themeMode];
@@ -79,7 +92,23 @@ export default function Home() {
   
 
   return (
-    <div className="h-screen flex flex-col font-sans text-white test gradient-2">
+    <div 
+      className={`h-screen flex flex-col font-sans text-white ${backgroundMode === "mesh" ? "gradient-2" : ""}`}
+    >
+      {backgroundMode == "video" &&
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          key={selectedBackground}
+          className="h-full w-full object-cover transition-opacity duration-1000"
+        >
+          <source src={`${BACKGROUND_CONFIGS[selectedBackground].path}`} type="video/mp4" />
+        </video>
+      </div>
+}
       <Header showSettings={showSettings} setShowSettings={setShowSettings}/>
       <div className="relative h-full">
         <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-hidden">

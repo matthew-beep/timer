@@ -42,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={dmSerifDisplay.className}>
+    <html lang="en" className={dmSerifDisplay.className}> 
       <body
         className={`${cormorantGaramond.variable} antialiased`}
       >

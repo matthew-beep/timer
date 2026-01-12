@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-
+import { useThemeStore } from "@/store/useTheme";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "glass" | "plain" | "glassPlain";
   isActive?: boolean; // Add this prop
@@ -14,13 +14,15 @@ export function Button({
   isActive = false,
   ...props
 }: ButtonProps) {
+  const colorTheme = useThemeStore((s) => s.theme);
+  
   return (
     <button
       {...props}
       className={clsx(
         "font-medium transition-all duration-150 active:scale-95 select-none cursor-pointer",
         {
-          "bg-button-primary text-text hover:bg-button-primary/50": variant === "primary",
+          "bg-primary text-text hover:bg-button-primary/50": variant === "primary",
           "bg-zinc-200 text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600":
             variant === "secondary",
           "bg-transparent text-current hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50":

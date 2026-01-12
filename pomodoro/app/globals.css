@@ -280,7 +280,7 @@ input[type="color" i]::-moz-color-swatch {
       /* Deep Accent Layer - uses c-5 to add depth to the base */
       radial-gradient(circle at 50% 50%, var(--c-5) 0%, transparent 100%);
 
-background-blend-mode: screen, screen, screen, screen, screen, normal;    
+    background-blend-mode: screen, screen, screen, screen, screen, normal;    
     /* Smooth transition when swapping themes */
     transition: background-color 0.5s ease, background-image 0.5s ease;
 }

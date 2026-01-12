@@ -6,13 +6,13 @@ import { useThemeStore } from "@/store/useTheme";
 import { theme1 as themes } from "@/components/Themes";
 import Modal, { ModalSection, ModalDivider } from "@/components/Modal";
 import { Button } from "@/components/Button";
+import { BACKGROUND_CONFIGS } from "@/config/BackgroundConfig";
+import { Switch } from "@mui/material";
 
-export default function Settings({ 
-  onClose, 
-  showSettings, 
-  setShowSettings 
-}: { 
-  onClose?: () => void;
+export default function Settings({
+  showSettings,
+  setShowSettings
+}: {
   showSettings: boolean;
   setShowSettings: (show: boolean) => void;
 }) {
@@ -25,6 +25,11 @@ export default function Settings({
   const updateSelectedGradient = useThemeStore((s) => s.updateSelectedGradient);
   const selectedTheme = useThemeStore((s) => s.theme);
   const updateTheme = useThemeStore((s) => s.updateTheme);
+
+  const backgroundMode = useThemeStore((s) => s.backgroundMode);
+  const updateBackgroundMode = useThemeStore((s) => s.updateBackgroundMode);
+  const updateSelectedBackground = useThemeStore((s) => s.updateSelectedBackground);
+  const [settingsBackgroundMode, setSettingsBackgroundMode] = useState(backgroundMode);
   const [settingsTheme, setSettingsTheme] = useState(selectedTheme);
 
   const [workTimerLength, setWorkTimerLength] = useState("");
@@ -36,7 +41,7 @@ export default function Settings({
       isOpen={showSettings}
       onClose={() => setShowSettings(false)}
       width="w-80"
-      maxHeight="max-h-[70vh] "
+      maxHeight="max-h-[70vh]"
       className="fixed top-20 right-4"
     >
       {/* Timer Duration Section */}
@@ -77,21 +82,74 @@ export default function Settings({
 
       <ModalDivider />
 
-      {/* Theme Selector Section */}
+      {/* Background Selector Section */}
       <ModalSection>
-        <label className="text-xs font-medium tracking-wider">
-          COLOR THEME
+        <label className="text-xs font-medium tracking-wider mb-2 block">
+          BACKGROUND
         </label>
-        <div
-          className="glass-plain rounded-md flex items-center gap-1 p-1"
-        >
+        <div className="glass-plain rounded-md flex items-center gap-1 p-1 mb-4">
           <Button
             variant='plain'
             className={`p-2 rounded-lg w-full`}
-            onClick={() => {
-              setSettingsTheme("dark");
-              // Only update the filter, don't apply gradient
+            onClick={() => setSettingsBackgroundMode("mesh")}
+            isActive={settingsBackgroundMode === "mesh"}
+          >
+            Gradient
+          </Button>
+          <Button
+            variant='plain'
+            className={`p-2 rounded-lg w-full`}
+            onClick={() => setSettingsBackgroundMode("video")}
+            isActive={settingsBackgroundMode === "video"}
+          >
+            Static
+          </Button>
+        </div>
+      </ModalSection>
+      { settingsBackgroundMode === "video" && (
+      <ModalSection>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs font-medium tracking-wider">
+            {selectedTheme === 'dark' ? 'DARK MODE' : 'LIGHT MODE'}
+          </label>
+          <Switch 
+            checked={selectedTheme === "dark"}
+            onChange={(e) => {
+              const newTheme = e.target.checked ? "dark" : "light";
+              updateTheme(newTheme);
+              setSettingsTheme(newTheme); // Sync your local settings filter too
             }}
+            size="small"
+          />
+        </div>        
+        <div className="grid grid-cols-2 gap-3">
+          {BACKGROUND_CONFIGS.map((bg, i) => (
+            <button
+              key={bg.name}
+              className="relative flex flex-col justify-center items-center group p-3 rounded-xl border border-border transition-all bg-white/5 hover:bg-white/10 hover:border-white/20"
+              onClick={() => {
+                updateBackgroundMode("video");
+                updateSelectedBackground(i);
+              }}
+            >
+              <span className="text-xs">{bg.name}</span>
+            </button>
+          ))}
+        </div>
+      </ModalSection>
+      )}  
+
+      {/* Theme Selector Section */}
+      { settingsBackgroundMode === "mesh" && (
+      <ModalSection>
+        <label className="text-xs font-medium tracking-wider mb-2 block">
+          COLOR THEME
+        </label>
+        <div className="glass-plain rounded-md flex items-center gap-1 p-1 mb-4">
+          <Button
+            variant='plain'
+            className={`p-2 rounded-lg w-full`}
+            onClick={() => setSettingsTheme("dark")}
             isActive={settingsTheme === "dark"}
           >
             Dark
@@ -99,52 +157,48 @@ export default function Settings({
           <Button
             variant='plain'
             className={`p-2 rounded-lg w-full`}
-            onClick={() => {
-              setSettingsTheme("light");
-              // Only update the filter, don't apply gradient
-            }}
+            onClick={() => setSettingsTheme("light")}
             isActive={settingsTheme === "light"}
           >
             Light
           </Button>
         </div>
+        
         <div className="grid grid-cols-2 gap-3">
           {themes.filter((theme) => theme.mode === settingsTheme).map((theme) => (
             <button
               key={theme.name}
               className="relative flex flex-col justify-center items-center group p-3 rounded-xl border border-border transition-all bg-white/5 hover:bg-white/10 hover:border-white/20"
               onClick={() => {
-                console.log("applying theme", theme.name);
-                // Apply both the gradient AND the light/dark mode
+                updateBackgroundMode("mesh");
                 updateSelectedGradient(themes.indexOf(theme));
-                updateTheme(settingsTheme); // Use the current filter selection
+                updateTheme(settingsTheme);
               }}
             >
               <div className="flex gap-1 mb-2">
                 {theme.preview.map((color, i) => (
                   <div
                     key={i}
-                    className="flex-1 h-6 w-6 rounded-md"
+                    className="h-6 w-6 rounded-md"
                     style={{ backgroundColor: color }}
                   />
                 ))}
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-text/70 font-medium">
-                  {theme.name}
-                </span>
-              </div>
+              <span className="text-xs text-text/70 font-medium">
+                {theme.name}
+              </span>
             </button>
           ))}
         </div>
       </ModalSection>
-
+      )}
+      
       <ModalDivider />
 
       {/* Custom Colors Section */}
       <ModalSection>
-        <div className="flex items-center w-full justify-between">
-          <label htmlFor="work-color" className="mr-2">Work Color</label>
+        <div className="flex items-center w-full justify-between mb-2">
+          <label htmlFor="work-color" className="text-sm">Work Color</label>
           <input
             type="color"
             id="work-color"
@@ -154,7 +208,7 @@ export default function Settings({
           />
         </div>
         <div className="flex items-center w-full justify-between">
-          <label htmlFor="break-color" className="mr-2">Break Color</label>
+          <label htmlFor="break-color" className="text-sm">Break Color</label>
           <input
             type="color"
             id="break-color"
