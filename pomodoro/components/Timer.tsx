@@ -41,12 +41,10 @@ export default function Timer() {
   
   useEffect(() => { 
     if (timeRemaining <= 0 && !isRunning) { 
-      const audio = new Audio('/sounds/small-dog.wav');
 
       if (mode === "focus") {
         updatePomodoroCount(); // No more dependency on 'pomodoroCount'
       }
-
 
       if (audioRef.current) {
         audioRef.current.currentTime = 0
@@ -60,10 +58,10 @@ export default function Timer() {
   }, [timeRemaining, isRunning, mode, setMode, start, updatePomodoroCount]);
 
   return (
-    <div className="flex flex-col w-full max-w-sm p-6 space-y-4 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-3xl">
+    <div className="flex flex-col w-full  p-6 space-y-4 bg-[#0a1929]/60 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-3xl">
       
       {/* Mode Buttons */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         <Button
           variant={mode === "focus" ? "glass" : "plain"}
           onClick={() => mode === "focus" ? null : setMode("focus")}
@@ -73,10 +71,17 @@ export default function Timer() {
         </Button>
         <Button
           variant={mode === "short" ? "glass" : "plain"}
-          onClick={() => mode === "short" || mode === "long" ? null : setMode("short")}
+          onClick={() => mode === "short" ? null : setMode("short")}
           className="px-4 py-2 rounded-full"
         >
-          Break
+          Short Break
+        </Button>
+        <Button
+          variant={mode === "long" ? "glass" : "plain"}
+          onClick={() => mode === "long" ? null : setMode("long")}
+          className="px-4 py-2 rounded-full"
+        >
+          Long Break
         </Button>
       </div>
 
@@ -102,6 +107,7 @@ export default function Timer() {
           console.log('Audio finished playing!');
           // Call your function here
           // handleAudioComplete();
+          // TODO: need to find when 4 pomodoros complete to switch to long break
           setMode(mode === "focus" ? "short" : "focus");
           start();
         }}

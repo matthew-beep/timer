@@ -2,12 +2,13 @@
 import { motion } from 'framer-motion'
 import { useNotesStore } from '@/store/useNotes';
 // TODO: Refactor to use react-rnd instead of draggable
-
+import { Button } from '@/components/Button';
 import { generateHTML } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { JSONContent } from '@tiptap/core';
 import { useMemo} from 'react';
 import {StickyNote } from '@/store/useNotes';
+import { IoTrashOutline } from "react-icons/io5";
 interface ListNoteProps extends StickyNote {
 
   index:number;
