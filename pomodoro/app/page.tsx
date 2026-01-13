@@ -89,7 +89,7 @@ export default function Home() {
 
   return (
     <div 
-      className={`h-screen flex flex-col font-sans text-white ${backgroundMode === "mesh" ? "gradient-2" : ""}`}
+      className={`font-serif h-screen flex flex-col text-white ${backgroundMode === "mesh" ? "gradient-2" : ""}`}
     >
       {backgroundMode == "video" &&
       <div className="fixed inset-0 -z-10 overflow-hidden">
@@ -123,7 +123,8 @@ export default function Home() {
           className="w-fit mx-auto flex flex-col items-center justify-center h-full z-0 relative p-10"
           >
             <div className="w-full h-full relative">
-              <PetRenderer />
+              <PetRenderer id="turtle" scale={1}/>
+              <PetRenderer id="rottweiler" scale={2}/>
             </div>
             <Timer />
             <div className="w-full h-full"></div>

@@ -59,7 +59,7 @@ export default function Settings({
               setDurationValue("focus", Number(e.target.value));
             }}
             placeholder={`${durations.focus / 60}`}
-            className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-placeholder text-text rounded-full border border-border outline-none"
+            className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-[var(--placeholder)] text-text rounded-full border border-border outline-none"
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -75,7 +75,7 @@ export default function Settings({
               setDurationValue("short", Number(e.target.value));
             }}
             placeholder={`${durations.short / 60}`}
-            className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-placeholder text-text rounded-full border border-border outline-none"
+            className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-[var(--placeholder)] text-text rounded-full border border-border outline-none"
           />
         </div>
       </ModalSection>
@@ -126,7 +126,7 @@ export default function Settings({
           {BACKGROUND_CONFIGS.map((bg, i) => (
             <button
               key={bg.name}
-              className="relative flex flex-col justify-center items-center group p-3 rounded-xl border border-border transition-all bg-white/5 hover:bg-white/10 hover:border-white/20"
+              className="relative flex flex-col justify-center items-center group p-3 rounded-xl border border-border transition-all bg-text/5 hover:bg-text/10 hover:border-text/20"
               onClick={() => {
                 updateBackgroundMode("video");
                 updateSelectedBackground(i);
@@ -168,7 +168,7 @@ export default function Settings({
           {themes.filter((theme) => theme.mode === settingsTheme).map((theme) => (
             <button
               key={theme.name}
-              className="relative flex flex-col justify-center items-center group p-3 rounded-xl border border-border transition-all bg-white/5 hover:bg-white/10 hover:border-white/20"
+              className="relative flex flex-col justify-center items-center group p-3 rounded-xl border border-border transition-all bg-text/5 hover:bg-text/10 hover:border-text/20"
               onClick={() => {
                 updateBackgroundMode("mesh");
                 updateSelectedGradient(themes.indexOf(theme));

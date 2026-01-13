@@ -37,7 +37,7 @@ export default function NotesList({showList, setShowList}: {showList: boolean, s
           className='h-10/12 ml-5 p-0'
         >
           <ModalSection>
-            <Button variant="plain" className="w-8 h-8 shrink justify-center items-center rounded-md p-1"><IoAddOutline size={24} className="text-white/60"/></Button>
+            <Button variant="plain" className="w-8 h-8 shrink justify-center items-center rounded-md p-1 text-text"><IoAddOutline size={24} /></Button>
           </ModalSection>
           <ModalSection className=' w-full overflow-y-auto'>
             {sortedNotes.map((note, index) => (

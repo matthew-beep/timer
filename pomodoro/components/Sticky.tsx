@@ -16,6 +16,7 @@ import { JSONContent } from '@tiptap/core';
 import { motion, AnimatePresence } from "motion/react";
 import { PiDotsThree } from "react-icons/pi";
 import { StickyNote as StickyNoteProps } from "@/store/useNotes";
+import { useThemeStore } from "@/store/useTheme";
 
 export default function StickyNote({
   id = "",
@@ -38,7 +39,7 @@ export default function StickyNote({
   const setActiveNote = useNotesStore(s => s.setActiveNote);
   const activeNoteId = useNotesStore(s => s.activeNoteId);
   const activeNote = activeNoteId === id;
-
+  const theme = useThemeStore((s) => s.theme);
 
   useEffect(() => {
     console.log("sticky color: ", color);
@@ -93,7 +94,7 @@ export default function StickyNote({
   >
     <AnimatePresence>
       <motion.div
-        className="w-full h-full flex bg-cardBg flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl"
+        className="w-full h-full flex bg-cardBg flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans"
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
@@ -119,10 +120,10 @@ export default function StickyNote({
           onMouseUp={() => setCursor("grab")}
         >
           <div 
-            className="flex items-center gap-1 bg-black/20 rounded-lg p-1"
+            className={`flex items-center gap-1 ${theme === "dark" ? "bg-black/20" : "bg-gray-200"} rounded-md p-1`}
             >
             <button 
-              className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'draw' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
+              className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'draw' ? 'bg-[var(--hoverBg)] text-text' : 'text-text/40 hover:text-text/70'}`}
               onClick={
                 () => {
                   updateNote(id, { mode: "draw" }) 
@@ -132,7 +133,7 @@ export default function StickyNote({
                 <BiPaint size={14} />
             </button> 
             <button 
-              className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'text' ? 'bg-white/10 text-white' : 'text-white/40 hover:text-white/70'}`}
+              className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'text' ? 'bg-[var(--hoverBg)] text-text' : 'text-text/40 hover:text-text/70'}`}
               onClick={
                 () => {
                   updateNote(id, { mode: "text" }) 

@@ -45,7 +45,7 @@ const normalizeNoteText = (text: unknown): JSONContent => {
 };
 export default function ListNote ({index, text, color, lastEdited, id} : ListNoteProps) {
 
-    const deleteNote = useNotesStore((s) => s.deleteNote);
+  const deleteNote = useNotesStore((s) => s.deleteNote);
 
     const htmlContent = useMemo(() => {
     try {
@@ -56,6 +56,30 @@ export default function ListNote ({index, text, color, lastEdited, id} : ListNot
       return '<p></p>'; // Fallback empty paragraph
     }
   }, [text]);
+
+  const formatNoteDate = (dateInput: string | number | Date) => {
+  const date = new Date(dateInput);
+  const now = new Date();
+
+  const isToday = 
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
+
+    if (isToday) {
+      // Returns "10:45 PM" format
+      return date.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    } else {
+      // Returns "01/11" format
+      return date.toLocaleDateString([], { 
+        month: '2-digit', 
+        day: '2-digit' 
+      });
+    }
+  };
 
   return (
 
@@ -87,8 +111,8 @@ export default function ListNote ({index, text, color, lastEdited, id} : ListNot
           >
           </div>
           {lastEdited && (
-            <div className="text-xs text-gray-400">
-              Last edited: {new Date(lastEdited).toLocaleString()}
+            <div className="text-xs text-text/60">
+              Last edited: {formatNoteDate(lastEdited)}
             </div>
           )}
         </div>

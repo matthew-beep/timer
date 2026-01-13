@@ -1,9 +1,10 @@
 import { PET_CONFIGS } from "@/config/PetConfig";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
+import { PetProps } from "@/config/PetConfig"; 
 
-export const PetRenderer = () => {
-  const pet = PET_CONFIGS["rottweiler"];
+export const PetRenderer = ({ id, scale = 1 } : PetProps) => {
+  const pet = PET_CONFIGS[id];
   
   const [petX, setPetX] = useState(-100);
   const [isMoving, setIsMoving] = useState(true); 
@@ -41,7 +42,7 @@ export const PetRenderer = () => {
     y: '-1px',
     // --- SIZE LOGIC ---
     // This makes him 2x or 3x bigger without breaking the animation
-    transform: `scale(2)`, 
+    transform: `scale(${scale})`, 
     // This ensures he stays on the "floor" and doesn't float when he grows
     transformOrigin: 'bottom center', 
     

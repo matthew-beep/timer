@@ -114,7 +114,7 @@ export default function StickyCanvas({
       {/* Top Bar */}
 
       <div 
-        className="h-12 absolute top-0 right-0 width-full flex rounded-full p-1 bg-[#0a1929]/80 m-2 z-10"
+        className="h-12 absolute top-0 right-0 width-full flex rounded-full p-1 bg-cardBg m-2 z-10"
       > 
         <Button 
           className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
@@ -144,7 +144,7 @@ export default function StickyCanvas({
 
       {editCanvas &&
       <motion.div 
-        className="h-12 absolute bottom-0 left-1/2 -translate-x-1/2 flex rounded-full p-1 bg-[#0a1929]/80 mb-1 gap-1"
+        className="h-12 absolute bottom-0 left-1/2 -translate-x-1/2 flex rounded-full p-1 bg-cardBg mb-1 gap-1"
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.3, delay: 0.2 }}

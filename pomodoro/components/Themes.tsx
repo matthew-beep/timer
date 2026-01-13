@@ -24,8 +24,9 @@ export const themes = {
     cardBg: 'rgba(255, 255, 255, 0.75)',
     border: 'rgba(209, 213, 219, 0.3)',
     inputBg: '#FFFFFF',
-    placeholder: '#000000',
-    stickyHandle: 'rgba(255, 255, 255, 0.5)'
+    placeholder: '#89919E',
+    stickyHandle: 'oklch(98.5% 0.002 247.839)',
+    hoverBg: 'rgba(0, 0, 0, 0.1)'
 
   },
   dark: {
@@ -37,7 +38,8 @@ export const themes = {
     border: 'rgba(255, 255, 255, 0.125)',
     inputBg: '#1F2A37',
     placeholder: '#89919E',
-    stickyHandle: 'rgba(255, 255, 255, 0.05)'
+    stickyHandle: 'rgba(255, 255, 255, 0.05)',
+    hoverBg: 'rgba(255, 255, 255, 0.1)'
   },
 } as const;
 

@@ -59,7 +59,7 @@ export default function Timer() {
 
   return (
     <div 
-      className="flex flex-col w-full p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border"
+      className="flex flex-col w-full p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display"
     >
       
       {/* Mode Buttons */}

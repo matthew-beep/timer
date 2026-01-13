@@ -35,7 +35,7 @@ export default function Modal({
     >
       <div 
         ref={nodeRef} 
-        className={`bg-cardBg backdrop-blur-xs saturate-80 rounded-3xl border border-border shadow-2xl overflow-hidden ${width} ${className}`}
+        className={`font-sans bg-cardBg backdrop-blur-xs saturate-80 rounded-3xl border border-border shadow-2xl overflow-hidden ${width} ${className}`}
       >
         {/* Header */}
         <div className="modal-handle flex justify-between items-center cursor-move py-3 px-6 text-text bg-white/5 hover:bg-white/10 transition-colors">

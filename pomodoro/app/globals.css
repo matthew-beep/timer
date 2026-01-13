@@ -21,9 +21,16 @@
   --inputBg: #1F2A37;
   --placeholder: #6b7280;
   --stickyHandle: rgba(255, 255, 255, 0.05);
+  --hoverBg: rgba(255, 255, 255, 0.1);
 }
 
 @theme inline {
+
+  --font-display: var(--font-dm-serif-display);
+  --font-body: var(--font-work-sans);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+   
   --color-background: var(--background);
   --color-cardBg: var(--cardBg);
   --color-text: var(--text);
@@ -33,7 +40,8 @@
   --color-foreground: var(--foreground);
   --color-test: var(--test); 
   --color-card: var(--test);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-work-sans);
+  --font-serif: var(--font-dm-serif-display);
   --font-mono: var(--font-geist-mono);
   --color-button-primary: var(--button-primary);
   --color-work: var(--work);
@@ -42,6 +50,7 @@
   --color-inputBg: var(--inputBg);
   --color-placeholder: var(--placeholder);
   --color-stickyHandle: var(--stickyHandle);
+  --color-hoverBg: var(--hoverBg);
 }
 
 /*
@@ -56,7 +65,7 @@
 body {
   background-color: #000000;
   color: var(--foreground);
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-work-sans), sans-serif;
 }
 
 input[type="color" i] {
