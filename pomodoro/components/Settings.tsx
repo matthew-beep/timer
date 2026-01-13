@@ -59,7 +59,7 @@ export default function Settings({
               setDurationValue("focus", Number(e.target.value));
             }}
             placeholder={`${durations.focus / 60}`}
-            className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#252527] placeholder:text-[#A9A9AB] text-white rounded-full border border-[#4C4B53] outline-none"
+            className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-placeholder text-text rounded-full border border-border outline-none"
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -75,7 +75,7 @@ export default function Settings({
               setDurationValue("short", Number(e.target.value));
             }}
             placeholder={`${durations.short / 60}`}
-            className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[#252527] placeholder:text-[#A9A9AB] text-white rounded-full border border-[#4C4B53] outline-none"
+            className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-placeholder text-text rounded-full border border-border outline-none"
           />
         </div>
       </ModalSection>

@@ -18,6 +18,9 @@
   --primary: #00d3f2;
   --secondary: #f6339a;
   --border: rgba(0, 0, 0, 0.1);
+  --inputBg: #1F2A37;
+  --placeholder: #6b7280;
+  --stickyHandle: rgba(255, 255, 255, 0.05);
 }
 
 @theme inline {
@@ -36,6 +39,9 @@
   --color-work: var(--work);
   --color-code: var(--code);
   --color-active: var(--primaryMode);
+  --color-inputBg: var(--inputBg);
+  --color-placeholder: var(--placeholder);
+  --color-stickyHandle: var(--stickyHandle);
 }
 
 /*
@@ -122,7 +128,7 @@ input[type="color" i]::-moz-color-swatch {
     padding: 0 1rem;
     margin: 1.25rem 1rem 1.25rem 0.4rem;
     list-style-type: disc;
-    color: white;
+    color: var(--text);
     li p {
       margin-top: 0.25em;
       margin-bottom: 0.25em;
@@ -133,7 +139,7 @@ input[type="color" i]::-moz-color-swatch {
     padding: 0 1rem;
     margin: 1.25rem 1rem 1.25rem 0.4rem;
     list-style-type: decimal;
-    color: white;
+    color: var(--text);
     li p {
       margin-top: 0.25em;
       margin-bottom: 0.25em;

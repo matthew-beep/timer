@@ -40,11 +40,6 @@ export default function Home() {
     gradientElement.style.setProperty('--c-4', theme.colors.c4)
     gradientElement.style.setProperty('--c-5', theme.colors.c5)
   }
-  
-  useEffect(() => { 
-    console.log(backgroundMode)
-    console.log("selectedBackground: ", selectedBackground);
-  },[backgroundMode]);
 
   useEffect(() => { 
     const activeColor = mode === "focus" ? colors.work : colors.break;
@@ -76,6 +71,7 @@ export default function Home() {
     const root = document.documentElement;
     
     Object.entries(currentTheme).forEach(([key, value]) => {
+      console.log(`Applying ${key}: ${value}`);
       root.style.setProperty(`--${key}`, value);
     });
   };
@@ -131,7 +127,7 @@ export default function Home() {
             </div>
             <Timer />
             <div className="w-full h-full"></div>
-
+          
         </div>
 
               <AnimatePresence>

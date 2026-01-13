@@ -18,19 +18,26 @@ export type Theme = {
 export const themes = {
   light: {
     background: '#ffffff',
-    text: '#04060A',
+    text: '#0a1929', // #04060A
     primary: '#ffffff',
     secondary: '#f6339a',
-    cardBg: 'rgba(255, 255, 255, 0.5)',
+    cardBg: 'rgba(255, 255, 255, 0.75)',
     border: 'rgba(209, 213, 219, 0.3)',
+    inputBg: '#FFFFFF',
+    placeholder: '#000000',
+    stickyHandle: 'rgba(255, 255, 255, 0.5)'
+
   },
   dark: {
     background: '#000000',
     text: '#ffffff',
     primary: '#0a1929',
     secondary: '#f6339a',
-    cardBg: 'rgba(10, 25, 41, 0.8)',
-    border: 'rgba(255, 255, 255, 0.2)',
+    cardBg: 'rgba(17, 25, 40, 0.75)',
+    border: 'rgba(255, 255, 255, 0.125)',
+    inputBg: '#1F2A37',
+    placeholder: '#89919E',
+    stickyHandle: 'rgba(255, 255, 255, 0.05)'
   },
 } as const;
 

@@ -107,7 +107,7 @@ export default function StickyNote({
         <motion.div
           className={`
             sticky-handle flex justify-between items-center 
-            font-semibold border-b border-white/5 bg-white/5 h-12 p-2
+            font-semibold border-b border-white/5 bg-[var(--stickyHandle)] h-12 p-2
           `}
           style={{ cursor: cursor }}
           onMouseEnter={() => setScale(1.05)}

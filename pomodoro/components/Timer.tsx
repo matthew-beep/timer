@@ -58,7 +58,9 @@ export default function Timer() {
   }, [timeRemaining, isRunning, mode, setMode, start, updatePomodoroCount]);
 
   return (
-    <div className="flex flex-col w-full  p-6 space-y-4 bg-cardBg shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] rounded-3xl">
+    <div 
+      className="flex flex-col w-full p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border"
+    >
       
       {/* Mode Buttons */}
       <div className="grid grid-cols-3 gap-2">
