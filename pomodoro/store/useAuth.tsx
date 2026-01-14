@@ -42,7 +42,6 @@ export const useAuthStore = create<AuthStore>()(
           set({ profile });
         } catch (error) {
           console.error('Failed to load profile:', error);
-          // Don't throw - profile creation might fail but auth should still work
         }
       },
 
@@ -55,46 +54,41 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
           });
 
-          // Load profile and notes if user is signed in
           if (session?.user) {
             await get().loadProfile();
-            // Initialize notes store (load from Supabase if authenticated)
             const { useNotesStore } = await import('./useNotes');
             await useNotesStore.getState().initialize();
           } else {
-            // If not authenticated, initialize notes store to load from localStorage
             const { useNotesStore } = await import('./useNotes');
             useNotesStore.getState().initialize();
           }
         });
 
-        // Listen for auth state changes
-        supabase.auth.onAuthStateChange(async (event, session) => {
+        // Listen for auth state changes (keep it synchronous!)
+        supabase.auth.onAuthStateChange((event, session) => {
           console.log('Auth state changed:', event, session?.user?.email);
 
+          // Update auth state synchronously
           set({
             session,
             user: session?.user ?? null,
             isLoading: false,
           });
 
-          // Handle specific events
+          // Handle side effects in background (non-blocking)
           if (event === 'SIGNED_IN' && session?.user) {
-            // User signed in - create/get profile and load their data
-            await get().loadProfile();
-            // Load notes from Supabase
-            const { useNotesStore } = await import('./useNotes');
-            await useNotesStore.getState().loadFromSupabase();
+            console.log('User signed in, loading data...');
+            get().loadProfile();
+            import('./useNotes').then(({ useNotesStore }) => {
+              useNotesStore.getState().loadFromSupabase();
+            });
           } else if (event === 'SIGNED_OUT') {
-            // User signed out - clear Supabase data, keep localStorage for guest mode
-            set({ user: null, session: null, profile: null });
-            // Clear notes from store (they'll be loaded from localStorage if any)
-            const { useNotesStore } = await import('./useNotes');
-            useNotesStore.setState({ notes: [] });
-            // Reload from localStorage (persist middleware will handle this)
-            useNotesStore.persist.rehydrate();
+            console.log('User signed out, clearing data...');
+            set({ profile: null });
+            import('./useNotes').then(({ useNotesStore }) => {
+              useNotesStore.setState({ notes: [] });
+            });
           } else if (event === 'TOKEN_REFRESHED') {
-            // Session refreshed - update store
             set({ session });
           }
         });
@@ -111,11 +105,8 @@ export const useAuthStore = create<AuthStore>()(
 
           if (error) throw error;
 
-          set({
-            user: data.user,
-            session: data.session,
-            isLoading: false,
-          });
+          // Let onAuthStateChange handle the rest
+          
         } catch (error: any) {
           set({
             error: error.message || 'Failed to sign in',
@@ -136,16 +127,8 @@ export const useAuthStore = create<AuthStore>()(
 
           if (error) throw error;
 
-          set({
-            user: data.user,
-            session: data.session,
-            isLoading: false,
-          });
-
-          // Create profile after signup (database trigger should handle this, but this is a fallback)
-          if (data.user) {
-            await get().loadProfile();
-          }
+          // Let onAuthStateChange handle the rest
+          
         } catch (error: any) {
           set({
             error: error.message || 'Failed to sign up',
@@ -159,7 +142,6 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true, error: null });
 
-          // Get the current URL for redirect
           const redirectUrl = `${window.location.origin}/auth/callback`;
 
           const { error } = await supabase.auth.signInWithOAuth({
@@ -170,9 +152,6 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           if (error) throw error;
-
-          // Note: The actual sign-in happens on the callback page
-          // The user will be redirected to Google, then back to /auth/callback
         } catch (error: any) {
           set({
             error: error.message || 'Failed to sign in with Google',
@@ -185,23 +164,16 @@ export const useAuthStore = create<AuthStore>()(
       signOut: async () => {
         try {
           set({ isLoading: true, error: null });
-          console.log("signing out from store");
+          console.log("Signing out...");
+          
           const { error } = await supabase.auth.signOut();
-          console.log("got response");
+          
           if (error) throw error;
-
-          set({
-            user: null,
-            session: null,
-            isLoading: false,
-          });
-          console.log("signed out");
-          console.log("user: ", get().user);
-          console.log("session: ", get().session);
-          console.log("profile: ", get().profile);
-          console.log("isLoading: ", get().isLoading);
-          console.log("error: ", get().error);
+          
+          console.log("Sign out complete - auth state change will update store");
+          
         } catch (error: any) {
+          console.error("Sign out error:", error);
           set({
             error: error.message || 'Failed to sign out',
             isLoading: false,
@@ -214,17 +186,13 @@ export const useAuthStore = create<AuthStore>()(
     }),
     {
       name: 'auth-storage',
-      // Only persist user ID and session token, not full user object
       partialize: (state) => ({
-        // Supabase handles session persistence automatically
-        // We just need to track that auth was initialized
         user: state.user ? { id: state.user.id } as User : null,
       }),
     }
   )
 );
 
-// Initialize auth on store creation (runs once)
 if (typeof window !== 'undefined') {
   useAuthStore.getState().initialize();
 }
