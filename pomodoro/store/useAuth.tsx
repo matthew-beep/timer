@@ -13,7 +13,7 @@ interface AuthStore {
 
   // Actions
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   initialize: () => void;
@@ -86,7 +86,7 @@ export const useAuthStore = create<AuthStore>()(
             console.log('User signed out, clearing data...');
             set({ profile: null });
             import('./useNotes').then(({ useNotesStore }) => {
-              useNotesStore.setState({ notes: [] });
+              useNotesStore.setState({ notes: [] }); //TODO: is this the flow we want? clearing our notes on sign out?
             });
           } else if (event === 'TOKEN_REFRESHED') {
             set({ session });
@@ -104,7 +104,7 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           if (error) throw error;
-
+          
           // Let onAuthStateChange handle the rest
           
         } catch (error: any) {
@@ -116,17 +116,22 @@ export const useAuthStore = create<AuthStore>()(
         }
       },
 
-      signUp: async (email: string, password: string) => {
+      signUp: async (email: string, password: string, firstName: string, lastName: string) => {
         try {
           set({ isLoading: true, error: null });
 
           const { data, error } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+              data: {
+                full_name: `${firstName} ${lastName}`,
+              },
+            }, 
           });
 
           if (error) throw error;
-
+          console.log("Sign up data:", data);
           // Let onAuthStateChange handle the rest
           
         } catch (error: any) {

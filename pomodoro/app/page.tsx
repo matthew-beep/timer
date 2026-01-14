@@ -17,6 +17,7 @@ import { BACKGROUND_CONFIGS } from "@/config/BackgroundConfig";
 import NotesList from "@/components/NotesList";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/useAuth";
+import { Button } from "@/components/Button";
 
 export default function Home() {
   const notes = useNotesStore((s) => s.notes);
@@ -27,7 +28,7 @@ export default function Home() {
   const viewMode = useNotesStore((s) => s.viewMode);
   const updateViewMode = useNotesStore((s) => s.updateViewMode);
   const colorTheme = useThemeStore((s) => s.theme);
-  const { user, session, isLoading, signIn, signOut } = useAuthStore();
+  const { user, session, isLoading, signIn, signOut, signInWithGoogle, signUp } = useAuthStore();
 
   const selectedBackground = useThemeStore((s) => s.selectedBackground);  
   const backgroundMode = useThemeStore((s) => s.backgroundMode);
@@ -157,7 +158,6 @@ export default function Home() {
     const root = document.documentElement;
     
     Object.entries(currentTheme).forEach(([key, value]) => {
-      console.log(`Applying ${key}: ${value}`);
       root.style.setProperty(`--${key}`, value);
     });
   };
@@ -211,14 +211,22 @@ export default function Home() {
             <div className="w-full h-full relative">
               <PetRenderer id="turtle" scale={1}/>
               <PetRenderer id="rottweiler" scale={2}/>
-              <button onClick={() => {
+              <Button onClick={() => {
+                  console.log("signing upo");
+                  signUp("mattface506@gmail.com", "testpass", "John", "Doe");
+                }}>sign up</Button>
+              <Button onClick={() => {
                   console.log("logging in");
                   signIn("test@gmail.com", "test");
-                }}>log in</button>
-                <button onClick={() => {
+                }}>log in</Button>
+                <Button onClick={() => {
                   console.log("logging out");
                   signOut();
-                }}>log out</button>
+                }}>log out</Button>
+                <Button onClick={() => {
+                  console.log("logging out");
+                  signInWithGoogle();
+                }}>google</Button>
             </div>
             <Timer />
             <div className="w-full h-full"></div>
