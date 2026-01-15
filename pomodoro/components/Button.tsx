@@ -14,8 +14,7 @@ export function Button({
   isActive = false,
   ...props
 }: ButtonProps) {
-  const colorTheme = useThemeStore((s) => s.theme);
-  
+    
   return (
     <button
       {...props}
