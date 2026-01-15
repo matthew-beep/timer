@@ -42,65 +42,65 @@ export function TimerControls() {
 
   return (
     <div className="flex gap-4 w-full items-center justify-center">
-        <Button onClick={reset} variant = "plain"className="p-2 rounded-full flex items-center justify-center">
-          <CiUndo size={24}/>
-        </Button>
-  
-        <Button
-          onClick={() => {
-            if (isRunning) {
-              pause();
-            } else {
-              start();
-            }
-          }}
-          className="w-12 h-12 px-4 py-2 rounded-full flex items-center justify-center"
-          variant="glass"
-        >
-          <AnimatePresence mode="wait">
-            {isRunning ? (
-              <motion.div
-                key="pause"
-                initial={{
-                  opacity: 0,
-                  scale: 0.5,
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.5,
-                }}
-              >
-                <FaPause className={`fill-current`}/>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="play"
-                initial={{
-                  opacity: 0,
-                  scale: 0.5,
-                }}
-                animate={{
-                  opacity: 1,
-                  scale: 1,
-                }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.5,
-                }}
-                className="pl-1" // Optical centering for play icon
-              >
-                <FaPlay className={`fill-current`} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Button>
-        <Button onClick={toggleFullscreen} variant = "plain" className="p-2 rounded-full flex items-center justify-center">
-          <GoScreenFull size={24}/>
-        </Button>
+      <Button onClick={reset} variant="plain" className="p-2 rounded-full flex items-center justify-center">
+        <CiUndo size={24} />
+      </Button>
+
+      <Button
+        onClick={() => {
+          if (isRunning) {
+            pause();
+          } else {
+            start();
+          }
+        }}
+        className="w-12 h-12 px-4 py-2 rounded-full flex items-center justify-center"
+        variant="glass"
+      >
+        <AnimatePresence mode="wait">
+          {isRunning ? (
+            <motion.div
+              key="pause"
+              initial={{
+                opacity: 0,
+                scale: 0.5,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.5,
+              }}
+            >
+              <FaPause className={`fill-current`} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="play"
+              initial={{
+                opacity: 0,
+                scale: 0.5,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.5,
+              }}
+              className="pl-1" // Optical centering for play icon
+            >
+              <FaPlay className={`fill-current`} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Button>
+      <Button onClick={toggleFullscreen} tooltip={isFullscreen ? "Exit Fullscreen" : "Fullscreen"} variant="plain" className="p-2 rounded-full flex items-center justify-center">
+        <GoScreenFull size={24} />
+      </Button>
     </div>
   );
 }

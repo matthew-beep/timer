@@ -13,26 +13,27 @@ import { useTimer } from "@/store/useTimer";
 import { useThemeStore } from "@/store/useTheme";
 import { Theme, theme1, themes } from "@/components/Themes";
 
-import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/store/useAuth";
 import BackgroundRenderer from "@/components/BackgroundRenderer";
 import NotesContainer from "@/components/NotesContainer";
 import AuthModal from "@/components/AuthModal";
 import Overlay from "@/components/Overlay";
+import MergeNotesModal from "@/components/MergeNotesModal";
 
 export default function Home() {
-  const notes = useNotesStore((s) => s.notes);
   const [showSettings, setShowSettings] = useState(false);
   const mode = useTimer((s) => s.mode);
   const colors = useThemeStore((s) => s.colors);
   const selectedGradient = useThemeStore((s) => s.selectedGradient);
   const viewMode = useNotesStore((s) => s.viewMode);
-  const updateViewMode = useNotesStore((s) => s.updateViewMode);
   const colorTheme = useThemeStore((s) => s.theme);
   const { user, session, isLoading, signIn, signOut, signInWithGoogle, signUp } = useAuthStore();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showMergeModal, setShowMergeModal] = useState(false);
+
   const selectedBackground = useThemeStore((s) => s.selectedBackground);
   const backgroundMode = useThemeStore((s) => s.backgroundMode);
+  const mergeState = useNotesStore((s) => s.mergeState);
 
   // Test Supabase connection on mount
   // useEffect(() => {
@@ -199,9 +200,13 @@ export default function Home() {
           <Settings showSettings={showSettings} setShowSettings={setShowSettings} />
         </Overlay>
 
-        <Overlay isOpen={showAuthModal} onClose={() => setShowAuthModal(false)}>
+        <Overlay isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} blur="xl">
           <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
         </Overlay>
+
+
+        <MergeNotesModal />
+
 
         <ProgressBar />
       </div>

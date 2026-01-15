@@ -3,12 +3,13 @@
 
 import { useAuthStore } from "@/store/useAuth";
 import { Button } from "./Button";
-import { IoPersonOutline, IoLogOutOutline } from "react-icons/io5";
+import { IoPersonOutline, IoLogOutOutline, IoCloseOutline } from "react-icons/io5";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AccountButtonProps {
   onSignInClick: () => void;
+
 }
 
 export default function AccountButton({ onSignInClick }: AccountButtonProps) {
@@ -35,13 +36,15 @@ export default function AccountButton({ onSignInClick }: AccountButtonProps) {
   return (
     <div
       className="relative"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
     >
       <Button
         className="flex items-center justify-center p-2 rounded-full"
         isActive={isOpen}
         variant='glassPlain'
+        onClick={() => {
+          setIsOpen(!isOpen)
+        }}
+        tooltip={isOpen ? undefined : (user ? "Profile" : "Sign In")}
       >
         <IoPersonOutline size={18} strokeWidth={0.5} />
       </Button>
@@ -55,8 +58,18 @@ export default function AccountButton({ onSignInClick }: AccountButtonProps) {
             transition={{ duration: 0.15 }}
             className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-cardBg backdrop-blur-md border border-border shadow-xl z-50 text-text"
           >
-            {/* Add invisible padding at top to bridge gap */}
-            <div className="pt-2">
+            <div>
+              <div className="flex justify-end border-2">
+                <Button
+                  variant="plain"
+                  className="flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-red-300 hover:text-red-200"
+                  onClick={() => {
+                    setIsOpen(false);
+                  }}
+                >
+                  <IoCloseOutline size={16} />
+                </Button>
+              </div>
               <div className="p-2 flex flex-col gap-2">
                 <div className="px-3 py-2 border-b border-white/10">
                   <p className="font-medium text-sm truncate">{displayName}</p>

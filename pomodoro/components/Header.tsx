@@ -18,6 +18,7 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
     const noteWidth = useNotesStore((s) => s.noteWidth);
     const noteHeight = useNotesStore((s) => s.noteHeight);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+    const syncState = useNotesStore((s) => s.syncState);
 
     const { user } = useAuthStore();
     const workColor = useThemeStore((s) => s.colors.work);
@@ -38,6 +39,7 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
     return (
         <div className="rounded-md flex justify-between py-10 px-5 relative z-10">
             <h1 className="text-3xl font-bold text-text">Study Space</h1>
+            {syncState}
             <div className='flex relative gap-2'>
                 <Button
                     className="flex items-center justify-center p-2 rounded-full"

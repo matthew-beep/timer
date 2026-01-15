@@ -80,7 +80,10 @@ export const useAuthStore = create<AuthStore>()(
             console.log('User signed in, loading data...');
             get().loadProfile();
             import('./useNotes').then(({ useNotesStore }) => {
-              useNotesStore.getState().loadFromSupabase();
+              // Use handleSignIn to check for guest notes merge
+
+              console.log("event found -> signed in, calling handle sign in")
+              useNotesStore.getState().handleSignIn();
             });
           } else if (event === 'SIGNED_OUT') {
             console.log('User signed out, clearing data...');
@@ -104,9 +107,9 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           if (error) throw error;
-          
+
           // Let onAuthStateChange handle the rest
-          
+
         } catch (error: any) {
           set({
             error: error.message || 'Failed to sign in',
@@ -127,13 +130,13 @@ export const useAuthStore = create<AuthStore>()(
               data: {
                 full_name: `${firstName} ${lastName}`,
               },
-            }, 
+            },
           });
 
           if (error) throw error;
           console.log("Sign up data:", data);
           // Let onAuthStateChange handle the rest
-          
+
         } catch (error: any) {
           set({
             error: error.message || 'Failed to sign up',
@@ -170,13 +173,13 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true, error: null });
           console.log("Signing out...");
-          
+
           const { error } = await supabase.auth.signOut();
-          
+
           if (error) throw error;
-          
+
           console.log("Sign out complete - auth state change will update store");
-          
+
         } catch (error: any) {
           console.error("Sign out error:", error);
           set({
