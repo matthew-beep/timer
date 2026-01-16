@@ -7,7 +7,7 @@ import { useNotesStore } from "@/store/useNotes";
 import { JSONContent } from '@tiptap/core';
 import { useEffect } from 'react';
 
-const Tiptap = ({content, id, height}: {content: JSONContent, id:string, height: number}) => {
+const Tiptap = ({ content, id, height }: { content: JSONContent, id: string, height: number }) => {
     const updateNote = useNotesStore((s) => s.updateNote);
     const activeNoteId = useNotesStore(s => s.activeNoteId);
     const activeNote = activeNoteId === id;
@@ -35,36 +35,29 @@ const Tiptap = ({content, id, height}: {content: JSONContent, id:string, height:
 
     })
 
-    useEffect(() => { 
-        console.log("height changing: ", height);
-        if (height< 250) {
-            console.log("Menu disappear, padding change");
-        }
-    }, [height]);
-
     return (
-        <div 
+        <div
             className="relative h-full min-h-0 flex flex-col justify-end"
         >
-        {/* Editor layer */}
-        <div 
-            className="absolute inset-0 min-h-0 pl-3"
-            style={{
-                paddingBottom: `${height < 250 || !activeNote ? "5px" : "50px"}`
-            }}
-        >
-            <EditorContent
-            editor={editor}
-            className="h-full min-h-0 overflow-auto text-text"
-            />
-        </div>
-
-        {/* Menu overlay */}
-        {editor && activeNote && height > 250 && (
-            <div className="bottom-0 left-0 w-full z-20 pointer-events-auto">
-                <MenuBar editor={editor} />
+            {/* Editor layer */}
+            <div
+                className="absolute inset-0 min-h-0 pl-3"
+                style={{
+                    paddingBottom: `${height < 250 || !activeNote ? "5px" : "50px"}`
+                }}
+            >
+                <EditorContent
+                    editor={editor}
+                    className="h-full min-h-0 overflow-auto text-text"
+                />
             </div>
-        )}
+
+            {/* Menu overlay */}
+            {editor && activeNote && height > 250 && (
+                <div className="bottom-0 left-0 w-full z-20 pointer-events-auto">
+                    <MenuBar editor={editor} />
+                </div>
+            )}
         </div>
     )
 }

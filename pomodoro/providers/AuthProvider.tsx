@@ -7,13 +7,18 @@ import { supabase } from '@/lib/supabase';
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const initialize = useAuthStore((s) => s.initialize);
+    const initializeNotes = useNotesStore((s) => s.initialize);
     const handleSignIn = useNotesStore((s) => s.handleSignIn);
     // Use a ref to track if we've set up the listener to avoid double-mount issues in strict mode
     const isMounted = useRef(false);
 
+
     useEffect(() => {
         // 1. Initialize Auth Store (get session, load profile)
         initialize();
+
+        // 2. Initialize Notes Store (load from Supabase if authenticated)
+        initializeNotes();
 
         // 2. Setup centralized listener
         // This replaces the listener inside useAuth.tsx store
@@ -24,15 +29,20 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             if (event === 'TOKEN_REFRESHED') return;
 
             if (event === 'SIGNED_IN' && session?.user) {
+
+                useAuthStore.setState({ session: session, user: session.user, isLoading: false });
+
                 // Trigger Notes merger/loading logic
                 handleSignIn();
+
                 // Also reload profile if needed (handled by store usually, but we can trigger it)
                 useAuthStore.getState().loadProfile();
+
             }
 
             if (event === 'SIGNED_OUT') {
-                useNotesStore.setState({ notes: [] });
-                useAuthStore.setState({ profile: null });
+                useNotesStore.setState({ notes: [], hasLoadedFromSupabase: false });
+                useAuthStore.setState({ profile: null, session: null, user: null, isLoading: false });
             }
         });
 
@@ -40,7 +50,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             console.log('🧹 Cleanup AuthProvider listener');
             subscription.unsubscribe();
         };
-    }, [initialize, handleSignIn]);
+    }, [initialize, initializeNotes, handleSignIn]);
 
     return <>{children}</>;
 }

@@ -114,6 +114,8 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
           });
           throw error;
+        } finally {
+          set({ isLoading: false });
         }
       },
 
@@ -184,8 +186,11 @@ export const useAuthStore = create<AuthStore>()(
           console.error("Sign out error:", error);
           const authError = error as AuthError;
           set({
-            error: authError.message || 'Failed to sign out',
-            isLoading: false,
+            user: null,
+            session: null,
+            profile: null,
+            error: authError.message,
+            isLoading: false
           });
           throw error;
         }

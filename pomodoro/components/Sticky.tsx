@@ -41,11 +41,6 @@ export default function StickyNote({
   const activeNote = activeNoteId === id;
   const theme = useThemeStore((s) => s.theme);
 
-  useEffect(() => {
-    console.log("sticky color: ", color);
-  }, []); // only on mount
-
-
 
   const [cursor, setCursor] = useState<string>("grab");
   const [scale, setScale] = useState<number>(1);

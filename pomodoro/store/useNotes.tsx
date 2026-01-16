@@ -4,14 +4,7 @@ import { supabase } from "@/lib/supabase";
 import type { CanvasPath } from "react-sketch-canvas";
 import { JSONContent } from '@tiptap/core';
 import type { Tables } from "@/types/supabase";
-
-// Helper to get auth user without circular dependency
-const getAuthUser = () => {
-  if (typeof window === 'undefined') return null;
-  // Dynamically import to avoid circular dependency
-  const { useAuthStore } = require('./useAuth');
-  return useAuthStore.getState().user;
-};
+import { getCurrentUser } from "@/lib/auth-helpers";
 
 export type StickyNote = {
   id: string;
@@ -41,6 +34,15 @@ type NotesStore = {
   dirtyNoteIds: Set<string>;
   pendingDeletes: Set<string>;
 
+  // Retry logic
+  retryCount: number;
+  lastError: {
+    message: string;
+    code?: string;
+    timestamp: Date;
+    noteIds?: string[];
+  } | null;
+
   // Local actions (optimistic updates)
   addNote: (note: StickyNote) => Promise<void>;
   updateNote: (id: string, updates: Partial<StickyNote>) => Promise<void>;
@@ -67,6 +69,35 @@ type NotesStore = {
   confirmMerge: () => Promise<void>;
   discardMerge: () => Promise<void>;
 };
+
+// Error categorization
+const isTransientError = (error: any): boolean => {
+  if (!error) return false;
+
+  const message = error.message?.toLowerCase() || '';
+  const code = error.code || '';
+
+  // Network errors
+  if (message.includes('network') ||
+    message.includes('timeout') ||
+    message.includes('fetch')) {
+    return true;
+  }
+
+  // Postgres connection errors
+  if (code === 'PGRST301' || code === 'PGRST504') {
+    return true;
+  }
+
+  // Rate limiting
+  if (code === '429' || message.includes('rate limit')) {
+    return true;
+  }
+
+  return false;
+};
+const MAX_RETRIES = 5;
+const BASE_DELAY_MS = 1000;
 
 // Debounce timeout for syncing (ms)
 const SYNC_DEBOUNCE_MS = 500;
@@ -115,6 +146,8 @@ export const useNotesStore = create<NotesStore>()(
     (set, get) => ({
       notes: [],
       syncState: 'idle',
+      retryCount: 0,
+      lastError: null,
       lastSyncedAt: null,
       isInitialized: false,
       dirtyNoteIds: new Set(),
@@ -124,11 +157,12 @@ export const useNotesStore = create<NotesStore>()(
       viewMode: "grid",
       hasLoadedFromSupabase: false,
       isFetchingFromSupabase: false,
+
       updateViewMode: (mode) => set({ viewMode: mode }),
       setActiveNote: (id) => set({ activeNoteId: id }),
 
       initialize: async () => {
-        const user = getAuthUser();
+        const user = getCurrentUser();
 
         if (user) {
           // User is authenticated - load from Supabase
@@ -140,7 +174,7 @@ export const useNotesStore = create<NotesStore>()(
       },
 
       loadFromSupabase: async () => {
-        const user = getAuthUser();
+        const user = getCurrentUser();
         // 1. Check user
         if (!user) {
           console.log('No user, skipping Supabase load');
@@ -191,7 +225,7 @@ export const useNotesStore = create<NotesStore>()(
       },
 
       queueSync: () => {
-        const user = getAuthUser();
+        const user = getCurrentUser();
         if (!user) {
           // Not authenticated - don't sync
           return;
@@ -230,59 +264,120 @@ export const useNotesStore = create<NotesStore>()(
         await get().syncToSupabase();
       },
 
+      // sync to supabase on notes change
+      // if no user, do nothing
+      // if user and dirty notes, sync
+      // on error -> check if network error, if so, retry
+
+      // retry up to MAX_RETRIES with exponential backoff of BASE_DELAY_MS * 2^retryCount
+
+      // if not network error, show error
       syncToSupabase: async () => {
-        const user = getAuthUser();
+        const user = getCurrentUser();
         if (!user) {
           console.log('No user, skipping Supabase sync');
           return;
         }
 
-        const { notes, dirtyNoteIds } = get();
-
-        // 1. Identify dirty notes
+        const { notes, dirtyNoteIds, retryCount } = get();
         const dirtyNotes = notes.filter(note => dirtyNoteIds.has(note.id));
-
         if (dirtyNotes.length === 0) {
           console.log('No dirty notes to sync');
           return;
         }
-
-        console.log(`starting sync: idle -> syncing (${dirtyNotes.length} notes)`);
+        console.log(`Starting sync: ${dirtyNotes.length} notes (attempt ${retryCount + 1})`);
         set({ syncState: 'syncing' });
-
         try {
-          // 2. Transform ONLY dirty notes
           const supabaseNotes = dirtyNotes.map(note =>
             transformToSupabaseNote(note, user.id)
           );
-
-          // 3. Batch upsert
           const { error } = await supabase
             .from('sticky_notes')
-            .upsert(supabaseNotes, {
-              onConflict: 'id',
+            .upsert(supabaseNotes, { onConflict: 'id' });
+          if (error) {
+            // Categorize error
+            const isTransient = isTransientError(error);
+
+            if (isTransient && retryCount < MAX_RETRIES) {
+              // Schedule retry with exponential backoff
+              const delay = BASE_DELAY_MS * Math.pow(2, retryCount);
+              console.log(`⏳ Retry ${retryCount + 1}/${MAX_RETRIES} in ${delay}ms`);
+
+              set({
+                syncState: 'error',
+                retryCount: retryCount + 1,
+                lastError: {
+                  message: error.message,
+                  code: error.code,
+                  timestamp: new Date(),
+                  noteIds: dirtyNotes.map(n => n.id)
+                }
+              });
+
+              // Schedule retry
+              setTimeout(() => {
+                get().syncToSupabase();
+              }, delay);
+
+              return;
+            }
+
+            // Permanent error or max retries reached
+            console.error('❌ Sync failed permanently:', error);
+            set({
+              syncState: 'error',
+              lastError: {
+                message: error.message,
+                code: error.code,
+                timestamp: new Date(),
+                noteIds: dirtyNotes.map(n => n.id)
+              }
             });
 
-          if (error) {
-            console.error('Error syncing notes:', error);
-            console.log(`sync failed: syncing -> error`);
-            set({ syncState: 'error' });
+            // TODO: Show user notification
             return;
           }
-
-          console.log(`✅ Synced ${dirtyNotes.length} dirty notes to Supabase`);
-          console.log(`sync complete: syncing -> idle`);
-
-          // 4. Clear dirty flags on success
+          // Success - reset retry count
+          console.log(`✅ Synced ${dirtyNotes.length} notes`);
           set({
             syncState: 'idle',
             lastSyncedAt: new Date(),
-            dirtyNoteIds: new Set(), // Clear dirty set
+            dirtyNoteIds: new Set(),
+            retryCount: 0,
+            lastError: null
           });
-        } catch (error) {
-          console.error('Failed to sync notes to Supabase:', error);
-          console.log(`sync failed: syncing -> error`);
-          set({ syncState: 'error' });
+
+        } catch (error: any) {
+          const isTransient = isTransientError(error);
+
+          if (isTransient && retryCount < MAX_RETRIES) {
+            const delay = BASE_DELAY_MS * Math.pow(2, retryCount);
+            console.log(`⏳ Retry ${retryCount + 1}/${MAX_RETRIES} in ${delay}ms`);
+
+            set({
+              syncState: 'error',
+              retryCount: retryCount + 1,
+              lastError: {
+                message: error.message,
+                timestamp: new Date(),
+                noteIds: dirtyNotes.map(n => n.id)
+              }
+            });
+
+            setTimeout(() => {
+              get().syncToSupabase();
+            }, delay);
+          } else {
+            console.error('❌ Sync failed permanently:', error);
+            set({
+              syncState: 'error',
+              lastError: {
+                message: error.message,
+                timestamp: new Date(),
+                noteIds: dirtyNotes.map(n => n.id)
+              }
+            });
+          }
         }
       },
 
@@ -324,7 +419,7 @@ export const useNotesStore = create<NotesStore>()(
       },
 
       deleteNote: async (id) => {
-        const user = getAuthUser();
+        const user = getCurrentUser();
 
         // Optimistic update
         set((state) => ({
@@ -350,8 +445,8 @@ export const useNotesStore = create<NotesStore>()(
             } else {
               console.log('Deleted note from Supabase');
               // Clear from pending deletes
-              set({ syncState: 'idle' })
               set((state) => ({
+                syncState: 'idle',
                 pendingDeletes: new Set([...state.pendingDeletes].filter(pid => pid !== id))
               }));
             }
@@ -361,26 +456,18 @@ export const useNotesStore = create<NotesStore>()(
         }
       },
 
+      // currently firing every time tab switch
+      // on sign in, if there are notes and supabase not loaded, prompt for merge
       handleSignIn: async () => {
         const { notes, hasLoadedFromSupabase } = get();
-        // If there are local notes, pause and prompt
-
-        //TODO: issue is that every tab switch i see that signed in even fires and calls this
-        // need to make sure that this is not called every time
-        // differentiate from guest notes and logged in notes
         if (notes.length > 0 && !hasLoadedFromSupabase) {
           console.log("notes: ", notes);
           console.log(`Found ${notes.length} guest notes. Prompting for merge.`);
+
+          // set guest notes as merge and set merge
           set({
             guestNotes: notes,
             mergeState: 'prompt',
-            // Temporarily clear notes from UI until decision is made (optional, 
-            // but often better to show them OR show empty state. 
-            // Let's keep them visible or clear them? 
-            // Actually, if we clear them, the background might look empty behind the modal.
-            // Let's keep them in 'notes' for now but disable editing?
-            // Or simpler: Clear 'notes' so we don't accidentally sync them if we weren't careful.
-            // Safest: Copy to guestNotes, clear notes, show modal.
             notes: [],
           });
         } else {
@@ -389,8 +476,11 @@ export const useNotesStore = create<NotesStore>()(
         }
       },
 
+
+      // user confirms merge
+      // merge guest notes to supabase
       confirmMerge: async () => {
-        const user = getAuthUser();
+        const user = getCurrentUser();
         const { guestNotes } = get();
 
         if (!user || guestNotes.length === 0) {
@@ -468,7 +558,7 @@ export const useNotesStore = create<NotesStore>()(
     {
       name: "sticky-notes",
       partialize: (state) => {
-        const user = getAuthUser();
+        const user = getCurrentUser();
 
         // If authenticated, don't persist notes (Supabase is source of truth)
         if (user) {
