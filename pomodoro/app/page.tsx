@@ -115,7 +115,7 @@ export default function Home() {
     console.log("user changed: ", user);
     console.log("session changed: ", session);
     console.log("isLoading changed: ", isLoading);
-  }, [user]);
+  }, [user, isLoading, session]);
 
   const applyTheme = (themeIndex: number) => {
     const theme = theme1[themeIndex];

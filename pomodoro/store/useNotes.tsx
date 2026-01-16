@@ -5,6 +5,7 @@ import type { CanvasPath } from "react-sketch-canvas";
 import { JSONContent } from '@tiptap/core';
 import type { Tables } from "@/types/supabase";
 import { getCurrentUser } from "@/lib/auth-helpers";
+import { telemetry } from "@/lib/telemetry";
 
 export type StickyNote = {
   id: string;
@@ -181,6 +182,19 @@ export const useNotesStore = create<NotesStore>()(
           return;
         }
 
+        // 2. Conflict Guard: If we have local notes that haven't been synced/merged, handling them takes priority
+        const { notes, hasLoadedFromSupabase, mergeState } = get();
+        const hasGuestNotes = notes.length > 0 && !hasLoadedFromSupabase;
+
+        if (hasGuestNotes) {
+          console.log("Found guest notes during load attempt. Aborting load to prompt merge.");
+          // If not already prompting, trigger the prompt logic
+          if (mergeState === 'idle') {
+            get().handleSignIn();
+          }
+          return;
+        }
+
         // 2. Race guard check
         if (get().isFetchingFromSupabase) {
           console.log('⏭️  Fetch already in progress, skipping');
@@ -273,8 +287,10 @@ export const useNotesStore = create<NotesStore>()(
 
       // if not network error, show error
       syncToSupabase: async () => {
+        const timer = telemetry.startTimer('notes.sync');
         const user = getCurrentUser();
         if (!user) {
+          telemetry.track('notes.sync.skipped', { reason: 'no_user' });
           console.log('No user, skipping Supabase sync');
           return;
         }
@@ -282,9 +298,15 @@ export const useNotesStore = create<NotesStore>()(
         const { notes, dirtyNoteIds, retryCount } = get();
         const dirtyNotes = notes.filter(note => dirtyNoteIds.has(note.id));
         if (dirtyNotes.length === 0) {
+          telemetry.track('notes.sync.skipped', { reason: 'no_dirty_notes' });
           console.log('No dirty notes to sync');
           return;
         }
+
+        telemetry.track('notes.sync.started', {
+          noteCount: dirtyNotes.length,
+          retryCount
+        });
         console.log(`Starting sync: ${dirtyNotes.length} notes (attempt ${retryCount + 1})`);
         set({ syncState: 'syncing' });
         try {
@@ -297,10 +319,19 @@ export const useNotesStore = create<NotesStore>()(
           if (error) {
             // Categorize error
             const isTransient = isTransientError(error);
+            timer.end({ success: false, error: error.message });
 
             if (isTransient && retryCount < MAX_RETRIES) {
               // Schedule retry with exponential backoff
               const delay = BASE_DELAY_MS * Math.pow(2, retryCount);
+
+              telemetry.track('notes.sync.retry', {
+                noteCount: dirtyNotes.length,
+                retryCount: retryCount + 1,
+                delay,
+                error: error.message,
+                errorCode: error.code
+              });
               console.log(`⏳ Retry ${retryCount + 1}/${MAX_RETRIES} in ${delay}ms`);
 
               set({
@@ -324,6 +355,15 @@ export const useNotesStore = create<NotesStore>()(
 
             // Permanent error or max retries reached
             console.error('❌ Sync failed permanently:', error);
+
+            telemetry.trackError(error as Error, {
+              context: 'notes.sync',
+              noteCount: dirtyNotes.length,
+              retryCount,
+              isTransient,
+              errorCode: error.code
+            });
+
             set({
               syncState: 'error',
               lastError: {
@@ -339,6 +379,13 @@ export const useNotesStore = create<NotesStore>()(
           }
           // Success - reset retry count
           console.log(`✅ Synced ${dirtyNotes.length} notes`);
+
+          timer.end({ success: true, noteCount: dirtyNotes.length });
+          telemetry.track('notes.sync.success', {
+            noteCount: dirtyNotes.length,
+            retryCount
+          });
+
           set({
             syncState: 'idle',
             lastSyncedAt: new Date(),
@@ -349,10 +396,18 @@ export const useNotesStore = create<NotesStore>()(
 
         } catch (error: any) {
           const isTransient = isTransientError(error);
+          timer.end({ success: false, error: error.message });
 
           if (isTransient && retryCount < MAX_RETRIES) {
             const delay = BASE_DELAY_MS * Math.pow(2, retryCount);
             console.log(`⏳ Retry ${retryCount + 1}/${MAX_RETRIES} in ${delay}ms`);
+
+            telemetry.track('notes.sync.retry', {
+              noteCount: dirtyNotes.length,
+              retryCount: retryCount + 1,
+              delay,
+              error: error.message
+            });
 
             set({
               syncState: 'error',
@@ -369,6 +424,14 @@ export const useNotesStore = create<NotesStore>()(
             }, delay);
           } else {
             console.error('❌ Sync failed permanently:', error);
+
+            telemetry.trackError(error, {
+              context: 'notes.sync.catch',
+              noteCount: dirtyNotes.length,
+              retryCount,
+              isTransient
+            });
+
             set({
               syncState: 'error',
               lastError: {
@@ -421,6 +484,10 @@ export const useNotesStore = create<NotesStore>()(
       deleteNote: async (id) => {
         const user = getCurrentUser();
 
+        // Capture state BEFORE optimistic update for rollback
+        const notesBeforeDelete = get().notes;
+        const deletedNote = notesBeforeDelete.find(n => n.id === id);
+
         // Optimistic update
         set((state) => ({
           notes: state.notes.filter((note) => note.id !== id),
@@ -433,15 +500,26 @@ export const useNotesStore = create<NotesStore>()(
         // If authenticated, delete from Supabase IMMEDIATE (no debounce)
         if (user) {
           console.log(`Deleting note ${id} immediately...`);
+
           try {
             const { error } = await supabase
               .from('sticky_notes')
               .delete()
               .eq('id', id)
               .eq('user_id', user.id);
+
             if (error) {
               console.error('Error deleting note from Supabase:', error);
-              // Note: We could restore if needed, but for now we log error
+              // Rollback: Restore the note
+              if (deletedNote) {
+                console.log('Rolling back delete due to error');
+                set((state) => ({
+                  notes: [...state.notes, deletedNote],
+                  // Add back to pending deletes if you want to retry, or just clear err
+                  // For now, simpler to just restore state so user can try again
+                }));
+              }
+              throw error; // Re-throw to be caught below
             } else {
               console.log('Deleted note from Supabase');
               // Clear from pending deletes
@@ -452,6 +530,10 @@ export const useNotesStore = create<NotesStore>()(
             }
           } catch (error) {
             console.error('Failed to delete note from Supabase:', error);
+            // Ensure rollback happens if not already handled
+            if (deletedNote && !get().notes.find(n => n.id === id)) {
+              set((state) => ({ notes: [...state.notes, deletedNote] }));
+            }
           }
         }
       },
@@ -459,7 +541,14 @@ export const useNotesStore = create<NotesStore>()(
       // currently firing every time tab switch
       // on sign in, if there are notes and supabase not loaded, prompt for merge
       handleSignIn: async () => {
-        const { notes, hasLoadedFromSupabase } = get();
+        const { notes, hasLoadedFromSupabase, mergeState } = get();
+
+        // Guard: Don't re-trigger if already handling merge
+        if (mergeState === 'prompt') {
+          console.log('Merge already in progress, skipping');
+          return;
+        }
+
         if (notes.length > 0 && !hasLoadedFromSupabase) {
           console.log("notes: ", notes);
           console.log(`Found ${notes.length} guest notes. Prompting for merge.`);

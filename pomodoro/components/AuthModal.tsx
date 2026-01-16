@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal, { ModalSection, ModalDivider } from "./Modal";
 import { Button } from "./Button";
 import { useAuthStore } from "@/store/useAuth";
@@ -21,7 +21,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  
+
   const { signIn, signUp, signInWithGoogle, isLoading, error, clearError } = useAuthStore();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -36,14 +36,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         onClose();
       } else {
         if (password !== confirmPassword) {
-            // Manually setting error in store might be tricky if store doesn't expose a setError, 
-            // but we can use local state or just console error for now if store implies server errors.
-            // However, Looking at useAuthStore, it has an 'error' state but only 'clearError' action.
-            // We'll just throw an error or alert for now, or maybe the store allows handling it gracefully.
-            // Actually, best to just return early and maybe show a local error?
-            // "Password match" is a client validation.
-            alert("Passwords do not match"); 
-            return;
+          // Manually setting error in store might be tricky if store doesn't expose a setError, 
+          // but we can use local state or just console error for now if store implies server errors.
+          // However, Looking at useAuthStore, it has an 'error' state but only 'clearError' action.
+          // We'll just throw an error or alert for now, or maybe the store allows handling it gracefully.
+          // Actually, best to just return early and maybe show a local error?
+          // "Password match" is a client validation.
+          alert("Passwords do not match");
+          return;
         }
         await signUp(email, password, firstName, lastName);
         setSuccessMessage("Please check your email to confirm your account.");
@@ -55,10 +55,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
   const handleGoogleSignIn = async () => {
     try {
-        await signInWithGoogle();
-        // Redirect usually happens here, so onClose might not be needed immediately
+      await signInWithGoogle();
+      // Redirect usually happens here, so onClose might not be needed immediately
     } catch (err) {
-        // Error handled in store
+      // Error handled in store
     }
   };
 
@@ -67,6 +67,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     clearError();
     setSuccessMessage(null);
   };
+
+  useEffect(() => {
+    console.log("isLoading changed: ", isLoading);
+  }, [isLoading]);
 
   return (
     <Modal
@@ -79,26 +83,26 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         {mode === "signup" && (
           <div className="flex gap-2">
             <div className="relative flex-1">
-                <IoPersonOutline className="absolute left-3 top-1/2 -translate-y-1/2 text-text/50" />
-                <input
+              <IoPersonOutline className="absolute left-3 top-1/2 -translate-y-1/2 text-text/50" />
+              <input
                 type="text"
                 placeholder="First Name"
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-white/30 transition-colors text-text placeholder:text-text/30"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 required
-                />
+              />
             </div>
             <div className="relative flex-1">
-                <IoPersonOutline className="absolute left-3 top-1/2 -translate-y-1/2 text-text/50" />
-                <input
+              <IoPersonOutline className="absolute left-3 top-1/2 -translate-y-1/2 text-text/50" />
+              <input
                 type="text"
                 placeholder="Last Name"
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-white/30 transition-colors text-text placeholder:text-text/30"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 required
-                />
+              />
             </div>
           </div>
         )}
@@ -129,30 +133,30 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         </div>
 
         {mode === "signup" && (
-            <div className="relative">
+          <div className="relative">
             <IoLockClosedOutline className="absolute left-3 top-1/2 -translate-y-1/2 text-text/50" />
             <input
-                type="password"
-                placeholder="Confirm Password"
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-white/30 transition-colors text-text placeholder:text-text/30"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={6}
+              type="password"
+              placeholder="Confirm Password"
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-white/30 transition-colors text-text placeholder:text-text/30"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
             />
-            </div>
+          </div>
         )}
 
         {error && (
-            <div className="text-red-400 text-sm text-center bg-red-400/10 py-2 rounded-lg">
-                {error}
-            </div>
+          <div className="text-red-400 text-sm text-center bg-red-400/10 py-2 rounded-lg">
+            {error}
+          </div>
         )}
-        
+
         {successMessage && (
-            <div className="text-green-400 text-sm text-center bg-green-400/10 py-2 rounded-lg">
-                {successMessage}
-            </div>
+          <div className="text-green-400 text-sm text-center bg-green-400/10 py-2 rounded-lg">
+            {successMessage}
+          </div>
         )}
 
         <Button

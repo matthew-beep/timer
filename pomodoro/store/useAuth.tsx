@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { createOrGetProfile } from '@/lib/createProfile';
 import type { User, Session, AuthError } from '@supabase/supabase-js';
 import type { Tables } from '@/types/supabase';
+import { telemetry } from '@/lib/telemetry';
 
 
 
@@ -22,7 +23,7 @@ interface AuthStore {
   signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
-  initialize: () => void;
+  initialize: () => Promise<void>;
   clearError: () => void;
   loadProfile: () => Promise<void>;
 }
@@ -36,7 +37,7 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       session: null,
       profile: null,
-      isLoading: true,
+      isLoading: false,
       error: null,
       isInitialized: false,
       isLoadingProfile: false,
@@ -52,6 +53,9 @@ export const useAuthStore = create<AuthStore>()(
           return;
         }
 
+        const timer = telemetry.startTimer('auth.profile.load');
+        telemetry.track('auth.profile.load.started');
+
         try {
           console.log("loading profile from load profile");
           set({ isLoadingProfile: true });
@@ -62,39 +66,55 @@ export const useAuthStore = create<AuthStore>()(
             profile,
             isLoadingProfile: false
           });
+
+          timer.end({ success: true });
+          telemetry.track('auth.profile.load.success');
           console.log('✅ Profile loaded');
 
         } catch (error) {
+          timer.end({ success: false, error: (error as Error).message });
+          telemetry.trackError(error as Error, { context: 'auth.profile.load' });
           console.error('Failed to load profile:', error);
-          set({ isLoadingProfile: false });
+          set({
+            isLoadingProfile: false,
+            error: 'Failed to load profile'
+          });
         }
       },
 
-      initialize: () => {
-
-        // Guard against multiple initializations
-        if (get().isInitialized) {
+      initialize: async () => {
+        // Guard against multiple initializations or if already loading
+        if (get().isInitialized || get().isLoading) {
           return;
         }
 
         console.log('Initializing auth store...');
-        set({ isInitialized: true });
+        set({ isLoading: true });
 
-        // Get initial session
-        supabase.auth.getSession().then(async ({ data: { session } }) => {
+        try {
+          // Get initial session
+          const { data: { session } } = await supabase.auth.getSession();
+
           set({
             session,
             user: session?.user ?? null,
-            isLoading: false,
           });
 
           if (session?.user) {
             await get().loadProfile();
           }
-        });
+        } catch (error) {
+          console.error('Auth initialization error:', error);
+        } finally {
+          console.log('🔓 Init finally block - setting loading: false');
+          set({ isInitialized: true, isLoading: false });
+        }
       },
 
       signIn: async (email: string, password: string) => {
+        const timer = telemetry.startTimer('auth.sign_in');
+        telemetry.track('auth.sign_in.started');
+
         try {
           set({ isLoading: true, error: null });
 
@@ -105,9 +125,13 @@ export const useAuthStore = create<AuthStore>()(
 
           if (error) throw error;
 
-          // Let onAuthStateChange handle the rest
+          timer.end({ success: true });
+          telemetry.track('auth.sign_in.success');
 
         } catch (error) {
+          timer.end({ success: false, error: (error as Error).message });
+          telemetry.trackError(error as Error, { context: 'auth.sign_in' });
+
           const authError = error as AuthError;
           set({
             error: authError.message || 'Failed to sign in',
@@ -120,6 +144,9 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       signUp: async (email: string, password: string, firstName: string, lastName: string) => {
+        const timer = telemetry.startTimer('auth.sign_up');
+        telemetry.track('auth.sign_up.started');
+
         try {
           set({ isLoading: true, error: null });
 
@@ -134,10 +161,15 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           if (error) throw error;
+
+          timer.end({ success: true });
+          telemetry.track('auth.sign_up.success');
           console.log("Sign up data:", data);
-          // Let onAuthStateChange handle the rest
 
         } catch (error) {
+          timer.end({ success: false, error: (error as Error).message });
+          telemetry.trackError(error as Error, { context: 'auth.sign_up' });
+
           const authError = error as AuthError;
           set({
             error: authError.message || 'Failed to sign up',
@@ -148,10 +180,12 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       signInWithGoogle: async () => {
+        console.log('🔵 signInWithGoogle called');
         try {
           set({ isLoading: true, error: null });
 
           const redirectUrl = `${window.location.origin}/auth/callback`;
+          console.log('Redirecting to:', redirectUrl);
 
           const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
@@ -172,6 +206,9 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       signOut: async () => {
+        const timer = telemetry.startTimer('auth.sign_out');
+        telemetry.track('auth.sign_out.started');
+
         try {
           set({ isLoading: true, error: null });
           console.log("Signing out...");
@@ -180,9 +217,14 @@ export const useAuthStore = create<AuthStore>()(
 
           if (error) throw error;
 
+          timer.end({ success: true });
+          telemetry.track('auth.sign_out.success');
           console.log("Sign out complete - auth state change will update store");
 
         } catch (error) {
+          timer.end({ success: false, error: (error as Error).message });
+          telemetry.trackError(error as Error, { context: 'auth.sign_out' });
+
           console.error("Sign out error:", error);
           const authError = error as AuthError;
           set({
@@ -201,7 +243,8 @@ export const useAuthStore = create<AuthStore>()(
     {
       name: 'auth-storage',
       partialize: (state) => ({
-        user: state.user ? { id: state.user.id } as User : null,
+        // Don't persist user - let initialize() fetch it fresh from Supabase
+        // user: state.user ? { id: state.user.id } as User : null,
         isInitialized: false,
         isLoadingProfile: false,
       }),

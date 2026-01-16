@@ -1,4 +1,4 @@
-import { getCurrentUser } from './auth-helpers';
+import { getCurrentUser, getCurrentSession } from './auth-helpers';
 
 type TelemetryEvent = {
     event: string;
@@ -25,16 +25,16 @@ class Telemetry {
     }
     track(event: string, properties?: Record<string, any>) {
         const user = getCurrentUser();
+        const session = getCurrentSession();
 
         const payload: TelemetryEvent = {
             event,
             properties,
-            userId: user?.id,
             timestamp: Date.now()
         };
         // Always log in development
         if (process.env.NODE_ENV === 'development') {
-            console.log('📊 Telemetry:', payload);
+            console.log('📊 Telemetry:', { ...payload, userId: user?.id });
         }
         if (!this.enabled) return;
         // Send to analytics service (PostHog, Mixpanel, etc.)
@@ -46,9 +46,16 @@ class Telemetry {
             });
         }
         // Send to your backend
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json'
+        };
+        if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+        }
+
         fetch('/api/telemetry', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers,
             body: JSON.stringify(payload)
         }).catch(err => {
             // Silent fail - don't break app for telemetry
