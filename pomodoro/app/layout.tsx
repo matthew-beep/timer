@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Work_Sans, Cormorant_Garamond, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
+import AuthProvider from "@/providers/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html 
-      lang="en" 
+    <html
+      lang="en"
       className={`
         ${geistSans.variable} 
         ${geistMono.variable} 
@@ -51,9 +52,11 @@ export default function RootLayout({
         ${workSans.variable} 
         ${cormorantGaramond.variable}
       `}
-    > 
+    >
       <body className="antialiased">
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

@@ -59,7 +59,7 @@ export default function AccountButton({ onSignInClick }: AccountButtonProps) {
             className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-cardBg backdrop-blur-md border border-border shadow-xl z-50 text-text"
           >
             <div>
-              <div className="flex justify-end border-2">
+              <div className="flex justify-end">
                 <Button
                   variant="plain"
                   className="flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-red-300 hover:text-red-200"

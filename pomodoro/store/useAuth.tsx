@@ -2,14 +2,20 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '@/lib/supabase';
 import { createOrGetProfile } from '@/lib/createProfile';
-import type { User, Session } from '@supabase/supabase-js';
+import type { User, Session, AuthError } from '@supabase/supabase-js';
+import type { Tables } from '@/types/supabase';
+
+
 
 interface AuthStore {
   user: User | null;
   session: Session | null;
-  profile: any | null; // Profile from profiles table
+  profile: Tables<'profiles'> | null; // Profile from profiles table
   isLoading: boolean;
   error: string | null;
+  isInitialized: boolean;
+  isLoadingProfile: boolean; // ← NEW: Guard against duplicate profile loads
+
 
   // Actions
   signIn: (email: string, password: string) => Promise<void>;
@@ -21,6 +27,9 @@ interface AuthStore {
   loadProfile: () => Promise<void>;
 }
 
+
+
+
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
@@ -29,23 +38,48 @@ export const useAuthStore = create<AuthStore>()(
       profile: null,
       isLoading: true,
       error: null,
-
+      isInitialized: false,
+      isLoadingProfile: false,
       loadProfile: async () => {
-        const { user } = get();
+        const { user, isLoadingProfile } = get();
         if (!user) {
           set({ profile: null });
           return;
         }
 
+        if (isLoadingProfile) {
+          console.log('⏭️  Profile load already in progress, skipping');
+          return;
+        }
+
         try {
+          console.log("loading profile from load profile");
+          set({ isLoadingProfile: true });
+
           const profile = await createOrGetProfile(user);
-          set({ profile });
+
+          set({
+            profile,
+            isLoadingProfile: false
+          });
+          console.log('✅ Profile loaded');
+
         } catch (error) {
           console.error('Failed to load profile:', error);
+          set({ isLoadingProfile: false });
         }
       },
 
       initialize: () => {
+
+        // Guard against multiple initializations
+        if (get().isInitialized) {
+          return;
+        }
+
+        console.log('Initializing auth store...');
+        set({ isInitialized: true });
+
         // Get initial session
         supabase.auth.getSession().then(async ({ data: { session } }) => {
           set({
@@ -56,43 +90,6 @@ export const useAuthStore = create<AuthStore>()(
 
           if (session?.user) {
             await get().loadProfile();
-            const { useNotesStore } = await import('./useNotes');
-            await useNotesStore.getState().initialize();
-          } else {
-            const { useNotesStore } = await import('./useNotes');
-            useNotesStore.getState().initialize();
-          }
-        });
-
-        // Listen for auth state changes (keep it synchronous!)
-        supabase.auth.onAuthStateChange((event, session) => {
-          console.log('Auth state changed:', event, session?.user?.email);
-
-          // Update auth state synchronously
-          set({
-            session,
-            user: session?.user ?? null,
-            isLoading: false,
-          });
-
-          // Handle side effects in background (non-blocking)
-          if (event === 'SIGNED_IN' && session?.user) {
-            console.log('User signed in, loading data...');
-            get().loadProfile();
-            import('./useNotes').then(({ useNotesStore }) => {
-              // Use handleSignIn to check for guest notes merge
-
-              console.log("event found -> signed in, calling handle sign in")
-              useNotesStore.getState().handleSignIn();
-            });
-          } else if (event === 'SIGNED_OUT') {
-            console.log('User signed out, clearing data...');
-            set({ profile: null });
-            import('./useNotes').then(({ useNotesStore }) => {
-              useNotesStore.setState({ notes: [] }); //TODO: is this the flow we want? clearing our notes on sign out?
-            });
-          } else if (event === 'TOKEN_REFRESHED') {
-            set({ session });
           }
         });
       },
@@ -110,9 +107,10 @@ export const useAuthStore = create<AuthStore>()(
 
           // Let onAuthStateChange handle the rest
 
-        } catch (error: any) {
+        } catch (error) {
+          const authError = error as AuthError;
           set({
-            error: error.message || 'Failed to sign in',
+            error: authError.message || 'Failed to sign in',
             isLoading: false,
           });
           throw error;
@@ -137,9 +135,10 @@ export const useAuthStore = create<AuthStore>()(
           console.log("Sign up data:", data);
           // Let onAuthStateChange handle the rest
 
-        } catch (error: any) {
+        } catch (error) {
+          const authError = error as AuthError;
           set({
-            error: error.message || 'Failed to sign up',
+            error: authError.message || 'Failed to sign up',
             isLoading: false,
           });
           throw error;
@@ -160,9 +159,10 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           if (error) throw error;
-        } catch (error: any) {
+        } catch (error) {
+          const authError = error as AuthError;
           set({
-            error: error.message || 'Failed to sign in with Google',
+            error: authError.message || 'Failed to sign in with Google',
             isLoading: false,
           });
           throw error;
@@ -180,10 +180,11 @@ export const useAuthStore = create<AuthStore>()(
 
           console.log("Sign out complete - auth state change will update store");
 
-        } catch (error: any) {
+        } catch (error) {
           console.error("Sign out error:", error);
+          const authError = error as AuthError;
           set({
-            error: error.message || 'Failed to sign out',
+            error: authError.message || 'Failed to sign out',
             isLoading: false,
           });
           throw error;
@@ -196,11 +197,10 @@ export const useAuthStore = create<AuthStore>()(
       name: 'auth-storage',
       partialize: (state) => ({
         user: state.user ? { id: state.user.id } as User : null,
+        isInitialized: false,
+        isLoadingProfile: false,
       }),
     }
   )
 );
 
-if (typeof window !== 'undefined') {
-  useAuthStore.getState().initialize();
-}

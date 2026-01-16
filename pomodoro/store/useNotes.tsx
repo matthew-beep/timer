@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { supabase } from "@/lib/supabase";
 import type { CanvasPath } from "react-sketch-canvas";
 import { JSONContent } from '@tiptap/core';
+import type { Tables } from "@/types/supabase";
 
 // Helper to get auth user without circular dependency
 const getAuthUser = () => {
@@ -45,8 +46,6 @@ type NotesStore = {
   updateNote: (id: string, updates: Partial<StickyNote>) => Promise<void>;
   deleteNote: (id: string) => Promise<void>;
   setActiveNote: (id: string) => void;
-  noteWidth: number;
-  noteHeight: number;
   bringNoteToFront: (id: string, z: number) => void;
   activeNoteId?: string;
   viewMode: "list" | "grid";
@@ -58,6 +57,8 @@ type NotesStore = {
   retrySync: () => Promise<void>;
   queueSync: () => void;
   initialize: () => Promise<void>;
+  hasLoadedFromSupabase: boolean;
+  isFetchingFromSupabase: boolean; // Race guard
 
   // Merge flow
   mergeState: 'idle' | 'prompt';
@@ -71,8 +72,11 @@ type NotesStore = {
 const SYNC_DEBOUNCE_MS = 500;
 let syncTimeout: ReturnType<typeof setTimeout> | null = null;
 
+export const DEFAULT_NOTE_WIDTH = 300;
+export const DEFAULT_NOTE_HEIGHT = 300;
+
 // Transform Supabase row to app format
-const transformSupabaseNote = (row: any): StickyNote => ({
+const transformSupabaseNote = (row: Tables<'sticky_notes'>): StickyNote => ({
   id: row.id,
   x: row.x,
   y: row.y,
@@ -81,11 +85,11 @@ const transformSupabaseNote = (row: any): StickyNote => ({
   zIndex: row.z_index,
   text: row.text as JSONContent,
   color: row.color,
-  mode: row.mode || 'text',
-  paths: row.paths || [],
-  inlineSvg: row.inline_svg || '',
-  dateCreated: row.date_created,
-  lastEdited: row.last_edited,
+  mode: (row.mode as "draw" | "text") || 'text',
+  paths: (row.paths as unknown as CanvasPath[]) || [],
+  inlineSvg: row.inline_svg || undefined,
+  dateCreated: row.date_created || new Date().toISOString(),
+  lastEdited: row.last_edited || new Date().toISOString(),
 });
 
 // Transform app note to Supabase format
@@ -117,10 +121,9 @@ export const useNotesStore = create<NotesStore>()(
       pendingDeletes: new Set(),
       mergeState: 'idle',
       guestNotes: [],
-      noteWidth: 300,
-      noteHeight: 300,
       viewMode: "grid",
-
+      hasLoadedFromSupabase: false,
+      isFetchingFromSupabase: false,
       updateViewMode: (mode) => set({ viewMode: mode }),
       setActiveNote: (id) => set({ activeNoteId: id }),
 
@@ -138,13 +141,23 @@ export const useNotesStore = create<NotesStore>()(
 
       loadFromSupabase: async () => {
         const user = getAuthUser();
+        // 1. Check user
         if (!user) {
           console.log('No user, skipping Supabase load');
           return;
         }
 
+        // 2. Race guard check
+        if (get().isFetchingFromSupabase) {
+          console.log('⏭️  Fetch already in progress, skipping');
+          return;
+        }
+
         try {
           console.log('Loading notes from Supabase...');
+          // 3. Set flag
+          set({ isFetchingFromSupabase: true });
+
           const { data, error } = await supabase
             .from('sticky_notes')
             .select('*')
@@ -153,7 +166,8 @@ export const useNotesStore = create<NotesStore>()(
 
           if (error) {
             console.error('Error loading notes:', error);
-            set({ syncState: 'error' });
+            // 4. Reset flag on error
+            set({ syncState: 'error', isFetchingFromSupabase: false });
             return;
           }
 
@@ -162,14 +176,17 @@ export const useNotesStore = create<NotesStore>()(
           console.log(`Loaded ${notes.length} notes from Supabase`);
           set({
             notes,
+            hasLoadedFromSupabase: true,
             lastSyncedAt: new Date(),
             syncState: 'idle',
             dirtyNoteIds: new Set(), // Clear dirty flags on fresh load
             pendingDeletes: new Set(),
+            isFetchingFromSupabase: false, // 4. Reset flag on success
           });
         } catch (error) {
           console.error('Failed to load notes from Supabase:', error);
-          set({ syncState: 'error' });
+          // 4. Reset flag on catch
+          set({ syncState: 'error', isFetchingFromSupabase: false });
         }
       },
 
@@ -345,13 +362,13 @@ export const useNotesStore = create<NotesStore>()(
       },
 
       handleSignIn: async () => {
-        const { notes } = get();
+        const { notes, hasLoadedFromSupabase } = get();
         // If there are local notes, pause and prompt
 
         //TODO: issue is that every tab switch i see that signed in even fires and calls this
         // need to make sure that this is not called every time
         // differentiate from guest notes and logged in notes
-        if (notes.length > 0) {
+        if (notes.length > 0 && !hasLoadedFromSupabase) {
           console.log("notes: ", notes);
           console.log(`Found ${notes.length} guest notes. Prompting for merge.`);
           set({
@@ -457,22 +474,19 @@ export const useNotesStore = create<NotesStore>()(
         if (user) {
           return {
             notes: [],
-            noteWidth: state.noteWidth,
-            noteHeight: state.noteHeight,
             viewMode: state.viewMode,
-            // Don't persist dirty/pending/mergeState
+            hasLoadedFromSupabase: true
+            // Don't persist dirty/pending/mergeState/isFetching
           };
         }
 
-        // If guest, persist everything EXCEPT dirty/pending (local only)
+        // If guest, persist everything EXCEPT dirty/pending/isFetching (local only)
         return {
           notes: state.notes,
-          noteWidth: state.noteWidth,
-          noteHeight: state.noteHeight,
           viewMode: state.viewMode,
+          hasLoadedFromSupabase: false
         };
       },
     }
   )
 );
-

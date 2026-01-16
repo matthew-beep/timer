@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNotesStore } from '@/store/useNotes';
+import { useNotesStore, DEFAULT_NOTE_WIDTH, DEFAULT_NOTE_HEIGHT } from '@/store/useNotes';
 import { Button } from './Button';
 import { v4 as uuidv4 } from 'uuid';
 import { IoSettingsOutline, IoAddOutline, IoPersonOutline } from 'react-icons/io5';
@@ -15,8 +15,6 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
 
     const addNote = useNotesStore((s) => s.addNote);
     const notes = useNotesStore((s) => s.notes);
-    const noteWidth = useNotesStore((s) => s.noteWidth);
-    const noteHeight = useNotesStore((s) => s.noteHeight);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const syncState = useNotesStore((s) => s.syncState);
 
@@ -33,7 +31,7 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
             ? Math.max(...notes.map(n => n.zIndex))
             : 0;
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: workColor, zIndex: maxZ + 1, width: noteWidth, height: noteHeight, mode: "text", dateCreated: now, lastEdited: now });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: workColor, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now });
     }
 
     return (
