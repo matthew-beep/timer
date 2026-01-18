@@ -157,6 +157,8 @@ export const useAuthStore = create<AuthStore>()(
               data: {
                 full_name: `${firstName} ${lastName}`,
               },
+
+              emailRedirectTo: `${window.location.origin}/auth/confirmed`,
             },
           });
 

@@ -117,6 +117,7 @@ export default function Home() {
     console.log("isLoading changed: ", isLoading);
   }, [user, isLoading, session]);
 
+  /*
   const applyTheme = (themeIndex: number) => {
     const theme = theme1[themeIndex];
     console.log("gradient object: ", theme);
@@ -155,6 +156,8 @@ export default function Home() {
 
   }, [selectedGradient, backgroundMode]);
 
+  /*
+
   const applyColorTheme = (themeMode: 'light' | 'dark') => {
     const currentTheme = themes[themeMode];
     const root = document.documentElement;
@@ -168,7 +171,7 @@ export default function Home() {
     applyColorTheme(colorTheme);
     console.log("switching mode: ", colorTheme);
 
-  }, [colorTheme]);
+  }, [colorTheme]);*/
 
 
 
@@ -176,10 +179,7 @@ export default function Home() {
 
 
   return (
-    <div
-      className={`font-serif h-screen flex flex-col text-white ${backgroundMode === "mesh" ? "gradient-2" : ""}`}
-    >
-      <BackgroundRenderer />
+    <>
       <Header showSettings={showSettings} setShowSettings={setShowSettings} setShowAuthModal={setShowAuthModal} showAuthModal={showAuthModal} />
       <div className="relative h-full">
         <NotesContainer />
@@ -196,11 +196,11 @@ export default function Home() {
 
         </div>
 
-        <Overlay isOpen={showSettings} onClose={() => setShowSettings(false)}>
+        <Overlay isOpen={showSettings} onClose={() => setShowSettings(false)} slide="right">
           <Settings showSettings={showSettings} setShowSettings={setShowSettings} />
         </Overlay>
 
-        <Overlay isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} blur="xl">
+        <Overlay isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} blur="xl" slide="top">
           <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
         </Overlay>
 
@@ -210,6 +210,6 @@ export default function Home() {
 
         <ProgressBar />
       </div>
-    </div>
+    </>
   );
 }

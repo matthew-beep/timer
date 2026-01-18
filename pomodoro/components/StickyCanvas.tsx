@@ -12,7 +12,8 @@ import { RxEraser } from "react-icons/rx";
 import StaticCanvas from "./StaticCanvas";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { CiEdit } from "react-icons/ci";
-import { Slider } from "@mui/material";
+import ColorPickerButton from "./ColorPickerButton";
+import StickyCanvasToolbar from "./CanvasMenuBar";
 
 interface StickyCanvasProps {
   id: string;
@@ -29,18 +30,18 @@ interface StickyCanvasProps {
 
 export default function StickyCanvas({
   id = "",
-  paths= [],
+  paths = [],
   inlineSvg = "",
 }: StickyCanvasProps) {
 
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const updateNote = useNotesStore((s) => s.updateNote);
-  const [showModal, setShowModal] = useState<boolean>(false);
   const [editCanvas, setEditCanvas] = useState<boolean>(false);
-  const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");  
+  const [strokeColor, setStrokeColor] = useState<string>("#FFFFFF");
   const [eraserMode, setEraserMode] = useState<boolean>(false);
 
-  useEffect(() => { 
+
+  useEffect(() => {
     if (canvasRef.current && paths.length > 0) {
       canvasRef.current.loadPaths(paths);
     }
@@ -58,8 +59,8 @@ export default function StickyCanvas({
   }, [isActive]);
 */
 
-  const saveEditCanvas = async (editMode:boolean) => {
-    
+  const saveEditCanvas = async (editMode: boolean) => {
+
 
     console.log("saveEditCanvas called with editMode: ", editMode);
     if (editMode) {
@@ -78,27 +79,17 @@ export default function StickyCanvas({
       setEditCanvas(true);
     }
 
-    
+
     //updateNote(id, { paths });
   };
 
-  const undoStroke = () => {
-    if (!canvasRef.current) return;
-    canvasRef.current.undo();
-  }
+  const disableEraser = () => {
+    if (!eraserMode) return;
+    canvasRef.current?.eraseMode(false);
+    setEraserMode(false);
+  };
 
-  const redoStroke = () => {
-    if (!canvasRef.current) return;
-    canvasRef.current.redo();
-  }
-
-  const eraserModeOn = () => {
-    if (!canvasRef.current) return;
-    canvasRef.current.eraseMode(true);
-    setEraserMode(true);
-  }
-
-    const eraserModeOff = () => {
+  const eraserModeOff = () => {
     if (!canvasRef.current) return;
     canvasRef.current.eraseMode(false);
     setEraserMode(false);
@@ -107,92 +98,51 @@ export default function StickyCanvas({
 
 
 
-  
+
   return (
     <div className="w-full h-full relative outline-none overflow-hidden">
 
       {/* Top Bar */}
 
-      <div 
+      <div
         className="h-12 absolute top-0 right-0 width-full flex rounded-full p-1 bg-cardBg m-2 z-10"
-      > 
-        <Button 
-          className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
+      >
+        <Button
+          className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center"
           onClick={() => {
             saveEditCanvas(editCanvas);
             eraserModeOff();
           }}
           variant="plain"
-          >{editCanvas ? <IoCheckmarkOutline size={24} /> : <CiEdit size={24} />}
+        >{editCanvas ? <IoCheckmarkOutline size={24} /> : <CiEdit size={24} />}
         </Button>
       </div>
 
-      {editCanvas ? 
-      <ReactSketchCanvas
-        id={`sticky-canvas-${id}`}
-        ref={canvasRef}
-        strokeWidth={2}
-        strokeColor={strokeColor}
-        style={{ border: "none" }}
-        className={`w-full h-full border-none ${editCanvas ? "pointer-events-auto" : "pointer-events-none"}`}
-        canvasColor="rgba(255, 255, 255, 0)"
-      /> :
+      {editCanvas ?
+        <ReactSketchCanvas
+          id={`sticky-canvas-${id}`}
+          ref={canvasRef}
+          strokeWidth={2}
+          strokeColor={strokeColor}
+          style={{ border: "none" }}
+          className={`w-full h-full border-none ${editCanvas ? "pointer-events-auto" : "pointer-events-none"} cursor-crosshair`}
+          canvasColor="rgba(255, 255, 255, 0)"
+        /> :
 
         <StaticCanvas paths={inlineSvg} />
-      } 
+      }
       {/* Bottom Toolbar */}
 
       {editCanvas &&
-      <motion.div 
-        className="h-12 absolute bottom-0 left-1/2 -translate-x-1/2 flex rounded-full p-1 bg-cardBg mb-1 gap-1"
-        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.3, delay: 0.2 }}
-      
-      > 
-          <input
-            type="color"
-            className="h-10 w-10 border-amber-600 cursor-pointer"
-            value={strokeColor}
-            onChange={(e) => setStrokeColor(e.target.value)}
-            onClick={eraserModeOff}
-          />
-
-          {/* Bottom Toolbar 
-          <Button 
-            className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center relative" 
-            variant="plain"
-            onClick={() => setShowModal(!showModal)}
-            >
-              {showModal && <div onClick={(e) => e.stopPropagation()}className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[#0a1929]/90 rounded-xl flex flex-col items-center w-96"><Slider /></div>}
-              |
-          </Button>
-          */}
-          <div className={`flex items-center gap-1 h-10 w-10 ${eraserMode ? 'bg-white/10 rounded-full' : ''}`}>
-            <Button 
-              className="pointer-events-auto rounded-full h-full w-full flex items-center justify-center" 
-              onClick={eraserMode ? eraserModeOff : eraserModeOn}
-              variant="plain"
-              >
-                <RxEraser size={24} />
-            </Button>
-          </div>
-          <Button 
-            className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
-            onClick={undoStroke}
-            variant="plain"
-            >
-              <CiUndo size={24} />
-          </Button>
-          <Button 
-            className="pointer-events-auto rounded-full h-10 w-10 flex items-center justify-center" 
-            onClick={redoStroke}
-            variant="plain"
-            >
-              <CiRedo size={24} />
-          </Button>
-      </motion.div>
-  }
+        <StickyCanvasToolbar
+          canvasRef={canvasRef}
+          strokeColor={strokeColor}
+          setStrokeColor={setStrokeColor}
+          eraserMode={eraserMode}
+          setEraserMode={setEraserMode}
+          disableEraser={disableEraser}
+        />
+      }
     </div>
   );
 }

@@ -3,6 +3,7 @@ import React from 'react';
 import Overlay from './Overlay';
 import { Button } from './Button';
 import { useNotesStore } from '@/store/useNotes';
+import Modal from '@/components/Modal';
 
 export default function MergeNotesModal() {
     const mergeState = useNotesStore((s) => s.mergeState);
@@ -13,10 +14,10 @@ export default function MergeNotesModal() {
     const isOpen = mergeState === 'prompt';
 
     return (
-        <Overlay isOpen={isOpen} onClose={() => { }} blur="md">
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-xl max-w-md w-full border border-zinc-200 dark:border-zinc-800 pointer-events-auto">
-                <h2 className="text-xl font-bold mb-2 dark:text-white">Unsaved Notes Found</h2>
-                <p className="text-zinc-600 dark:text-zinc-400 mb-6">
+        <Overlay isOpen={isOpen} onClose={() => { }} blur="md" slide='top'>
+            <Modal title="Merge Unsaved Notes" isOpen={isOpen} onClose={() => { }} disableDragging={true} enableResizing={false} centered={true} enableClose={false}>
+                <h2 className="text-xl font-bold mb-2 text-text">Unsaved Notes Found</h2> 
+                <p className="text-text/60 mb-6">
                     You have {guestNotes.length} unsaved notes from your guest session.
                     Would you like to merge them into your account?
                 </p>
@@ -38,7 +39,7 @@ export default function MergeNotesModal() {
                         Discard Local Notes
                     </Button>
                 </div>
-            </div>
+            </Modal>
         </Overlay>
     );
 }

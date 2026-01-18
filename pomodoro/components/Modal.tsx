@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, ReactNode } from "react";
-import Draggable from "react-draggable";
+import { useRef, ReactNode, useState } from "react";
+import { Rnd } from "react-rnd";
 import { IoIosClose } from "react-icons/io";
 import { Button } from "./Button";
 
@@ -11,35 +11,91 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   className?: string;
-  width?: string;
+  width?: string | number;
+  height?: string | number;
+  defaultX?: number;
+  defaultY?: number;
   maxHeight?: string;
+  disableDragging?: boolean;
+  enableResizing?: boolean;
+  centered?: boolean;
+  enableClose?: boolean;
 }
 
-export default function Modal({ 
-  title, 
-  isOpen, 
-  onClose, 
+export default function Modal({
+  title,
+  isOpen,
+  onClose,
   children,
   className = "",
-  width = "w-80",
-  maxHeight = "max-h-[70vh]"
+  width = 320,
+  height,
+  defaultX = 100,
+  defaultY = 100,
+  maxHeight = "max-h-[70vh]",
+  disableDragging = false,
+  enableResizing = true,
+  centered = false,
+  enableClose = true,
 }: ModalProps) {
-  const nodeRef = useRef<HTMLDivElement>(null);
-
   if (!isOpen) return null;
 
+
+  if (centered) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="pointer-events-auto">
+          <div
+            className={`font-sans bg-cardBg backdrop-blur-xs saturate-80 rounded-3xl border border-border shadow-2xl overflow-hidden flex flex-col`}
+            style={{ width: typeof width === 'number' ? `${width}px` : width }}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center px-6 py-4 text-text bg-white/5">
+              <h2 className="text-sm font-medium tracking-wide uppercase">{title}</h2>
+
+              {enableClose && ( 
+                <Button
+                  onClick={onClose}
+                  className="text-sm rounded-full hover:bg-white/10 transition-all"
+                  variant="plain"
+                >
+                  <IoIosClose size={24} />
+                </Button>
+              )}
+            </div>
+
+            {/* Content */}
+            <div className={`flex flex-col gap-6 overflow-y-auto ${maxHeight} py-4 px-6 flex-1`}>
+              {children}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <Draggable 
-      handle=".modal-handle" 
-      nodeRef={nodeRef as React.RefObject<HTMLElement>}
+    <Rnd
+      dragHandleClassName="modal-handle"
+      default={{
+        x: defaultX,
+        y: defaultY,
+        width: typeof width === "number" ? width : parseInt(width as string) || 320,
+        height: height || "auto",
+      }}
+      disableDragging={disableDragging}
+      enableResizing={enableResizing}
+      minWidth={280}
+      bounds="window"
+      className={`z-50 ${className}`}
+
     >
-      <div 
-        ref={nodeRef} 
-        className={`font-sans bg-cardBg backdrop-blur-xs saturate-80 rounded-3xl border border-border shadow-2xl overflow-hidden ${width} ${className}`}
+      <div
+        className={`font-sans bg-cardBg backdrop-blur-xs saturate-80 rounded-3xl border border-border shadow-2xl overflow-hidden h-full flex flex-col`}
       >
         {/* Header */}
-        <div className="modal-handle flex justify-between items-center cursor-move py-3 px-6 text-text bg-white/5 hover:bg-white/10 transition-colors">
-          <h2 className="text-xl font-semibold">{title}</h2>
+        <div className="modal-handle flex justify-between items-center cursor-move px-6 py-4 text-text bg-white/5 hover:bg-white/10 transition-colors">
+          <h2 className="text-sm font-medium tracking-wide uppercase">{title}</h2>
           <Button
             onClick={onClose}
             className="text-sm rounded-full hover:bg-white/10 transition-all"
@@ -50,13 +106,13 @@ export default function Modal({
         </div>
 
         {/* Content */}
-        <div 
-          className={`flex flex-col gap-6 overflow-y-auto ${maxHeight} py-4 px-6`}
-          >
+        <div
+          className={`flex flex-col gap-6 overflow-y-auto ${maxHeight} py-4 px-6 flex-1`}
+        >
           {children}
         </div>
       </div>
-    </Draggable>
+    </Rnd>
   );
 }
 

@@ -92,7 +92,7 @@ export default function MenuBar({ editor }: MenuBarProps) {
   })
 
   return (
-    <div className="h-full bg-[var(--stickyHandle)]">
+    <div className="h-full border-t border-border">
       <div className="flex flex-wrap justify-start gap-1 p-1">
         {options.map((option) => (
           <Tooltip key={option.name} title={option.name.charAt(0).toUpperCase() + option.name.slice(1)}>

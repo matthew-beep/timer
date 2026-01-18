@@ -11,10 +11,16 @@ export default function Timer() {
   const mode = useTimer((s) => s.mode);
   const setMode = useTimer((s) => s.setMode);
   const isRunning = useTimer((s) => s.isRunning);
-  const start = useTimer((s) => s.start);
+
   const audioRef = useRef<HTMLAudioElement>(null)
   const pomodoroCount = useTimer((s) => s.pomodoroCount);
-  const updatePomodoroCount = useTimer((s) => s.updatePomodoroCount);
+
+  const justCompleted = useTimer(s => s.justCompleted);
+  const complete = useTimer(s => s.complete);
+  const clearCompletion = useTimer(s => s.clearCompletion);
+  const start = useTimer(s => s.start);
+
+  const method = useTimer(s => s.method);
 
   const minutes = Math.floor(timeRemaining / 60)
     .toString()
@@ -37,33 +43,25 @@ export default function Timer() {
     };
   }, [timeRemaining, isRunning, mode]);
 
-
-  
   useEffect(() => { 
-    if (timeRemaining <= 0 && !isRunning) { 
+    console.log("Timer method changed to:", method?.name);
+    console.log("mode: ", mode);
+  }, [method, mode]);
+  
+  useEffect(() => {
+    if (!justCompleted) return;
 
-      if (mode === "focus") {
-        updatePomodoroCount(); // No more dependency on 'pomodoroCount'
-      }
+    audioRef.current?.play().catch(console.error);
 
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0
-        audioRef.current.play().catch(err => {
-          console.log('Audio play failed:', err)
-        })
-      }
-      
-    }
-
-  }, [timeRemaining, isRunning, mode, setMode, start, updatePomodoroCount]);
+  }, [justCompleted]);
 
   return (
     <div 
-      className="flex flex-col w-full p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display"
+      className="flex flex-col w-[420px] p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display"
     >
       
       {/* Mode Buttons */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className={`grid ${method && method.name === "Pomodoro" ? "grid-cols-3" : "grid-cols-2"} gap-2 font-sans text-md`}>
         <Button
           variant={mode === "focus" ? "glass" : "plain"}
           onClick={() => mode === "focus" ? null : setMode("focus")}
@@ -71,25 +69,50 @@ export default function Timer() {
         >
           Work
         </Button>
-        <Button
-          variant={mode === "short" ? "glass" : "plain"}
-          onClick={() => mode === "short" ? null : setMode("short")}
-          className="px-4 py-2 rounded-full"
-        >
-          Short Break
-        </Button>
-        <Button
-          variant={mode === "long" ? "glass" : "plain"}
-          onClick={() => mode === "long" ? null : setMode("long")}
-          className="px-4 py-2 rounded-full"
-        >
-          Long Break
-        </Button>
+
+        {method && method.name === "Pomodoro" ? ( 
+         <>
+          <Button
+            variant={mode === "short" ? "glass" : "plain"}
+            onClick={() => mode === "short" ? null : setMode("short")}
+            className="px-4 py-2 rounded-full"
+          >
+            Short
+          </Button>
+
+
+          <Button
+            variant={mode === "long" ? "glass" : "plain"}
+            onClick={() => mode === "long" ? null : setMode("long")}
+            className="px-4 py-2 rounded-full"
+          >
+            Long
+          </Button>
+          </>
+        ) : (
+
+          <Button
+            variant={mode === "break" ? "glass" : "plain"}
+            onClick={() => mode === "break" ? null : setMode("break")}
+            className="px-4 py-2 rounded-full"
+          >
+            Break
+          </Button>
+        )
+        
+        }
+
       </div>
 
       {/* Timer Display */}
       <div className="flex justify-center px-5">
-        <h3 className="text-9xl font-bold tabular-nums tracking-tight text-text">
+        <h3 
+          className="text-9xl font-bold tabular-nums tracking-tight text-text"
+            style={{
+            fontVariantNumeric: "tabular-nums",
+            fontFeatureSettings: "'tnum'",
+          }}
+          >
           {minutes}:{seconds}
         </h3>
       </div>
@@ -110,7 +133,8 @@ export default function Timer() {
           // Call your function here
           // handleAudioComplete();
           // TODO: need to find when 4 pomodoros complete to switch to long break
-          setMode(mode === "focus" ? "short" : "focus");
+          complete();
+          clearCompletion();
           start();
         }}
       />

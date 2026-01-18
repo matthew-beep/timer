@@ -77,7 +77,13 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
       title={mode === "signin" ? "Welcome Back" : "Create Account"}
       isOpen={isOpen}
       onClose={onClose}
-      width="w-96"
+      width={384}
+      defaultX={typeof window !== 'undefined' ? (window.innerWidth - 384) / 2 : 100}
+      defaultY={100}
+      className="margin-auto"
+      disableDragging={true}
+      enableResizing={false}
+      centered={true}
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {mode === "signup" && (
@@ -190,7 +196,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           {mode === "signin" ? "Don't have an account?" : "Already have an account?"}{" "}
           <button
             onClick={toggleMode}
-            className="text-primary hover:text-primary/80 font-medium ml-1 outline-none"
+            className="text-text hover:text-text/80 font-medium ml-1 outline-none cursor-pointer"
           >
             {mode === "signin" ? "Sign Up" : "Log In"}
           </button>

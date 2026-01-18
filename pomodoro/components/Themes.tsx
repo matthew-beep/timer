@@ -39,6 +39,7 @@ export const themes = {
     inputBg: '#1F2A37',
     placeholder: '#89919E',
     stickyHandle: 'rgba(255, 255, 255, 0.05)',
+    stickyBg: 'rgba(17, 25, 40, 0.9)',
     hoverBg: 'rgba(255, 255, 255, 0.1)'
   },
 } as const;

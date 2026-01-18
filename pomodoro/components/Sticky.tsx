@@ -1,22 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Rnd } from "react-rnd";
-import { ReactSketchCanvasRef } from "react-sketch-canvas";
+
 import { IoIosClose } from "react-icons/io";
 import { useNotesStore } from "@/store/useNotes";
 import { Button } from "./Button";
-import type { CanvasPath } from "react-sketch-canvas";
+
 import StickyText from "./StickyText";
 import StickyCanvas from "./StickyCanvas";
 
 import { RxText } from "react-icons/rx";
-import { BiPaint } from "react-icons/bi";
-import { JSONContent } from '@tiptap/core';
 import { motion, AnimatePresence } from "motion/react";
 import { PiDotsThree } from "react-icons/pi";
 import { StickyNote as StickyNoteProps } from "@/store/useNotes";
 import { useThemeStore } from "@/store/useTheme";
+import { LuPenTool } from "react-icons/lu";
+
+const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'];
+
 
 export default function StickyNote({
   id = "",
@@ -89,12 +91,11 @@ export default function StickyNote({
     >
       <AnimatePresence>
         <motion.div
-          className="w-full h-full flex bg-cardBg flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans"
+          className="w-full h-full flex bg-stickyBg flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans border border-white/20"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           style={{
-            border: `1px solid ${color}`,
             scale: scale
           }}
         >
@@ -103,7 +104,7 @@ export default function StickyNote({
           <motion.div
             className={`
             sticky-handle flex justify-between items-center 
-            font-semibold border-b border-white/5 bg-[var(--stickyHandle)] h-12 p-2
+            font-semibold border-b border-white/5 h-12 p-2
           `}
             style={{ cursor: cursor }}
             onMouseEnter={() => setScale(1.05)}
@@ -125,7 +126,7 @@ export default function StickyNote({
                     setDraw(true);
                   }
                 }>
-                <BiPaint size={14} />
+                <LuPenTool size={14} />
               </button>
               <button
                 className={`cursor-pointer w-8 h-full flex items-center justify-center transition-all duration-150 rounded-sm p-1.5 ${mode === 'text' ? 'bg-[var(--hoverBg)] text-text' : 'text-text/40 hover:text-text/70'}`}
@@ -177,3 +178,5 @@ export default function StickyNote({
     </Rnd>
   );
 }
+
+

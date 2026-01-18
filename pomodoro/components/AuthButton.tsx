@@ -56,13 +56,14 @@ export default function AccountButton({ onSignInClick }: AccountButtonProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-cardBg backdrop-blur-md border border-border shadow-xl z-50 text-text"
+            className="absolute right-0 top-full mt-2 w-64 rounded-2xl bg-cardBg backdrop-blur-md border border-border shadow-xl z-50 text-text p-1"
           >
-            <div>
-              <div className="flex justify-end">
+            <div className="flex flex-col">
+              <div className="flex justify-between h-auto px-2 py-1 items-center">
+                <h4 className="font-semibold text-sm font-sans uppercase">Profile</h4>
                 <Button
                   variant="plain"
-                  className="flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-red-300 hover:text-red-200"
+                  className="flex items-center gap-2 p-1 justify-start rounded-full hover:bg-white/10 text-sm transition-colors text-red-300 hover:text-red-200 !hover:text-text"
                   onClick={() => {
                     setIsOpen(false);
                   }}
@@ -71,8 +72,8 @@ export default function AccountButton({ onSignInClick }: AccountButtonProps) {
                 </Button>
               </div>
               <div className="p-2 flex flex-col gap-2">
-                <div className="px-3 py-2 border-b border-white/10">
-                  <p className="font-medium text-sm truncate">{displayName}</p>
+                <div className="py-2 border-b border-white/10">
+                  <p className="text-sm truncate">{displayName}</p>
                   <p className="text-xs text-text/50 truncate">{email}</p>
                 </div>
 

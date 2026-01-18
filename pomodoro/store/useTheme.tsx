@@ -21,11 +21,15 @@ interface ThemeStore {
   updateTheme: (theme: "light" | "dark") => void;
   updateBackgroundMode: (backgroundMode: 'mesh' | 'video') => void;
   updateSelectedBackground: (backgroundIndex: number) => void;
+  _hasHydrated: boolean;
+  setHasHydrated: (hasHydrated: boolean) => void;
 }
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set) => ({
       mode: 'work',
+      _hasHydrated: false,
+      setHasHydrated: (hasHydrated: boolean) => set({ _hasHydrated: hasHydrated }),
       defaultWork: '#00d3f2',
       backgroundMode: 'mesh',
       defaultBreak: '#f6339a',
@@ -45,7 +49,7 @@ export const useThemeStore = create<ThemeStore>()(
         set((state) => ({
           mode: state.mode === 'work' ? 'break' : 'work',
         })
-      ),
+        ),
       updateSelectedGradient: (gradientIndex: number) =>
         set({ selectedGradient: gradientIndex }),
 
@@ -57,9 +61,12 @@ export const useThemeStore = create<ThemeStore>()(
         set({ selectedBackground: backgroundIndex }),
     }),
 
-      
+
     {
       name: 'theme-storage', // unique name for localStorage key
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
