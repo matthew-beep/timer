@@ -6,8 +6,9 @@ import MenuBar from './TextMenuBar'
 import { useNotesStore } from "@/store/useNotes";
 import { JSONContent } from '@tiptap/core';
 import { useEffect } from 'react';
+import StickyBottomBar from '@/components/StickyBottomBar';
 
-const Tiptap = ({ content, id, height }: { content: JSONContent, id: string, height: number }) => {
+const Tiptap = ({ color, onColorChange, content, id, height, showToolbar }: { color: string, onColorChange: (color: string) => void, content: JSONContent, id: string, height: number, showToolbar: boolean }) => {
     const updateNote = useNotesStore((s) => s.updateNote);
     const activeNoteId = useNotesStore(s => s.activeNoteId);
     const activeNote = activeNoteId === id;
@@ -30,7 +31,11 @@ const Tiptap = ({ content, id, height }: { content: JSONContent, id: string, hei
             // You can handle content updates here if needed
             const json: JSONContent = editor.getJSON();
             console.log("updating note content: ", json);
-            updateNote(id, { text: json });
+            console.log("plain text: " + editor.getText());
+            updateNote(id, { 
+                text: json,
+                plainText: editor.getText()
+            });
         }
 
     })
@@ -53,10 +58,15 @@ const Tiptap = ({ content, id, height }: { content: JSONContent, id: string, hei
             </div>
 
             {/* Menu overlay */}
-            {editor && activeNote && height > 250 && (
-                <div className="bottom-0 left-0 w-full z-20 pointer-events-auto">
+            {editor && (
+                <StickyBottomBar
+                    color={color}
+                    onColorChange={onColorChange}
+                    show={showToolbar}
+                    id={id}
+                >
                     <MenuBar editor={editor} />
-                </div>
+                </StickyBottomBar>
             )}
         </div>
     )

@@ -13,6 +13,29 @@ export type Theme = {
   preview: string[];
 };
 
+export const DARK_STICKY_COLORS = [
+  "#111928",
+  "#1C2438", // default dark paper
+  "#3A3320", // soft yellow
+  "#243A2F", // sage green
+  "#243247", // blue gray
+  "#2F2A3F", // muted lavender
+  "#3B2A1E", // warm amber
+  "#3A2328", // soft rose
+];
+
+export const LIGHT_STICKY_COLORS = [
+  '#FFFFFF',
+  "#FAFAF9", // default off-white paper
+  "#FEF3C7", // soft yellow
+  "#ECFDF5", // mint
+  "#EFF6FF", // light blue
+  "#F5F3FF", // lavender
+  "#FFF1E6", // peach
+  "#FFF1F2", // blush
+];
+
+
 
 // lib/themes.ts
 export const themes = {
@@ -26,6 +49,7 @@ export const themes = {
     inputBg: '#FFFFFF',
     placeholder: '#89919E',
     stickyHandle: 'oklch(98.5% 0.002 247.839)',
+    stickyBg: 'rgba(255, 255, 255, 0.9)',
     hoverBg: 'rgba(0, 0, 0, 0.1)'
 
   },

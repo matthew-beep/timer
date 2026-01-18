@@ -54,6 +54,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
         "--inputBg": uiTheme.inputBg,
         "--placeholder": uiTheme.placeholder,
         "--stickyHandle": uiTheme.stickyHandle,
+        "--stickyBg": uiTheme.stickyBg,
         "--hoverBg": uiTheme.hoverBg,
 
 

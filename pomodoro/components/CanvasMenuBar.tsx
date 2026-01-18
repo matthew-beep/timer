@@ -51,12 +51,8 @@ export default function StickyCanvasToolbar({
 
 
     return (
-        <motion.div
-          className="w-full absolute bottom-0 left-1/2 -translate-x-1/2 flex p-1 gap-1 border-t border-border"
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-
+        <div
+          className="w-full flex gap-1"
         >
           <ColorPickerButton 
                 strokeColor={strokeColor} 
@@ -91,6 +87,6 @@ export default function StickyCanvasToolbar({
           >
             <CiRedo size={24} />
           </Button>
-        </motion.div>
+        </div>
     );
 }

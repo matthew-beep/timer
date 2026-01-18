@@ -9,12 +9,18 @@ interface StickyTextProps {
   id: string;
   initialText: JSONContent;
   height: number;
+  color: string;
+  onColorChange: (color: string) => void;
+  showToolbar: boolean;
 }
 
 export default function StickyText({
   id = "",
   initialText = { type: 'doc', content: [{ type: 'text', text: '' }] },
   height,
+  color,
+  onColorChange,
+  showToolbar
 
 }: StickyTextProps) {
   return (
@@ -28,7 +34,7 @@ export default function StickyText({
       placeholder="Enter text..."
     />*/
     <div className="flex-1 min-h-0 pt-3">
-      <Tiptap content={initialText} id={id} height={height} />
+      <Tiptap content={initialText} id={id} height={height} color={color} onColorChange={onColorChange} showToolbar={showToolbar} />
     </div>
 
   );

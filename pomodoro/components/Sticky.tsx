@@ -49,6 +49,10 @@ export default function StickyNote({
   const [currHeight, setCurrHeight] = useState<number>(height);
   const resizeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const handleColorChange = (color: string) => {
+    updateNote(id, { color });
+  };
+
   return (
     <Rnd
       position={{ x, y }}
@@ -91,12 +95,13 @@ export default function StickyNote({
     >
       <AnimatePresence>
         <motion.div
-          className="w-full h-full flex bg-stickyBg flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans border border-white/20"
+          className="w-full h-full flex flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans border border-white/20"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           style={{
-            scale: scale
+            scale: scale,
+            backgroundColor: `${color}CC`,
           }}
         >
 
@@ -167,9 +172,23 @@ export default function StickyNote({
           {/* Content */}
           <div onMouseDown={() => setActiveNote(id)} className="w-full h-full flex">
             {draw ?
-              (<StickyCanvas id={id} color={color} paths={paths} inlineSvg={inlineSvg} />)
+              (<StickyCanvas 
+                id={id} 
+                color={color}
+                paths={paths} 
+                inlineSvg={inlineSvg} 
+                onColorChange={handleColorChange}
+                showToolbar={activeNote && currHeight > 250}
+              />
+              )
               :
-              (<StickyText id={id} initialText={text} height={currHeight} />)
+              (<StickyText 
+                id={id} 
+                initialText={text} 
+                height={currHeight} 
+                color={color} 
+                onColorChange={handleColorChange} 
+                showToolbar={activeNote && currHeight > 250} />)
             }
           </div>
 

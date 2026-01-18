@@ -65,6 +65,7 @@ export type Database = {
           height: number;
           z_index: number;
           text: Record<string, any>; // JSONB
+          plain_text: string;
           color: string;
           mode: 'text' | 'draw';
           paths: Record<string, any> | null; // JSONB
@@ -83,6 +84,7 @@ export type Database = {
           height?: number;
           z_index?: number;
           text?: Record<string, any>;
+          plain_text: string;
           color?: string;
           mode?: 'text' | 'draw';
           paths?: Record<string, any> | null;
@@ -101,6 +103,7 @@ export type Database = {
           height?: number;
           z_index?: number;
           text?: Record<string, any>;
+          plain_text: string;
           color?: string;
           mode?: 'text' | 'draw';
           paths?: Record<string, any> | null;

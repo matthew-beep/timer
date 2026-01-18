@@ -12,6 +12,7 @@ export type StickyNote = {
   x: number;
   y: number;
   text: JSONContent;
+  plainText: string;
   color: string;
   zIndex: number;
   width: number;
@@ -120,6 +121,7 @@ const transformSupabaseNote = (row: Tables<'sticky_notes'>): StickyNote => ({
   mode: (row.mode as "draw" | "text") || 'text',
   paths: (row.paths as unknown as CanvasPath[]) || [],
   inlineSvg: row.inline_svg || undefined,
+  plainText: row.plain_text || '',
   dateCreated: row.date_created || new Date().toISOString(),
   lastEdited: row.last_edited || new Date().toISOString(),
 });
@@ -136,6 +138,7 @@ const transformToSupabaseNote = (note: StickyNote, userId: string) => ({
   text: note.text,
   color: note.color,
   mode: note.mode || 'text',
+  plain_text: note.plainText,
   paths: note.paths || null,
   inline_svg: note.inlineSvg || null,
   date_created: note.dateCreated,

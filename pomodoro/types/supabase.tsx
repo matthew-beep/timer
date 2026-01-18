@@ -78,6 +78,7 @@ export type Database = {
           mode: string
           paths: Json | null
           text: Json
+          plain_text: string
           updated_at: string | null
           user_id: string
           width: number
@@ -96,6 +97,7 @@ export type Database = {
           mode?: string
           paths?: Json | null
           text?: Json
+          plain_text?: string
           updated_at?: string | null
           user_id: string
           width?: number
@@ -114,6 +116,7 @@ export type Database = {
           mode?: string
           paths?: Json | null
           text?: Json
+          plain_text?: string
           updated_at?: string | null
           user_id?: string
           width?: number

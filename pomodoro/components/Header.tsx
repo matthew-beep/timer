@@ -7,6 +7,8 @@ import { useThemeStore } from '@/store/useTheme';
 import { useAuthStore } from '@/store/useAuth';
 import AuthButton from './AuthButton';
 import { motion } from 'framer-motion';
+import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
+
 
 const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
 
@@ -17,6 +19,8 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
     const notes = useNotesStore((s) => s.notes);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const syncState = useNotesStore((s) => s.syncState);
+    const theme = useThemeStore((s) => s.theme);
+    
 
     useEffect(() => {
         console.log("syncState changed:", syncState);
@@ -25,6 +29,7 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
     const workColor = useThemeStore((s) => s.colors.work);
 
     const addSticky = () => {
+        const stickyColor = theme == "dark" ? DARK_STICKY_COLORS[0] : LIGHT_STICKY_COLORS[0];
         const id = uuidv4();
         console.log("add sticky: ", id);
         const lastNoteX = notes.length > 0 ? notes[notes.length - 1].x + 20 : 0;
@@ -34,7 +39,7 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
             ? Math.max(...notes.map(n => n.zIndex))
             : 0;
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, color: workColor, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, plainText: "", color: stickyColor, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now });
     }
     // probably want to debounce the sync menu
     return (

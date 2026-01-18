@@ -17,6 +17,8 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
     });
   }, [notes]);
 
+  const pills = ["All"];
+
   return (
     // Pass nodeRef to Draggable and attach the ref to the actual DOM node child
 
@@ -38,8 +40,17 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
             defaultY={20}
             className='h-10/12 p-0'
           >
-            <ModalSection>
-              <Button variant="plain" className="w-8 h-8 shrink justify-center items-center rounded-md p-1 text-text"><IoAddOutline size={24} /></Button>
+            <ModalSection className='flex flex-row'>
+              <Button variant="plain" className="flex border-2 w-8 h-8 justify-center items-center rounded-full text-text">
+                <IoAddOutline size={16} />
+              </Button>
+              <div className="flex overflow-x-auto">
+                {pills.map((pill) => (
+                  <Button key={pill} variant="plain" className="whitespace-nowrap">
+                    {pill}
+                  </Button>
+                ))}
+              </div>
             </ModalSection>
             <ModalSection className=' w-full overflow-y-auto'>
               {sortedNotes.map((note, index) => (
@@ -53,11 +64,17 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                   height={note.height}
                   width={note.width}
                   text={note.text}
+                  plainText={note.plainText}
                   color={note.color}
                   dateCreated={note.dateCreated}
                   lastEdited={note.lastEdited}
                 />
               ))}
+            </ModalSection>
+            <ModalSection className='flex justify-center'>
+              <Button variant="plain" className="flex w-8 h-8 justify-center items-center rounded-full text-text w-full">
+                Add Note <IoAddOutline size={16} />
+              </Button>
             </ModalSection>
           </Modal>
         </motion.div>

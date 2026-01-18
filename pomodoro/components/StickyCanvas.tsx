@@ -14,11 +14,12 @@ import { IoCheckmarkOutline } from "react-icons/io5";
 import { CiEdit } from "react-icons/ci";
 import ColorPickerButton from "./ColorPickerButton";
 import StickyCanvasToolbar from "./CanvasMenuBar";
+import StickyBottomBar from "./StickyBottomBar";
 
 interface StickyCanvasProps {
   id: string;
   initialText?: string;
-  color?: string;
+  color: string;
   x?: number;
   y?: number;
   width?: number;
@@ -26,12 +27,18 @@ interface StickyCanvasProps {
   mode?: "draw" | "text";
   paths?: CanvasPath[]; // <-- important
   inlineSvg?: string;
+  onColorChange: (color: string) => void;
+  showToolbar: boolean;
+
 }
 
 export default function StickyCanvas({
   id = "",
   paths = [],
   inlineSvg = "",
+  color,
+  onColorChange,
+  showToolbar
 }: StickyCanvasProps) {
 
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
@@ -134,6 +141,13 @@ export default function StickyCanvas({
       {/* Bottom Toolbar */}
 
       {editCanvas &&
+
+    <StickyBottomBar
+        color={color}
+        onColorChange={onColorChange}
+        show={showToolbar}
+        id={id}
+        >
         <StickyCanvasToolbar
           canvasRef={canvasRef}
           strokeColor={strokeColor}
@@ -142,6 +156,7 @@ export default function StickyCanvas({
           setEraserMode={setEraserMode}
           disableEraser={disableEraser}
         />
+      </StickyBottomBar>
       }
     </div>
   );

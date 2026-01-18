@@ -93,7 +93,18 @@ export const useAuthStore = create<AuthStore>()(
 
         try {
           // Get initial session
-          const { data: { session } } = await supabase.auth.getSession();
+          const { data: { session }, error } = await supabase.auth.getSession();
+
+          if (error) {
+            // If it's a refresh token error, throw it so AuthProvider catches it
+            if (error.message.includes('Refresh Token')) {
+                throw error;
+            }
+            console.error('Session error:', error);
+            set({ isLoading: false, isInitialized: true });
+            return;
+          }
+
 
           set({
             session,
