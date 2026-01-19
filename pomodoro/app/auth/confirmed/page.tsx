@@ -4,57 +4,80 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { useThemeStore } from '@/store/useTheme';
 
 export default function ConfirmedPage() {
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const theme = useThemeStore((s) => s.theme);
+  const [errorMessage, setErrorMessage] = useState('');
+
   useEffect(() => {
-    // Check if we have a session (email was confirmed)
-    const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
-      if (session) {
-        console.log('✅ Email confirmed, session exists');
-        setStatus('success');
-        
-        // Notify other tabs
-        localStorage.setItem('email_confirmed', Date.now().toString());
-        
-        // Auto-redirect after showing success
-        setTimeout(() => {
-          router.push('/');
-        }, 3000);
-      } else if (error) {
-        console.error('❌ Session check error:', error);
+    const handleEmailConfirmation = async () => {
+      try {
+        // Check if there's a hash in the URL (Supabase sends tokens in hash)
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const access_token = hashParams.get('access_token');
+        const refresh_token = hashParams.get('refresh_token');
+        const type = hashParams.get('type');
+
+        console.log('Hash params:', { access_token: !!access_token, refresh_token: !!refresh_token, type });
+
+        if (access_token && refresh_token) {
+          // Set the session with the tokens from URL
+          const { data, error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token,
+          });
+
+          if (error) throw error;
+
+          console.log('✅ Session set successfully:', data);
+          setStatus('success');
+
+          // Notify other tabs
+          localStorage.setItem('email_confirmed', Date.now().toString());
+
+          // Redirect after 2 seconds
+          setTimeout(() => {
+            router.push('/');
+          }, 2000);
+        } else {
+          // Check if there's an error in the hash
+          const error = hashParams.get('error');
+          const error_description = hashParams.get('error_description');
+
+          if (error) {
+            throw new Error(error_description || error);
+          }
+
+          // No tokens and no error - maybe they're already signed in?
+          const { data: { session } } = await supabase.auth.getSession();
+          
+          if (session) {
+            console.log('✅ Already has session');
+            setStatus('success');
+            setTimeout(() => {
+              router.push('/');
+            }, 2000);
+          } else {
+            throw new Error('No confirmation tokens found in URL');
+          }
+        }
+      } catch (error) {
+        console.error('❌ Email confirmation error:', error);
         setStatus('error');
+        setErrorMessage((error as Error).message || 'Failed to confirm email');
       }
     };
 
-    checkSession();
-
-    // Also listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        console.log('✅ Signed in via auth state change');
-        setStatus('success');
-        
-        setTimeout(() => {
-          router.push('/');
-        }, 3000);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    handleEmailConfirmation();
   }, [router]);
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Confirming your email...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-text">Confirming your email...</p>
         </div>
       </div>
     );
@@ -62,24 +85,27 @@ export default function ConfirmedPage() {
 
   if (status === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="bg-cardBg p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-border">
           <div className="flex justify-center mb-6">
-            <div className="bg-red-100 rounded-full p-4">
-              <svg className="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-red-500/20 rounded-full p-4">
+              <svg className="w-16 h-16 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+          <h1 className="text-2xl font-bold text-text mb-4">
             Confirmation Failed
           </h1>
-          <p className="text-gray-600 mb-6">
-            There was a problem confirming your email. The link may have expired.
+          <p className="text-text/70 mb-2">
+            {errorMessage || 'There was a problem confirming your email.'}
+          </p>
+          <p className="text-text/50 text-sm mb-6">
+            The link may have expired or already been used.
           </p>
           <button
             onClick={() => router.push('/')}
-            className="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+            className="w-full px-4 py-3 bg-primary text-white rounded-lg hover:opacity-80 transition-opacity font-medium"
           >
             Back to Home
           </button>
@@ -89,26 +115,26 @@ export default function ConfirmedPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">
-      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="bg-cardBg p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-border">
         <div className="flex justify-center mb-6">
-          <div className="bg-green-100 rounded-full p-4 animate-bounce">
-            <svg className="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-green-500/20 rounded-full p-4 animate-bounce">
+            <svg className="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
         
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+        <h1 className="text-3xl font-bold text-text mb-4">
           Welcome! 🎉
         </h1>
         
-        <p className="text-gray-600 mb-2">
+        <p className="text-text/70 mb-2">
           Your email has been confirmed successfully!
         </p>
         
-        <p className="text-sm text-gray-500 mb-8">
-          Redirecting you to the app in 3 seconds...
+        <p className="text-sm text-text/50 mb-8">
+          Redirecting you to the app...
         </p>
         
         <button
