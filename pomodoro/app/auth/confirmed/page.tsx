@@ -24,7 +24,7 @@ export default function ConfirmedPage() {
           // Verify the OTP token
           const { data, error } = await supabase.auth.verifyOtp({
             token_hash,
-            type: type as any, // 'email', 'signup', etc.
+            type: type as 'email', // 'email', 'signup', etc.
           });
 
           if (error) throw error;
