@@ -2,35 +2,34 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export default function ConfirmedPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
-        // Check if there's a hash in the URL (Supabase sends tokens in hash)
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const access_token = hashParams.get('access_token');
-        const refresh_token = hashParams.get('refresh_token');
-        const type = hashParams.get('type');
+        // Get token_hash from URL query params (not hash!)
+        const token_hash = searchParams.get('token_hash');
+        const type = searchParams.get('type');
 
-        console.log('Hash params:', { access_token: !!access_token, refresh_token: !!refresh_token, type });
+        console.log('Token hash from URL:', { token_hash: !!token_hash, type });
 
-        if (access_token && refresh_token) {
-          // Set the session with the tokens from URL
-          const { data, error } = await supabase.auth.setSession({
-            access_token,
-            refresh_token,
+        if (token_hash && type) {
+          // Verify the OTP token
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash,
+            type: type as any, // 'email', 'signup', etc.
           });
 
           if (error) throw error;
 
-          console.log('✅ Session set successfully:', data);
+          console.log('✅ Email verified successfully:', data);
           setStatus('success');
 
           // Notify other tabs
@@ -41,15 +40,7 @@ export default function ConfirmedPage() {
             router.push('/');
           }, 2000);
         } else {
-          // Check if there's an error in the hash
-          const error = hashParams.get('error');
-          const error_description = hashParams.get('error_description');
-
-          if (error) {
-            throw new Error(error_description || error);
-          }
-
-          // No tokens and no error - maybe they're already signed in?
+          // Check if they're already signed in
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session) {
@@ -59,7 +50,7 @@ export default function ConfirmedPage() {
               router.push('/');
             }, 2000);
           } else {
-            throw new Error('No confirmation tokens found in URL');
+            throw new Error('No confirmation token found in URL');
           }
         }
       } catch (error) {
@@ -70,7 +61,7 @@ export default function ConfirmedPage() {
     };
 
     handleEmailConfirmation();
-  }, [router]);
+  }, [router, searchParams]);
 
   if (status === 'loading') {
     return (
