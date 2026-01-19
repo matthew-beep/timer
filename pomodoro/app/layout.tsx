@@ -1,0 +1,66 @@
+
+import type { Metadata } from "next";
+import { Geist, Geist_Mono, Work_Sans, Cormorant_Garamond, DM_Serif_Display } from "next/font/google";
+import "./globals.css";
+import AuthProvider from "@/providers/AuthProvider";
+import ThemeProvider from "@/providers/ThemeProvider";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const dmSerifDisplay = DM_Serif_Display({
+  weight: ["400"],
+  variable: "--font-dm-serif-display",
+  subsets: ["latin"],
+});
+
+const workSans = Work_Sans({
+  variable: "--font-work-sans",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant-garamond",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+export const metadata: Metadata = {
+  title: "Study Space",
+  description: "Work and study with focus and intention.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`
+        ${geistSans.variable} 
+        ${geistMono.variable} 
+        ${dmSerifDisplay.variable} 
+        ${workSans.variable} 
+        ${cormorantGaramond.variable}
+      `}
+    >
+      <body className="antialiased">
+        <AuthProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}

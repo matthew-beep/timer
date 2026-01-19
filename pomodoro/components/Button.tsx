@@ -1,0 +1,53 @@
+"use client";
+
+import clsx from "clsx";
+import { useThemeStore } from "@/store/useTheme";
+import Tooltip from "@mui/material/Tooltip";
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "ghost" | "glass" | "plain" | "glassPlain";
+  isActive?: boolean; // Add this prop
+  tooltip?: string;
+}
+
+export function Button({
+  children,
+  variant = "primary",
+  className,
+  isActive = false,
+  tooltip,
+  ...props
+}: ButtonProps) {
+
+
+  const buttonElement = (
+    <button
+      {...props}
+      className={clsx(
+        "font-medium transition-all duration-150 active:scale-95 select-none cursor-pointer",
+        {
+          "bg-primary text-text hover:bg-button-primary/50": variant === "primary",
+          "bg-zinc-200 text-zinc-900 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-600":
+            variant === "secondary",
+          "bg-transparent text-current hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50":
+            variant === "ghost",
+          "hover:scale-105 text-active bg-active/20 border-active/30 border": variant === "glass",
+          "text-text/50 hover:bg-[var(--hoverBg)] hover:text-text ": variant === "plain" && !isActive,
+          "text-text bg-[var(--hoverBg)]": variant === "plain" && isActive,
+          "hover:scale-105 text-text border-white/10 border bg-cardBg/60 backdrop-blur-md hover:bg-text/20 shadow-md hover:shadow-2xl transition-all duration-150": variant === "glassPlain",
+        },
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
+
+  if (tooltip) {
+    return (<Tooltip title={tooltip} placement="bottom">{buttonElement}</Tooltip>)
+  }
+  return (
+    buttonElement
+  );
+}
+

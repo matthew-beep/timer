@@ -1,0 +1,348 @@
+@import "tailwindcss";
+
+/* globals.css */
+:root {
+  /* Keep ONLY static/default values */
+  --foreground: #171717;
+  --test: #00cda1;
+  --timer-bg: #ffffff;
+  --card: #eaeaea;
+  --button-primary: #586674;
+  --code: #2E2B29;
+
+  /* These will be overridden by ThemeProvider inline styles */
+  /* But we keep defaults for SSR/initial render */
+  --primaryMode: #00d3f2;
+  --work: #00d3f2;
+  --break: #f6339a;
+  --background: #000000;
+  --cardBg: #0a1929;
+  --text: #ffffff;
+  --primary: #00d3f2;
+  --secondary: #f6339a;
+  --border: rgba(0, 0, 0, 0.1);
+  --inputBg: #1F2A37;
+  --placeholder: #6b7280;
+  --stickyHandle: rgba(255, 255, 255, 0.05);
+  --hoverBg: rgba(255, 255, 255, 0.1);
+  --stickyBg: rgba(17, 25, 40, 0.9);
+}
+
+/* Keep your @theme inline, gradient classes, etc. */
+@theme inline {
+
+  --font-display: var(--font-dm-serif-display);
+  --font-body: var(--font-work-sans);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-background: var(--background);
+  --color-cardBg: var(--cardBg);
+  --color-text: var(--text);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-test: var(--test);
+  --color-card: var(--test);
+  --font-sans: var(--font-work-sans);
+  --font-serif: var(--font-dm-serif-display);
+  --font-mono: var(--font-geist-mono);
+  --color-button-primary: var(--button-primary);
+  --color-work: var(--work);
+  --color-code: var(--code);
+  --color-active: var(--primaryMode);
+  --color-inputBg: var(--inputBg);
+  --color-placeholder: var(--placeholder);
+  --color-stickyHandle: var(--stickyHandle);
+  --color-hoverBg: var(--hoverBg);
+  --color-stickyBg: var(--stickyBg);
+}
+
+/*
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}*/
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-work-sans), sans-serif;
+}
+
+input[type="color" i] {
+  border-radius: 50%;
+
+
+  /* Can set padding between outer circle and color swatch for Firefox here;
+   * it doesn't support a color-swarch-wrapper pseudoclass
+   */
+  border-style: solid;
+  border-color: rgb(153, 153, 153);
+}
+
+/* Affects area between outer circle and color swatch. Firefox doesn't have an equivalent. */
+input[type="color" i]::-webkit-color-swatch-wrapper {
+  padding: 1px;
+}
+
+/* Affects the inner circle, i.e. the current color selection */
+input[type="color" i]::-webkit-color-swatch {
+  border-radius: 50%;
+  border: 0px;
+}
+
+input[type="color" i]::-moz-color-swatch {
+  border-radius: 50%;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+
+
+
+/* Styles the whole scrollbar (width/height) */
+::-webkit-scrollbar {
+  width: 8px;
+  /* vertical scrollbar width - made thinner */
+  height: 8px;
+  /* horizontal scrollbar height */
+}
+
+/* Styles the track (background) */
+::-webkit-scrollbar-track {
+  opacity: 0;
+  border-radius: 5px;
+  margin-right: 4px;
+  /* offset from the right */
+}
+
+/* Styles the thumb (draggable handle) */
+::-webkit-scrollbar-thumb {
+  background: #A9A9AB;
+  /* light gray */
+  border-radius: 5px;
+  border-right: 4px solid transparent;
+  /* creates offset from right edge */
+  background-clip: padding-box;
+}
+
+/* Styles the thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #8B8B8D;
+  /* slightly darker on hover */
+  background-clip: padding-box;
+}
+
+
+/* Basic editor styles */
+.tiptap {
+  :first-child {
+    margin-top: 0;
+  }
+
+  color: var(--text);
+
+  /* List styles */
+  ul {
+    padding: 0 1rem;
+    margin: 1.25rem 1rem 1.25rem 0.4rem;
+    list-style-type: disc;
+    color: var(--text);
+
+    li p {
+      margin-top: 0.25em;
+      margin-bottom: 0.25em;
+    }
+  }
+
+  ol {
+    padding: 0 1rem;
+    margin: 1.25rem 1rem 1.25rem 0.4rem;
+    list-style-type: decimal;
+    color: var(--text);
+
+    li p {
+      margin-top: 0.25em;
+      margin-bottom: 0.25em;
+    }
+  }
+
+  /* Heading styles */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 1.1;
+    margin-top: 2.5rem;
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2 {
+    margin-top: 3.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-size: 1rem;
+  }
+
+  /* Code and preformatted text styles */
+  code {
+    background-color: var(--color-code);
+    border-radius: 0.4rem;
+    color: var(--text);
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+  }
+
+  pre {
+    background: var(--black);
+    border-radius: 0.5rem;
+    color: var(--white);
+    font-family: 'JetBrainsMono', monospace;
+    margin: 1.5rem 0;
+    padding: 0.75rem 1rem;
+
+    code {
+      background: none;
+      color: inherit;
+      font-size: 0.8rem;
+      padding: 0;
+    }
+  }
+
+  blockquote {
+    border-left: 3px solid var(--code);
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-2);
+    margin: 2rem 0;
+  }
+}
+
+.ProseMirror {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.glass-plain {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transition: all 150ms;
+}
+
+.gradient-1 {
+  /* Remove opacity: 0 - let it be visible */
+  /* Remove the initial color declarations - they conflict */
+
+  /* Just keep the positioning variables */
+  --x-0: 76%;
+  --y-0: 73%;
+  --y-1: 44%;
+  --x-1: 77%;
+  --x-2: 26%;
+  --y-2: 44%;
+  --y-3: 97%;
+  --x-3: 86%;
+  --x-4: 57%;
+  --y-4: 89%;
+  --y-5: 19%;
+  --x-5: 5%;
+
+  /* Background stays visible */
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 1868 1868' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"),
+    radial-gradient(circle at var(--x-0) var(--y-0), var(--c-0) var(--s-start-0), transparent var(--s-end-0)),
+    radial-gradient(circle at var(--x-1) var(--y-1), var(--c-1) var(--s-start-1), transparent var(--s-end-1)),
+    radial-gradient(circle at var(--x-2) var(--y-2), var(--c-2) var(--s-start-2), transparent var(--s-end-2)),
+    radial-gradient(circle at var(--x-3) var(--y-3), var(--c-3) var(--s-start-3), transparent var(--s-end-3)),
+    radial-gradient(circle at var(--x-4) var(--y-4), var(--c-4) var(--s-start-4), transparent var(--s-end-4)),
+    radial-gradient(circle at var(--x-5) var(--y-5), var(--c-5) var(--s-start-5), transparent var(--s-end-5));
+  background-blend-mode: overlay, overlay, normal, normal, normal, normal, normal;
+
+  /* Optional: smooth color transitions */
+  transition: background-image 0.5s ease-in-out;
+}
+
+.gradient-2 {
+  /* Use the bg variable for the base layer */
+  background-color: var(--bg);
+
+  background-image:
+    /* Top Left */
+    radial-gradient(circle at 0% 5%, var(--c-0) 3.12%, transparent 40%),
+    /* Top Left-ish Center */
+    radial-gradient(circle at 23% 3%, var(--c-1) 3.12%, transparent 76.42%),
+    /* Bottom Right */
+    radial-gradient(circle at 100% 93%, var(--c-2) 3.12%, transparent 45.38%),
+    /* Bottom Right Corner */
+    radial-gradient(circle at 96% 103%, var(--c-3) 3.12%, transparent 50%),
+    /* Top Right */
+    radial-gradient(circle at 80% 0%, var(--c-4) 3.12%, transparent 24.82%),
+    /* Deep Accent Layer - uses c-5 to add depth to the base */
+    radial-gradient(circle at 50% 50%, var(--c-5) 0%, transparent 100%);
+
+  background-blend-mode: screen, screen, screen, screen, screen, normal;
+  /* Smooth transition when swapping themes */
+  transition: background-color 0.5s ease, background-image 0.5s ease;
+}
+
+
+.sprite-layer {
+  image-rendering: pixelated;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+
+  /* Apply scale here so we can grow him via React */
+  transform: scale(var(--pixel-scale, 1));
+  transform-origin: bottom center;
+
+  /* Ensure linear timing for crisp frame jumps */
+  animation: play-sprite var(--speed) steps(var(--frames)) infinite linear;
+}
+
+@keyframes play-sprite {
+  from {
+    background-position-x: 0px;
+  }
+
+  /* Using -100% is more flexible than pixels if the backgroundSize is set correctly */
+  to {
+    background-position-x: -100%;
+  }
+}

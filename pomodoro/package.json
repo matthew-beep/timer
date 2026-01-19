@@ -1,0 +1,45 @@
+{
+  "name": "pomodoro",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "update-types": "supabase gen types typescript --linked > @/types/supabase.tsx",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.3.5",
+    "@supabase/supabase-js": "^2.90.1",
+    "@tiptap/pm": "^3.14.0",
+    "@tiptap/react": "^3.14.0",
+    "@tiptap/starter-kit": "^3.14.0",
+    "motion": "^12.23.24",
+    "next": "^16.1.0",
+    "react": "^19.2.3",
+    "react-colorful": "^5.6.1",
+    "react-dom": "^19.2.3",
+    "react-draggable": "^4.5.0",
+    "react-icons": "^5.5.0",
+    "react-resizable": "^3.0.5",
+    "react-rnd": "^10.5.2",
+    "react-sketch-canvas": "^6.2.0",
+    "uuid": "^13.0.0",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/react-resizable": "^3.0.8",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.1",
+    "supabase": "^2.72.7",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
