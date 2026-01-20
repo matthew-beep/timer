@@ -40,16 +40,23 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
             defaultY={20}
             className='h-10/12 p-0'
           >
-            <ModalSection className='flex flex-row'>
-              <Button variant="plain" className="flex border-2 w-8 h-8 justify-center items-center rounded-full text-text">
-                <IoAddOutline size={16} />
-              </Button>
-              <div className="flex overflow-x-auto">
-                {pills.map((pill) => (
-                  <Button key={pill} variant="plain" className="whitespace-nowrap">
-                    {pill}
-                  </Button>
-                ))}
+            <ModalSection className='flex flex-col items-center'>
+              <input
+                type="text"
+                placeholder="Search notes..."
+                className={`w-full bg-text/5 py-2.5 outline-none text-sm text-text placeholder:text-text/50 rounded-md`}
+              />
+              <div className='flex flex-row w-full items-center justify-start'>
+                <Button variant="plain" className="flex p-1 justify-center items-center rounded-full text-text">
+                  <IoAddOutline size={24} />
+                </Button>
+                <div className="flex overflow-x-auto">
+                  {pills.map((pill) => (
+                    <Button key={pill} variant="plain" className="whitespace-nowrap">
+                      {pill}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </ModalSection>
             <ModalSection className=' w-full overflow-y-auto'>

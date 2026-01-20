@@ -18,7 +18,6 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
     const addNote = useNotesStore((s) => s.addNote);
     const notes = useNotesStore((s) => s.notes);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
-    const syncState = useNotesStore((s) => s.syncState);
     const theme = useThemeStore((s) => s.theme);
 
     const addSticky = () => {
@@ -40,13 +39,15 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
             <h1 className="text-3xl font-bold text-text">Study Space</h1>
             
             <div className='flex relative gap-2'>
+
+                {false &&
                 <Button
                     className="flex items-center justify-center p-2 rounded-full"
                     onClick={addSticky}
                     variant='glassPlain'
                 >
                     <IoAddOutline size={18} strokeWidth={0.5} />
-                </Button>
+                </Button>}
                 <Button
                     className="flex items-center justify-center p-2 rounded-full"
                     onClick={() => setShowSettings(!settingsOpen)}
