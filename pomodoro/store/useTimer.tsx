@@ -62,6 +62,8 @@ interface TimerState {
 
   pomodoroCount: number;
   updatePomodoroCount: () => void;
+
+  collapsed?: boolean;
 }
 
 export const useTimer = create<TimerState>((set, get) => ({
@@ -72,6 +74,7 @@ export const useTimer = create<TimerState>((set, get) => ({
   duration: POMODORO.durations.focus,
   timeRemaining: POMODORO.durations.focus,
   isRunning: false,
+  collapsed: false,
 
   setMethod: (method) => {
 

@@ -44,7 +44,7 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
               <input
                 type="text"
                 placeholder="Search notes..."
-                className={`w-full bg-text/5 py-2.5 outline-none text-sm text-text placeholder:text-text/50 rounded-md`}
+                className={`px-3 w-full bg-text/5 py-2.5 outline-none text-sm text-text placeholder:text-text/50 rounded-md`}
               />
               <div className='flex flex-row w-full items-center justify-start'>
                 <Button variant="plain" className="flex p-1 justify-center items-center rounded-full text-text">
@@ -59,7 +59,8 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                 </div>
               </div>
             </ModalSection>
-            <ModalSection className=' w-full overflow-y-auto'>
+            <ModalSection className=' w-full overflow-y-auto relative'>
+
               {sortedNotes.map((note, index) => (
                 <ListNote
                   key={note.id}
@@ -71,6 +72,7 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                   height={note.height}
                   width={note.width}
                   text={note.text}
+                  tags={note.tags}
                   plainText={note.plainText}
                   color={note.color}
                   dateCreated={note.dateCreated}

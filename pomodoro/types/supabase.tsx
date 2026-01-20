@@ -86,6 +86,7 @@ export type Database = {
           x: number
           y: number
           z_index: number
+          tags: string[]
         }
         Insert: {
           color?: string
@@ -106,6 +107,7 @@ export type Database = {
           x?: number
           y?: number
           z_index?: number
+          tags?: string[]
         }
         Update: {
           color?: string
@@ -126,6 +128,7 @@ export type Database = {
           x?: number
           y?: number
           z_index?: number
+          tags?: string[]
         }
         Relationships: []
       }

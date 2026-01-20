@@ -9,6 +9,9 @@ import { LuLayoutGrid, LuList } from "react-icons/lu";
 import { useThemeStore } from '@/store/useTheme';
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 import { v4 as uuidv4 } from 'uuid';
+import { PetRenderer } from './Pet';
+
+import TimerToolbar from './TimerToolbar';
 const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
 
 
@@ -45,7 +48,7 @@ export default function ProgressBar() {
           ? Math.max(...notes.map(n => n.zIndex))
           : 0;
 
-      addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, plainText: "", color: stickyColor, colorIndex: 0, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now });
+      addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, plainText: "", color: stickyColor, colorIndex: 0, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now, tags: [] });
   }
 
     return (
@@ -56,8 +59,15 @@ export default function ProgressBar() {
           <div className='bg-[#0a1929]/60 border-white/10 rounded-md shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl text-xs p-1 ml-5'>
             Spotify coming soon 
           </div>
-        {/* Notes Toggle */}
-
+        {/* Notes Toggle */ false &&
+        <div className='border-2 flex flex-col'>
+          <div className="w-full  relative h-24">
+            <PetRenderer id="turtle" scale={1} />
+            <PetRenderer id="rottweiler" scale={2} />
+          </div>
+          <TimerToolbar />
+        </div>
+        }
         <div className='flex items-center pr-5 h-10 gap-2'>
           <div
             className="bg-cardBg/60 text-text flex items-center gap-1 p-1 rounded-full backdrop-blur-md border-white/10 border h-full"
@@ -90,8 +100,8 @@ export default function ProgressBar() {
             </div>
         </div>
         <div 
-          className="w-full h-5 hover:h-8 transition-all duration-300 
-          bg-gray-500 py-3 relative"
+          className="w-full h-2 hover:h-5 transition-all duration-300
+          bg-gray-500 relative"
           onMouseEnter={() => setShowText(true)}
           onMouseLeave={() => setShowText(false)}
           >
@@ -102,7 +112,7 @@ export default function ProgressBar() {
           />
           {showText &&
           <motion.div 
-            className={`absolute top-0 left-0 w-full h-full flex justify-center items-center text-white font-bold`}
+            className={`absolute top-0 left-0 w-full h-full flex justify-center items-center text-white text-xs font-sans`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ ease: "linear", duration: 1 }}

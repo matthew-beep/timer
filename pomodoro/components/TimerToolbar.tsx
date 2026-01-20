@@ -7,9 +7,7 @@ import { useNotesStore } from "@/store/useNotes";
 import { Tooltip } from "@mui/material";
 import { motion } from "motion/react";
 
-import { RiCollapseDiagonalFill } from "react-icons/ri";
-
-export default function Timer() {
+export default function TimerToolbar() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
   const mode = useTimer((s) => s.mode);
   const setMode = useTimer((s) => s.setMode);
@@ -60,66 +58,17 @@ export default function Timer() {
 
   }, [justCompleted]);
 
-  
 
   return (
-    <div 
-      className="flex flex-col w-[420px] p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display"
-    > {false && 
-      <div className="flex justify-end items-center">
-        <Button variant="plain" className="rounded-full p-2">
-          <RiCollapseDiagonalFill />
-        </Button>
-      </div>
-  }
-      {/* Mode Buttons */}
-      <div className={`grid ${method && method.name === "Pomodoro" ? "grid-cols-3" : "grid-cols-2"} gap-2 font-sans text-md`}>
-        <Button
-          variant={mode === "focus" ? "glass" : "plain"}
-          onClick={() => mode === "focus" ? null : setMode("focus")}
-          className="px-4 py-2 rounded-full"
-        >
-          Work
-        </Button>
-
-        {method && method.name === "Pomodoro" ? ( 
-         <>
-          <Button
-            variant={mode === "short" ? "glass" : "plain"}
-            onClick={() => mode === "short" ? null : setMode("short")}
-            className="px-4 py-2 rounded-full"
-          >
-            Short
-          </Button>
-
-
-          <Button
-            variant={mode === "long" ? "glass" : "plain"}
-            onClick={() => mode === "long" ? null : setMode("long")}
-            className="px-4 py-2 rounded-full"
-          >
-            Long
-          </Button>
-          </>
-        ) : (
-
-          <Button
-            variant={mode === "break" ? "glass" : "plain"}
-            onClick={() => mode === "break" ? null : setMode("break")}
-            className="px-4 py-2 rounded-full"
-          >
-            Break
-          </Button>
-        )
-        
-        }
-
-      </div>
-
+    <motion.div
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        className="flex flex-row items-center w-auto justify-centers rounded-2xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display gap-2"
+    >
       {/* Timer Display */}
-      <div className="flex justify-center px-5 flex-col items-center">
+      <div className="flex justify-center items-center">
         <h3 
-          className="text-9xl font-bold tabular-nums tracking-tight text-text w-full text-center"
+          className="text-xl font-bold tabular-nums tracking-tight text-text text-center"
             style={{
             fontVariantNumeric: "tabular-nums",
             fontFeatureSettings: "'tnum'",
@@ -146,6 +95,6 @@ export default function Timer() {
 
       <TimerControls />
       
-    </div>
+    </motion.div>
   );
 }

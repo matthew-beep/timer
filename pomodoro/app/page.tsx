@@ -2,19 +2,13 @@
 
 import Timer from "@/components/Timer";
 import Header from "@/components/Header";
-import { useNotesStore } from "@/store/useNotes";
-import StickyNote from "@/components/Sticky";
 import { PetRenderer } from "@/components/Pet";
 import ProgressBar from "@/components/Progress";
 import Settings from "@/components/Settings";
-import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useTimer } from "@/store/useTimer";
-import { useThemeStore } from "@/store/useTheme";
-import { Theme, theme1, themes } from "@/components/Themes";
+
 
 import { useAuthStore } from "@/store/useAuth";
-import BackgroundRenderer from "@/components/BackgroundRenderer";
 import NotesContainer from "@/components/NotesContainer";
 import AuthModal from "@/components/AuthModal";
 import Overlay from "@/components/Overlay";

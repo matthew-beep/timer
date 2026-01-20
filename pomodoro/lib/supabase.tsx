@@ -71,6 +71,7 @@ export type Database = {
           mode: 'text' | 'draw';
           paths: Record<string, any> | null; // JSONB
           inline_svg: string | null;
+          tags: string[];
           date_created: string;
           last_edited: string;
           created_at: string;
@@ -91,6 +92,7 @@ export type Database = {
           mode?: 'text' | 'draw';
           paths?: Record<string, any> | null;
           inline_svg?: string | null;
+          tags?: string[];
           date_created?: string;
           last_edited?: string;
           created_at?: string;
@@ -111,6 +113,7 @@ export type Database = {
           mode?: 'text' | 'draw';
           paths?: Record<string, any> | null;
           inline_svg?: string | null;
+          tags?: string[];
           date_created?: string;
           last_edited?: string;
           created_at?: string;
