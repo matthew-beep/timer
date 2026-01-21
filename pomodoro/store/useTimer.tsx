@@ -63,7 +63,8 @@ interface TimerState {
   pomodoroCount: number;
   updatePomodoroCount: () => void;
 
-  collapsed?: boolean;
+  collapsed: boolean;
+  toggleCollapsed: () => void;
 }
 
 export const useTimer = create<TimerState>((set, get) => ({
@@ -75,7 +76,10 @@ export const useTimer = create<TimerState>((set, get) => ({
   timeRemaining: POMODORO.durations.focus,
   isRunning: false,
   collapsed: false,
-
+  toggleCollapsed: () => {
+    set((s) => ({ collapsed: !s.collapsed }))
+  },
+  
   setMethod: (method) => {
 
     const defaultMode = "focus";

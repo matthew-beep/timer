@@ -3,10 +3,6 @@ import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
 import { useEffect, useRef } from "react"; 
-import { useNotesStore } from "@/store/useNotes";
-import { Tooltip } from "@mui/material";
-import { motion } from "motion/react";
-
 import { RiCollapseDiagonalFill } from "react-icons/ri";
 
 export default function Timer() {
@@ -14,11 +10,8 @@ export default function Timer() {
   const mode = useTimer((s) => s.mode);
   const setMode = useTimer((s) => s.setMode);
   const isRunning = useTimer((s) => s.isRunning);
-
   const audioRef = useRef<HTMLAudioElement>(null)
-  const duration = useTimer((s) => s.duration);
-
-  const progress = 1 - timeRemaining / duration;
+  const toggleCollapsed = useTimer(s => s.toggleCollapsed);
 
   const justCompleted = useTimer(s => s.justCompleted);
   const complete = useTimer(s => s.complete);
@@ -47,11 +40,6 @@ export default function Timer() {
       document.title = 'Study Space';
     };
   }, [timeRemaining, isRunning, mode]);
-
-  useEffect(() => { 
-    console.log("Timer method changed to:", method?.name);
-    console.log("mode: ", mode);
-  }, [method, mode]);
   
   useEffect(() => {
     if (!justCompleted) return;
@@ -65,13 +53,23 @@ export default function Timer() {
   return (
     <div 
       className="flex flex-col w-[420px] p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display"
-    > {false && 
-      <div className="flex justify-end items-center">
-        <Button variant="plain" className="rounded-full p-2">
-          <RiCollapseDiagonalFill />
-        </Button>
+    > 
+      <div className="flex flex-col border-b border-border pb-4 gap-2">
+        <div className="flex justify-between items-center font-sans">
+          <h4>SESSION GOAL</h4>
+          <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
+            <RiCollapseDiagonalFill />
+          </Button>
+        </div>
+        <div className="flex justify-between items-center">
+          <input
+            type="text"
+            placeholder="Set a goal"
+            className={`px-3 w-full bg-text/5 py-2.5 outline-none text-sm text-text placeholder:text-text/50 rounded-md`}
+          />
+        </div>
       </div>
-  }
+
       {/* Mode Buttons */}
       <div className={`grid ${method && method.name === "Pomodoro" ? "grid-cols-3" : "grid-cols-2"} gap-2 font-sans text-md`}>
         <Button

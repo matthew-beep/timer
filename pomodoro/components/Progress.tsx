@@ -31,6 +31,9 @@ export default function ProgressBar() {
     const theme = useThemeStore((s) => s.theme);
     const addNote = useNotesStore((s) => s.addNote);
 
+
+    const collapsed = useTimer((s) => s.collapsed);
+
     useEffect(() => {
       // Initialize view mode based on store value
       console.log("viewMode from store: ", viewMode);
@@ -59,8 +62,8 @@ export default function ProgressBar() {
           <div className='bg-[#0a1929]/60 border-white/10 rounded-md shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl text-xs p-1 ml-5'>
             Spotify coming soon 
           </div>
-        {/* Notes Toggle */ false &&
-        <div className='border-2 flex flex-col'>
+        {/* Notes Toggle */ collapsed &&
+        <div className='flex flex-col'>
           <div className="w-full  relative h-24">
             <PetRenderer id="turtle" scale={1} />
             <PetRenderer id="rottweiler" scale={2} />

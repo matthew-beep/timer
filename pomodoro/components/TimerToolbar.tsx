@@ -3,9 +3,9 @@ import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
 import { useEffect, useRef } from "react"; 
-import { useNotesStore } from "@/store/useNotes";
-import { Tooltip } from "@mui/material";
+
 import { motion } from "motion/react";
+import { RiExpandDiagonalFill } from "react-icons/ri";
 
 export default function TimerToolbar() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
@@ -17,7 +17,7 @@ export default function TimerToolbar() {
   const duration = useTimer((s) => s.duration);
 
   const progress = 1 - timeRemaining / duration;
-
+  const toggleCollapsed = useTimer(s => s.toggleCollapsed);
   const justCompleted = useTimer(s => s.justCompleted);
   const complete = useTimer(s => s.complete);
   const clearCompletion = useTimer(s => s.clearCompletion);
@@ -63,7 +63,7 @@ export default function TimerToolbar() {
     <motion.div
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className="flex flex-row items-center w-auto justify-centers rounded-2xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display gap-2"
+        className="flex flex-row items-center w-auto justify-centers rounded-full bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display gap-2 p-1"
     >
       {/* Timer Display */}
       <div className="flex justify-center items-center">
@@ -93,8 +93,13 @@ export default function TimerToolbar() {
         }}
       />
 
-      <TimerControls />
+      {false && 
+        <TimerControls />
+      }
       
+      <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
+        <RiExpandDiagonalFill size={18} />
+      </Button>
     </motion.div>
   );
 }

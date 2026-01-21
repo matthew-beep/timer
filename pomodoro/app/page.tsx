@@ -13,13 +13,14 @@ import NotesContainer from "@/components/NotesContainer";
 import AuthModal from "@/components/AuthModal";
 import Overlay from "@/components/Overlay";
 import MergeNotesModal from "@/components/MergeNotesModal";
+import { useTimer } from "@/store/useTimer";
 
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
 
   const { user, session, isLoading } = useAuthStore();
   const [showAuthModal, setShowAuthModal] = useState(false);
-
+  const collapsed = useTimer((s) => s.collapsed);
   useEffect(() => {
     console.log("user changed: ", user);
     console.log("session changed: ", session);
@@ -39,7 +40,7 @@ export default function Home() {
             <PetRenderer id="turtle" scale={1} />
             <PetRenderer id="rottweiler" scale={2} />
           </div>
-          <Timer />
+          {!collapsed && <Timer />}
           <div className="w-full h-full"></div>
 
         </div>
