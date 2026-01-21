@@ -14,6 +14,7 @@ import AuthModal from "@/components/AuthModal";
 import Overlay from "@/components/Overlay";
 import MergeNotesModal from "@/components/MergeNotesModal";
 import { useTimer } from "@/store/useTimer";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
@@ -36,11 +37,40 @@ export default function Home() {
         <div
           className="w-fit mx-auto flex flex-col items-center justify-center h-full z-0 relative p-10"
         >
-          <div className="w-full h-full relative">
-            <PetRenderer id="turtle" scale={1} />
-            <PetRenderer id="rottweiler" scale={2} />
-          </div>
-          {!collapsed && <Timer />}
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div 
+                className="w-full h-full relative"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ 
+                  opacity: 0, 
+                  scale: 0.9,
+                  transition: { duration: 0.25 }
+                }}
+                transition={{ duration: 0.3 }}
+              >
+                <PetRenderer id="turtle" scale={1} />
+                <PetRenderer id="rottweiler" scale={2} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ 
+                  opacity: 0, 
+                  y: 10,
+                  transition: { duration: 0.25 }
+                }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+              >
+                <Timer />
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="w-full h-full"></div>
 
         </div>

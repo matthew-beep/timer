@@ -1,5 +1,5 @@
 'use client'
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useTimer } from '@/store/useTimer';
 import { useNotesStore, DEFAULT_NOTE_WIDTH, DEFAULT_NOTE_HEIGHT } from '@/store/useNotes';
 import { useEffect, useState } from 'react';
@@ -58,19 +58,66 @@ export default function ProgressBar() {
       <div
         className="w-screen bottom-0 flex flex-col left-0 h-auto absolute overflow-hidden gap-1"
       >
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-end">
           <div className='bg-[#0a1929]/60 border-white/10 rounded-md shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl text-xs p-1 ml-5'>
             Spotify coming soon 
           </div>
-        {/* Notes Toggle */ collapsed &&
-        <div className='flex flex-col'>
-          <div className="w-full  relative h-24">
-            <PetRenderer id="turtle" scale={1} />
-            <PetRenderer id="rottweiler" scale={2} />
-          </div>
-          <TimerToolbar />
-        </div>
-        }
+                {/* Center: Collapsed timer + pets */}
+        <AnimatePresence mode="wait">
+          {collapsed && (
+            <motion.div 
+              className='flex flex-col items-center gap-2'
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              animate={{ 
+                opacity: 1, 
+                y: 0, 
+                scale: 1,
+                transition: {
+                  duration: 0.4,
+                  ease: [0.34, 1.56, 0.64, 1], // Bounce easing
+                }
+              }}
+              exit={{ 
+                opacity: 0, 
+                y: 50, 
+                scale: 0.95,
+                transition: { duration: 0.25 }
+              }}
+            >
+              {/* Compact pets - delay until timer toolbar is in place */}
+              <motion.div 
+                className="relative h-20 flex items-center justify-center w-full"
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.3 }}
+              >
+                <motion.div
+                  initial={{opacity: 0 }}
+                  animate={{opacity: 1 }}
+                  transition={{ delay: 0.45, duration: 0.3 }}
+                >
+                  <PetRenderer id="turtle" scale={0.6} />
+                </motion.div>
+                <motion.div
+                  initial={{opacity: 0 }}
+                  animate={{opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.3 }}
+                >
+                  <PetRenderer id="rottweiler" scale={1.2} />
+                </motion.div>
+              </motion.div>
+              {/* Compact timer toolbar first */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.3 }}
+              >
+                <TimerToolbar />
+              </motion.div>
+
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div className='flex items-center pr-5 h-10 gap-2'>
           <div
             className="bg-cardBg/60 text-text flex items-center gap-1 p-1 rounded-full backdrop-blur-md border-white/10 border h-full"

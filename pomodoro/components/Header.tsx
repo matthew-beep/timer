@@ -31,7 +31,7 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
             ? Math.max(...notes.map(n => n.zIndex))
             : 0;
 
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, plainText: "", color: stickyColor, colorIndex: 0, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now });
+        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, plainText: "", color: stickyColor, colorIndex: 0, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now, tags: [] });
     }
     // probably want to debounce the sync menu
     return (

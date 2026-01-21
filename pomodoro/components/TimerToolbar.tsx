@@ -60,46 +60,40 @@ export default function TimerToolbar() {
 
 
   return (
-    <motion.div
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        className="flex flex-row items-center w-auto justify-centers rounded-full bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display gap-2 p-1"
-    >
-      {/* Timer Display */}
-      <div className="flex justify-center items-center">
-        <h3 
-          className="text-xl font-bold tabular-nums tracking-tight text-text text-center"
-            style={{
-            fontVariantNumeric: "tabular-nums",
-            fontFeatureSettings: "'tnum'",
-          }}
-          >
-          {minutes}:{seconds}
-        </h3>
-      </div>
+    <div className="flex flex-row items-center w-auto justify-center rounded-full bg-cardBg/90 backdrop-blur-md border-white/10 border font-display gap-3 px-4 py-2 shadow-lg">
+      {/* Compact timer display */}
+      <h3 
+        className="text-xl font-bold tabular-nums tracking-tight text-text"
+        style={{
+          fontVariantNumeric: "tabular-nums",
+          fontFeatureSettings: "'tnum'",
+        }}
+      >
+        {minutes}:{seconds}
+      </h3>
 
-      {/* Controls + Timer Logic */}
+      {/* Timer controls */}
       <TimerController />
+      
       <audio 
-        ref={audioRef} src="/sounds/small-dog.wav" 
+        ref={audioRef} 
+        src="/sounds/small-dog.wav" 
         onEnded={() => {
           console.log('Audio finished playing!');
-          // Call your function here
-          // handleAudioComplete();
-          // TODO: need to find when 4 pomodoros complete to switch to long break
           complete();
           clearCompletion();
           start();
         }}
       />
 
-      {false && 
-        <TimerControls />
-      }
-      
-      <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
-        <RiExpandDiagonalFill size={18} />
+      {/* Expand button */}
+      <Button 
+        variant="plain" 
+        className="rounded-full p-1.5 hover:bg-white/10 transition-colors" 
+        onClick={toggleCollapsed}
+      >
+        <RiExpandDiagonalFill size={16} />
       </Button>
-    </motion.div>
+    </div>
   );
 }
