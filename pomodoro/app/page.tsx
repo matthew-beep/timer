@@ -38,6 +38,24 @@ export default function Home() {
           className="w-fit mx-auto flex flex-col items-center justify-center h-full z-0 relative p-10"
         >
           <AnimatePresence>
+            {false && (
+              <motion.div 
+                className="w-full relative"
+                initial={{ opacity: 0, scale: 0.9, y:100 }}
+                animate={{ opacity: 1, scale: 1, y:0 }}
+                exit={{ 
+                  opacity: 0, 
+                  scale: 0.9,
+                  transition: { duration: 0.1}
+                }}
+                transition={{ duration: 0.3, delay: 1 }}
+              >
+                <h2 className="text-5xl text-text text-shadow-lg text-shadow-white">The secret of getting ahead is getting started</h2>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            
             {!collapsed && (
               <motion.div 
                 className="w-full h-full relative"
@@ -65,13 +83,13 @@ export default function Home() {
                   y: 10,
                   transition: { duration: 0.25 }
                 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
               >
                 <Timer />
               </motion.div>
             )}
           </AnimatePresence>
-          <div className="w-full h-full"></div>
+          {!collapsed && <div className="w-full h-full"></div>}
 
         </div>
 
