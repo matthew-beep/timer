@@ -40,7 +40,7 @@ interface TimerState {
   method: Method;
   setPomodoro: () => void;
   setCambridge: () => void;
-
+  goal: string | null;
   mode: string; // narrowed at runtime
   durations: Record<string, number>;
 
@@ -71,7 +71,7 @@ export const useTimer = create<TimerState>((set, get) => ({
   mode: "focus",
   method: POMODORO,
   durations: {...POMODORO.durations },
-
+  goal: null,
   duration: POMODORO.durations.focus,
   timeRemaining: POMODORO.durations.focus,
   isRunning: false,

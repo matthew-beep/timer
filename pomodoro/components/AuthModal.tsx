@@ -118,7 +118,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <input
             type="email"
             placeholder="Email Address"
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-white/30 transition-colors text-text placeholder:text-text/30"
+            className="w-full bg-text/5 border border-text/10 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-text/30 transition-colors text-text placeholder:text-text/30"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -130,7 +130,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <input
             type="password"
             placeholder="Password"
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-white/30 transition-colors text-text placeholder:text-text/30"
+            className="w-full bg-text/5 border border-text/10 rounded-xl py-2 pl-9 pr-4 outline-none focus:border-text/30 transition-colors text-text placeholder:text-text/30"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -185,7 +185,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         type="button"
         onClick={handleGoogleSignIn}
         variant="glassPlain"
-        className="w-full flex items-center justify-center gap-2 py-2.5 bg-white text-black hover:bg-gray-100 border-none"
+        className="w-full flex rounded-full items-center justify-center gap-2 py-2.5 bg-white text-black hover:bg-white/75 border-none"
       >
         <FcGoogle size={20} />
         <span className="text-black">Google</span>

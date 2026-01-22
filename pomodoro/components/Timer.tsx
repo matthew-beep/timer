@@ -17,7 +17,8 @@ export default function Timer() {
   const complete = useTimer(s => s.complete);
   const clearCompletion = useTimer(s => s.clearCompletion);
   const start = useTimer(s => s.start);
-
+  const [quote, setQuote] = useState<string | null>("The secret of getting ahead is getting started");
+  const placeholder = "The secret of getting ahead is getting started";
   const method = useTimer(s => s.method);
 
   const minutes = Math.floor(timeRemaining / 60)
@@ -57,26 +58,19 @@ export default function Timer() {
     > 
       <motion.div 
         className="flex flex-col border-b border-border pb-4 gap-2"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        initial={{ opacity: 0, y: -10 }}
-        animate={{
-          y: isHovered ? -16 : 0,
-          opacity: isHovered ? 1 : 0.7,
-        }}
-        transition={{ duration: 0.2 }}
+
         >
         <div className="flex justify-between items-center font-sans">
-          <h4>SESSION GOAL</h4>
+          <h4 className="text-text/50">SESSION GOAL</h4>
           <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
             <RiCollapseDiagonalFill />
           </Button>
         </div>
-        <div className="flex justify-between items-center">
+        <div className="font-display flex justify-between items-center">
           <input
             type="text"
-            placeholder="Set a goal"
-            className={`px-3 w-full bg-text/5 py-2.5 outline-none text-sm text-text placeholder:text-text/50 rounded-md`}
+            placeholder={placeholder}
+            className={`w-full py-2.5 outline-none text-md text-text placeholder:text-text`}
           />
         </div>
       </motion.div>
