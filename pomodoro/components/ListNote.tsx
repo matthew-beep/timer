@@ -9,6 +9,8 @@ import { JSONContent } from "@tiptap/core";
 import { useMemo } from "react";
 import { StickyNote } from "@/store/useNotes";
 import { IoTrashOutline } from "react-icons/io5";
+import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
+import { useThemeStore } from "@/store/useTheme";
 
 interface ListNoteProps extends StickyNote {
   index: number;
@@ -44,9 +46,10 @@ export default function ListNote({
   color,
   lastEdited,
   id,
+  colorIndex
 }: ListNoteProps) {
   const deleteNote = useNotesStore((s) => s.deleteNote);
-
+  const theme = useThemeStore((s) => s.theme);
   const htmlContent = useMemo(() => {
     try {
       const normalizedText = normalizeNoteText(text);
@@ -69,13 +72,14 @@ export default function ListNote({
       ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
       : date.toLocaleDateString([], { month: "2-digit", day: "2-digit" });
   };
+  const bgColor = theme === "dark" ? DARK_STICKY_COLORS[colorIndex] : LIGHT_STICKY_COLORS[colorIndex];
 
   return (
     <motion.div
       className="relative h-32 rounded-xl border p-2 flex flex-col justify-between"
       style={{
-        backgroundColor: `${color}30`,
-        borderColor: color,
+        backgroundColor: `${bgColor}30`,
+        borderColor: bgColor,
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
