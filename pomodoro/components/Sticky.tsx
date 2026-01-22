@@ -19,8 +19,6 @@ import { LuPenTool } from "react-icons/lu";
 
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "./Themes";
 
-const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6'];
-
 
 export default function StickyNote({
   id = "",

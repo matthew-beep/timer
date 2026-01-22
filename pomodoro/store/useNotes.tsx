@@ -7,6 +7,7 @@ import type { Tables } from "@/types/supabase";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { telemetry } from "@/lib/telemetry";
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
+import { Tag } from '@/types/index';
 
 export type StickyNote = {
   id: string;
@@ -22,9 +23,11 @@ export type StickyNote = {
   mode?: "draw" | "text"
   paths?: CanvasPath[]; // for drawing paths
   inlineSvg?: string; // for storing SVG representation
-  tags: string[];
   dateCreated: string;
   lastEdited: string;
+  tags?: string[]; // array of tag IDs
+  tagIds?: Tag[]; // array of tag objects
+
 };
 
 type SyncState = 'idle' | 'syncing' | 'error';
@@ -128,7 +131,6 @@ const transformSupabaseNote = (row: Tables<'sticky_notes'>): StickyNote => ({
   paths: (row.paths as unknown as CanvasPath[]) || [],
   inlineSvg: row.inline_svg || undefined,
   plainText: row.plain_text || '',
-  tags: row.tags || [],
   dateCreated: row.date_created || new Date().toISOString(),
   lastEdited: row.last_edited || new Date().toISOString(),
 });
@@ -149,7 +151,6 @@ const transformToSupabaseNote = (note: StickyNote, userId: string) => ({
   plain_text: note.plainText,
   paths: note.paths || null,
   inline_svg: note.inlineSvg || null,
-  tags: note.tags,
   date_created: note.dateCreated,
   last_edited: note.lastEdited,
 });

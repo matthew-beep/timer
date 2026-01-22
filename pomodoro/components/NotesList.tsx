@@ -72,7 +72,6 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                   height={note.height}
                   width={note.width}
                   text={note.text}
-                  tags={note.tags}
                   plainText={note.plainText}
                   color={note.color}
                   dateCreated={note.dateCreated}
