@@ -2,9 +2,9 @@ import { useTimer } from "@/store/useTimer";
 import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
-import { useEffect, useRef } from "react"; 
+import { useEffect, useRef, useState } from "react"; 
 import { RiCollapseDiagonalFill } from "react-icons/ri";
-
+import { motion } from "motion/react";
 export default function Timer() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
   const mode = useTimer((s) => s.mode);
@@ -48,13 +48,24 @@ export default function Timer() {
 
   }, [justCompleted]);
 
-  
+  const [isHovered, setIsHovered] = useState(false);
+
 
   return (
     <div 
       className="flex flex-col w-[420px] p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display"
     > 
-      <div className="flex flex-col border-b border-border pb-4 gap-2">
+      <motion.div 
+        className="flex flex-col border-b border-border pb-4 gap-2"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{
+          y: isHovered ? -16 : 0,
+          opacity: isHovered ? 1 : 0.7,
+        }}
+        transition={{ duration: 0.2 }}
+        >
         <div className="flex justify-between items-center font-sans">
           <h4>SESSION GOAL</h4>
           <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
@@ -68,7 +79,7 @@ export default function Timer() {
             className={`px-3 w-full bg-text/5 py-2.5 outline-none text-sm text-text placeholder:text-text/50 rounded-md`}
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* Mode Buttons */}
       <div className={`grid ${method && method.name === "Pomodoro" ? "grid-cols-3" : "grid-cols-2"} gap-2 font-sans text-md`}>
