@@ -21,6 +21,7 @@ export default function NotesContainer() {
                         id={note.id}
                         color={note.color}
                         colorIndex={note.colorIndex}
+                        tags={note.tags}
                         x={note.x}
                         y={note.y}
                         width={note.width}
