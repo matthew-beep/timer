@@ -220,10 +220,20 @@ export const useNotesStore = create<NotesStore>()(
           set({ isFetchingFromSupabase: true });
 
           const { data, error } = await supabase
-            .from('sticky_notes')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('last_edited', { ascending: false });
+          .from('sticky_notes')
+          .select(`
+            *,
+            note_tags (
+              tag_id,
+              tags (
+                id,
+                name,
+                color
+              )
+            )
+          `)
+          .eq('user_id', user.id)
+          .order('last_edited', { ascending: false });
 
           if (error) {
             console.error('Error loading notes:', error);
@@ -231,7 +241,8 @@ export const useNotesStore = create<NotesStore>()(
             set({ syncState: 'error', isFetchingFromSupabase: false });
             return;
           }
-
+          console.log("fetched data: ", data);
+          
           const notes: StickyNote[] = (data || []).map(transformSupabaseNote);
 
           console.log(`Loaded ${notes.length} notes from Supabase`);
