@@ -30,6 +30,7 @@ export default function NotesContainer() {
                         inlineSvg={note.inlineSvg}
                         dateCreated={note.dateCreated}
                         lastEdited={note.lastEdited}
+                        tagIds={note.tagIds}
                     />
                 ))
             ) : (

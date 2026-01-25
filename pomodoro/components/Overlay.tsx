@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 interface OverlayProps {
     isOpen: boolean;
     onClose: () => void;
-    children: ReactNode;
+    children?: ReactNode;
     contentClassName?: string;
     blur?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
     slide?: "left" | "right" | "top" | "bottom";

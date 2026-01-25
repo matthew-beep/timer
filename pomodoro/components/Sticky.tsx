@@ -9,6 +9,7 @@ import { Button } from "./Button";
 
 import StickyText from "./StickyText";
 import StickyCanvas from "./StickyCanvas";
+import StickyContextMenu from "./StickyContextMenu";
 
 import { RxText } from "react-icons/rx";
 import { motion, AnimatePresence } from "motion/react";
@@ -32,7 +33,8 @@ export default function StickyNote({
   paths = [],
   zIndex = 1,
   inlineSvg = "",
-  colorIndex = 0
+  colorIndex = 0,
+  tagIds = [],
 }: StickyNoteProps) {
 
   const [draw, setDraw] = useState(mode === "draw" ? true : false);
@@ -43,7 +45,7 @@ export default function StickyNote({
   const activeNoteId = useNotesStore(s => s.activeNoteId);
   const activeNote = activeNoteId === id;
   const theme = useThemeStore((s) => s.theme);
-
+  const [contextMenu, setContextMenu] = useState<boolean>(false);
 
   const [cursor, setCursor] = useState<string>("grab");
   const [scale, setScale] = useState<number>(1);
@@ -113,11 +115,13 @@ export default function StickyNote({
           <motion.div
             className={`
             sticky-handle flex justify-between items-center 
-            font-semibold border-b border-white/5 h-12 p-2
+            font-semibold border-b border-white/5 h-12 p-2 relative z-20 
           `}
-            style={{ cursor: cursor }}
-            onMouseEnter={() => setScale(1.05)}
-            onMouseLeave={() => setScale(1)}
+            style={{ 
+              cursor: cursor,
+              backgroundColor: `${bgColor}`,
+
+            }}
             onMouseDown={() => {
               setCursor("grabbing");
               setActiveNote(id);
@@ -154,7 +158,7 @@ export default function StickyNote({
             <div className="flex items-center">
               <Button
                 className="w-8 h-8 flex items-center justify-center transition-all duration-150 rounded-full"
-                onClick={() => console.log("More options")}
+                onClick={() => setContextMenu(!contextMenu)}
                 variant="plain"
               >
                 <PiDotsThree
@@ -171,10 +175,29 @@ export default function StickyNote({
                 />
               </Button>
             </div>
+
           </motion.div>
 
+          {/* Slide-Down Menu */}
+          <AnimatePresence>
+            {contextMenu && (
+              <StickyContextMenu id={id} color={bgColor} tagIds={tagIds} colorIndex={colorIndex}/>
+            )}
+          </AnimatePresence>
+
           {/* Content */}
-          <div onMouseDown={() => setActiveNote(id)} className="w-full h-full flex">
+          <div onMouseDown={() => setActiveNote(id)} className="w-full h-full flex relative">
+            { contextMenu &&
+              <motion.div 
+                className="absolute inset-0 pointer-events-none w-full h-full"
+                initial={{
+                  backgroundColor: "rgba(0, 0, 0, 0)",
+                }}
+                animate={{
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                }}
+              />
+              }
             {draw ?
               (<StickyCanvas 
                 id={id} 
@@ -193,6 +216,8 @@ export default function StickyNote({
                 colorIndex={colorIndex} 
                 showToolbar={activeNote && currHeight > 250} />)
             }
+
+
           </div>
 
         </motion.div>
