@@ -58,7 +58,10 @@ export default function StickyNote({
   };
 
   const bgColor = theme === "dark" ? DARK_STICKY_COLORS[colorIndex] : LIGHT_STICKY_COLORS[colorIndex];
-  
+  useEffect(() => {
+    console.log("activeNoteId changed: ", activeNoteId, " for note id: ", id);
+  }, [activeNoteId, id]);
+
   return (
     <Rnd
       position={{ x, y }}
@@ -115,7 +118,7 @@ export default function StickyNote({
           <motion.div
             className={`
             sticky-handle flex justify-between items-center 
-            font-semibold border-b border-white/5 h-12 p-2 relative z-20 
+            font-semibold border-b border-white/5 h-12 p-2 relative z-50
           `}
             style={{ 
               cursor: cursor,
@@ -187,17 +190,15 @@ export default function StickyNote({
 
           {/* Content */}
           <div onMouseDown={() => setActiveNote(id)} className="w-full h-full flex relative">
-            { contextMenu &&
+          {activeNoteId === id && contextMenu && (
               <motion.div 
-                className="absolute inset-0 pointer-events-none w-full h-full"
-                initial={{
-                  backgroundColor: "rgba(0, 0, 0, 0)",
-                }}
-                animate={{
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                }}
+                className="absolute inset-0 w-full h-full z-30 cursor-pointer" // Increased Z and removed pointer-events-none
+                initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
+                animate={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }} // Subtle dimming
+                exit={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
+                onClick={() => setContextMenu(false)} // Click the dim area to close the menu
               />
-              }
+            )}
             {draw ?
               (<StickyCanvas 
                 id={id} 

@@ -2,7 +2,6 @@
 "use client";
 
 import { ReactNode } from "react";
-import StickyColorPicker from "./StickyColorPicker";
 import { motion } from "framer-motion";
 import StickyTagSelector from "./StickyTagSelector";
 
@@ -36,7 +35,6 @@ export default function StickyBottomBar({
 
         {/* Right side: Color picker (shared) */}
         <StickyTagSelector id={id} colorIndex={colorIndex} />
-        <StickyColorPicker id={id} colorIndex={colorIndex} />
       </div>
     </motion.div>
   );
