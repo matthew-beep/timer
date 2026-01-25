@@ -56,11 +56,7 @@ export default function StickyNote({
   };
 
   const bgColor = theme === "dark" ? DARK_STICKY_COLORS[colorIndex] : LIGHT_STICKY_COLORS[colorIndex];
-
-  useEffect(() => {
-    console.log("colorIndex changed: ", colorIndex);
-  }, [colorIndex]);
-
+  
   return (
     <Rnd
       position={{ x, y }}

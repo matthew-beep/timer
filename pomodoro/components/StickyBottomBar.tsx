@@ -4,6 +4,7 @@
 import { ReactNode } from "react";
 import StickyColorPicker from "./StickyColorPicker";
 import { motion } from "framer-motion";
+import StickyTagSelector from "./StickyTagSelector";
 
 interface StickyBottomBarProps {
   children: ReactNode; // The mode-specific toolbar (canvas or text tools)
@@ -34,6 +35,7 @@ export default function StickyBottomBar({
         </div>
 
         {/* Right side: Color picker (shared) */}
+        <StickyTagSelector id={id} colorIndex={colorIndex} />
         <StickyColorPicker id={id} colorIndex={colorIndex} />
       </div>
     </motion.div>

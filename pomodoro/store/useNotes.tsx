@@ -3,11 +3,12 @@ import { persist } from "zustand/middleware";
 import { supabase } from "@/lib/supabase";
 import type { CanvasPath } from "react-sketch-canvas";
 import { JSONContent } from '@tiptap/core';
-import type { Tables } from "@/types/supabase";
+import { Database, Tables } from "@/types/supabase";
 import { getCurrentUser } from "@/lib/auth-helpers";
 import { telemetry } from "@/lib/telemetry";
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
-import { Tag } from '@/types/index';
+import { Tag, NoteTagJoinRow } from '@/types/index';
+import { useTagsStore } from "./useTags";
 
 export type StickyNote = {
   id: string;
@@ -25,9 +26,7 @@ export type StickyNote = {
   inlineSvg?: string; // for storing SVG representation
   dateCreated: string;
   lastEdited: string;
-  tags?: string[]; // array of tag IDs
-  tagIds?: Tag[]; // array of tag objects
-
+  tagIds?: string[]; 
 };
 
 type SyncState = 'idle' | 'syncing' | 'error';
@@ -215,39 +214,51 @@ export const useNotesStore = create<NotesStore>()(
         }
 
         try {
-          console.log('Loading notes from Supabase...');
+          console.log('Loading notes and tags from Supabase...');
           // 3. Set flag
           set({ isFetchingFromSupabase: true });
 
-          const { data, error } = await supabase
-          .from('sticky_notes')
-          .select(`
-            *,
-            note_tags (
-              tag_id,
-              tags (
-                id,
-                name,
-                color
-              )
-            )
-          `)
-          .eq('user_id', user.id)
-          .order('last_edited', { ascending: false });
+          // 1. Parallel Fetch: Get the "Master Palette" and the "Notes" at the same time
+          const [notesResponse, tagsResponse] = await Promise.all([
+            supabase
+              .from('sticky_notes')
+              .select(`
+                *,
+                note_tags (tag_id) 
+              `) // We only need the tag_id string from the join now
+              .eq('user_id', user.id)
+              .order('last_edited', { ascending: false }),
+            
+            supabase
+              .from('tags')
+              .select('*')
+              .eq('user_id', user.id)
+              .order('name')
+          ]);
 
-          if (error) {
-            console.error('Error loading notes:', error);
-            // 4. Reset flag on error
-            set({ syncState: 'error', isFetchingFromSupabase: false });
-            return;
-          }
-          console.log("fetched data: ", data);
+          if (notesResponse.error) throw notesResponse.error;
+          if (tagsResponse.error) throw tagsResponse.error;
+          console.log("fetched data: ", notesResponse.data, tagsResponse.data);
           
-          const notes: StickyNote[] = (data || []).map(transformSupabaseNote);
+          const masterTags = tagsResponse.data || [];
+          useTagsStore.getState().syncTags(masterTags);
 
-          console.log(`Loaded ${notes.length} notes from Supabase`);
+          // 3. Transform Notes
+          const transformedNotes: StickyNote[] = (notesResponse.data || []).map(note => {
+            const transformed = transformSupabaseNote(note);
+            return {
+              ...transformed,
+              // Since we only selected tag_id, this is a clean string array
+              tagIds: note.note_tags?.map((nt: NoteTagJoinRow) => nt.tag_id)
+                .filter((id: string | null): id is string => !!id) || []            
+            };
+          });
+
+
+          console.log(`Loaded ${transformedNotes.length} notes from Supabase`);
+          console.log("transformed notes: ", transformedNotes);
           set({
-            notes,
+            notes: transformedNotes,
             hasLoadedFromSupabase: true,
             lastSyncedAt: new Date(),
             syncState: 'idle',

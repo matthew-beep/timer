@@ -1,6 +1,7 @@
 // store/useTagsStore.ts
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
+import { StickyNote } from './useNotes';
 
 interface Tag {
   id: string;
@@ -8,23 +9,17 @@ interface Tag {
   color: string;
 }
 
-interface StickyNote {
-  id: string;
-  content: string;
-  tagIds?: string[];
-  // ... other note properties
-}
-
 interface TagsStore {
   tags: Tag[];
   isLoading: boolean;
   
   // Actions
+  setTags: (tags: Tag[]) => void; // ADD THIS - allows external setting of tags
   loadTags: () => Promise<void>;
   createTag: (name: string, color?: string) => Promise<Tag>;
   deleteTag: (tagId: string) => Promise<void>;
   updateTag: (tagId: string, updates: Partial<Tag>) => Promise<void>;
-  
+  syncTags: (newTags: Tag[]) => void;
   // Note-Tag associations
   addTagToNote: (noteId: string, tagId: string) => Promise<void>;
   removeTagFromNote: (noteId: string, tagId: string) => Promise<void>;
@@ -35,6 +30,30 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
   tags: [],
   isLoading: false,
 
+  // ADD THIS METHOD - allows notes store to populate tags after fetch
+  setTags: (tags: Tag[]) => {
+    set({ tags });
+  },
+  // Inside implementation
+  syncTags: (newTags: Tag[]) => {
+    const currentTags = get().tags;
+    const tagMap = new Map();
+
+    // Add existing tags to map
+    currentTags.forEach(t => tagMap.set(t.id, t));
+    
+    // Add/Update with new tags fetched from the join
+    newTags.forEach(t => tagMap.set(t.id, t));
+
+    const mergedTags = Array.from(tagMap.values());
+    set({ tags: mergedTags });
+    console.log("Synced tags:", mergedTags);
+    // If guest, keep localStorage in sync
+    const isGuest = !localStorage.getItem('supabase.auth.token'); // Or your auth check
+    if (isGuest) {
+      localStorage.setItem('sticky-tags', JSON.stringify(mergedTags));
+    }
+  },
   loadTags: async () => {
     const { data: { user } } = await supabase.auth.getUser();
     

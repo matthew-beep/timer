@@ -120,7 +120,7 @@ export default function ProgressBar() {
         </AnimatePresence>
         <div className='flex items-center pr-5 h-10 gap-2'>
           <div
-            className="bg-cardBg/60 text-text flex items-center gap-1 p-1 rounded-full backdrop-blur-md border-white/10 border h-full"
+            className="bg-cardBg/60 text-text flex items-center p-1 rounded-full backdrop-blur-md border-white/10 border h-full"
           >
             <Button
               onClick={() => updateViewMode("grid")}
