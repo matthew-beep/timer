@@ -60,7 +60,11 @@ export default function StickyNote({
   const bgColor = theme === "dark" ? DARK_STICKY_COLORS[colorIndex] : LIGHT_STICKY_COLORS[colorIndex];
   useEffect(() => {
     console.log("activeNoteId changed: ", activeNoteId, " for note id: ", id);
+    console.log("is active: ", activeNote);
   }, [activeNoteId, id]);
+
+
+  
 
   return (
     <Rnd
@@ -111,6 +115,12 @@ export default function StickyNote({
           style={{
             scale: scale,
             backgroundColor: `${bgColor}CC`,
+          }}
+          onMouseDown={() => {
+            if (!activeNote) {
+              setContextMenu(false); 
+            }
+            setActiveNote(id);
           }}
         >
 
@@ -183,14 +193,14 @@ export default function StickyNote({
 
           {/* Slide-Down Menu */}
           <AnimatePresence>
-            {contextMenu && (
+            {activeNote && contextMenu && (
               <StickyContextMenu id={id} color={bgColor} tagIds={tagIds} colorIndex={colorIndex}/>
             )}
           </AnimatePresence>
 
           {/* Content */}
           <div onMouseDown={() => setActiveNote(id)} className="w-full h-full flex relative">
-          {activeNoteId === id && contextMenu && (
+          {activeNote && contextMenu && (
               <motion.div 
                 className="absolute inset-0 w-full h-full z-30 cursor-pointer" // Increased Z and removed pointer-events-none
                 initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
