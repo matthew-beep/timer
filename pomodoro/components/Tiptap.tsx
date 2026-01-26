@@ -8,7 +8,7 @@ import { JSONContent } from '@tiptap/core';
 import { useEffect } from 'react';
 import StickyBottomBar from '@/components/StickyBottomBar';
 
-const Tiptap = ({ colorIndex, content, id, height, showToolbar }: { colorIndex: number, content: JSONContent, id: string, height: number, showToolbar: boolean }) => {
+const Tiptap = ({ colorIndex, content, id, height, showToolbar, tagIds }: { tagIds: string[], colorIndex: number, content: JSONContent, id: string, height: number, showToolbar: boolean }) => {
     const updateNote = useNotesStore((s) => s.updateNote);
     const activeNoteId = useNotesStore(s => s.activeNoteId);
     const activeNote = activeNoteId === id;
@@ -63,6 +63,7 @@ const Tiptap = ({ colorIndex, content, id, height, showToolbar }: { colorIndex: 
                     colorIndex={colorIndex}
                     show={showToolbar}
                     id={id}
+                    tagIds={tagIds}
                 >
                     <MenuBar editor={editor} />
                 </StickyBottomBar>

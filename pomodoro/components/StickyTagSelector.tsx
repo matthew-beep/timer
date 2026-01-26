@@ -4,6 +4,8 @@ import { useThemeStore } from "@/store/useTheme";
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 import { Button } from "@/components/Button";
 import { LuTag } from "react-icons/lu";
+import NoteTagSelector from "./NoteTagSelecter";
+
 
 export default function StickyTagSelector({id, colorIndex } : {id: string, colorIndex: number }) {
 
@@ -44,7 +46,7 @@ export default function StickyTagSelector({id, colorIndex } : {id: string, color
                 }}
                 onMouseLeave={() => setShowModal(false)}
                 >
-                    add tag
+                    <NoteTagSelector id={id} />
                 </div>
             )}
 

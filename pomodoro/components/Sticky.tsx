@@ -217,6 +217,7 @@ export default function StickyNote({
                 inlineSvg={inlineSvg} 
                 onColorChange={handleColorChange}
                 showToolbar={activeNote && currHeight > 250}
+                tagIds={tagIds}
               />
               )
               :
@@ -225,7 +226,11 @@ export default function StickyNote({
                 initialText={text} 
                 height={currHeight} 
                 colorIndex={colorIndex} 
-                showToolbar={activeNote && currHeight > 250} />)
+                showToolbar={activeNote && currHeight > 250} 
+                tagIds={tagIds}
+                />
+                
+              )
             }
 
 

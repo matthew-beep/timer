@@ -11,6 +11,7 @@ interface StickyTextProps {
   height: number;
   colorIndex: number;
   showToolbar: boolean;
+  tagIds: string[];
 }
 
 export default function StickyText({
@@ -18,8 +19,8 @@ export default function StickyText({
   initialText = { type: 'doc', content: [{ type: 'text', text: '' }] },
   height,
   colorIndex,
-  showToolbar
-
+  showToolbar,
+  tagIds = [],
 }: StickyTextProps) {
   return (
 
@@ -32,7 +33,7 @@ export default function StickyText({
       placeholder="Enter text..."
     />*/
     <div className="flex-1 min-h-0 pt-3">
-      <Tiptap content={initialText} id={id} height={height} colorIndex={colorIndex} showToolbar={showToolbar} />
+      <Tiptap content={initialText} id={id} height={height} colorIndex={colorIndex} showToolbar={showToolbar} tagIds={tagIds} />
     </div>
 
   );

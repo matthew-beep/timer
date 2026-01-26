@@ -29,6 +29,7 @@ interface StickyCanvasProps {
   inlineSvg?: string;
   onColorChange: (color: string) => void;
   showToolbar: boolean;
+  tagIds: string[];
 
 }
 
@@ -37,7 +38,8 @@ export default function StickyCanvas({
   paths = [],
   inlineSvg = "",
   colorIndex = 0,
-  showToolbar
+  showToolbar,
+  tagIds = [],
 }: StickyCanvasProps) {
 
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
@@ -143,7 +145,7 @@ export default function StickyCanvas({
 
     <StickyBottomBar
         colorIndex={colorIndex}
-
+        tagIds={tagIds}
         show={showToolbar}
         id={id}
         >
