@@ -57,15 +57,15 @@ export default function Timer() {
       className="flex flex-col w-[420px] p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display"
     > 
       <motion.div 
-        className="flex flex-col border-b border-border pb-4 gap-2"
-
+        className="flex flex-col gap-2"
         >
         <div className="flex justify-between items-center font-sans">
-          <h4 className="text-text/50">SESSION GOAL</h4>
+          <h4 className="text-text/50">TIMER</h4>
           <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
             <RiCollapseDiagonalFill />
           </Button>
         </div>
+        {/*
         <div className="font-display flex justify-between items-center">
           <input
             type="text"
@@ -73,6 +73,7 @@ export default function Timer() {
             className={`w-full py-2.5 outline-none text-md text-text placeholder:text-text`}
           />
         </div>
+        */}
       </motion.div>
 
       {/* Mode Buttons */}

@@ -42,6 +42,7 @@ export default function Settings({
   const [workTimerLength, setWorkTimerLength] = useState("");
   const [breakTimerLength, setBreakTimerLength] = useState("");
   const [activeTab, setActiveTab] = useState<TabType>('timer')
+  const [localDurations, setLocalDurations] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     console.log("durations changed: ", durations);
@@ -127,27 +128,51 @@ export default function Settings({
               size="small"
             />
           </div>
-          {Object.entries(durations).map(([mode, seconds]) => (
-            <div key={mode} className="flex flex-col gap-2">
-              <label
-                htmlFor={`${mode}-timer`}
-                className="tracking-wider text-xs font-medium"
-              >
-                {mode.toUpperCase()} DURATION
-              </label>
+          {Object.entries(durations).map(([mode, seconds]) => {
+            // Determine what value to show: local typing state or the store value
+            const displayValue = localDurations[mode] !== undefined 
+              ? localDurations[mode] 
+              : Math.floor(seconds / 60).toString();
 
-              <input
-                id={`${mode}-timer`}
-                type="number"
-                min={1}
-                value={Math.floor(seconds / 60)}
-                onChange={(e) =>
-                  setDurationValue(mode, Number(e.target.value))
-                }
-                className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-[var(--placeholder)] text-text rounded-full border border-border outline-none"
-              />
-            </div>
-          ))}
+            return (
+              <div key={mode} className="flex flex-col gap-2">
+                <label htmlFor={`${mode}-timer`} className="tracking-wider text-xs font-medium">
+                  {mode.toUpperCase()} DURATION
+                </label>
+
+                <input
+                  id={`${mode}-timer`}
+                  type="number"
+                  value={displayValue}
+                  onFocus={() => {
+                      // Optional: select all text on focus for easier editing
+                  }}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    
+                    // Allow the user to clear the input
+                    setLocalDurations(prev => ({ ...prev, [mode]: val }));
+
+                    // Only update the store if there's a valid number > 0
+                    const numVal = Number(val);
+                    if (val !== "" && !isNaN(numVal) && numVal > 0) {
+                      setDurationValue(mode, numVal);
+                    }
+                  }}
+                  onBlur={() => {
+                    // Cleanup: Remove local state so it snaps back to store value 
+                    // (handles cases where user left it blank)
+                    setLocalDurations(prev => {
+                      const next = { ...prev };
+                      delete next[mode];
+                      return next;
+                    });
+                  }}
+                  className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-[var(--placeholder)] text-text rounded-full border border-border outline-none"
+                />
+              </div>
+            );
+          })}
 
           {/* Custom Input Fields for Work and Break Durations 
 
