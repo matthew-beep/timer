@@ -1,6 +1,6 @@
 import { StickyNote, useNotesStore } from "@/store/useNotes";
 import { useTagsStore } from "@/store/useTags";
-
+import { TagPill } from "./TagPill";
 
 
 export default function NoteTagSelector({ id }: { id: string }) {
@@ -30,26 +30,14 @@ export default function NoteTagSelector({ id }: { id: string }) {
       {/* Display selected tags */}
       <div className="selected-tags">
         {noteTags.map(tag => (
-          <span 
-            key={tag.id}
-            style={{ borderLeft: `3px solid ${tag.color}` }}
-          >
-            {tag.name}
-            <button onClick={() => handleToggle(tag.id)}>×</button>
-          </span>
+          <TagPill key={tag.id} tagId={tag.id} name={tag.name} color={tag.color} />
         ))}
       </div>
 
       {/* Tag picker */}
       <div className="tag-picker">
         {allTags.map(tag => (
-          <button
-            key={tag.id}
-            onClick={() => handleToggle(tag.id)}
-            className={isTagSelected(tag.id) ? 'active' : ''}
-          >
-            {tag.name}
-          </button>
+          <TagPill key={tag.id} tagId={tag.id} name={tag.name} color={tag.color} />
         ))}
       </div>
     </div>

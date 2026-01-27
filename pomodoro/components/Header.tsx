@@ -4,7 +4,7 @@ import { Button } from './Button';
 import { v4 as uuidv4 } from 'uuid';
 import { IoSettingsOutline, IoAddOutline, IoPersonOutline } from 'react-icons/io5';
 import { useThemeStore } from '@/store/useTheme';
-
+import { useTimer } from '@/store/useTimer';
 import AuthButton from './AuthButton';
 
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
@@ -19,7 +19,8 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
     const notes = useNotesStore((s) => s.notes);
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const theme = useThemeStore((s) => s.theme);
-
+    const pomodoroCount = useTimer((s) => s.pomodoroCount);
+    
     const addSticky = () => {
         const stickyColor = theme == "dark" ? DARK_STICKY_COLORS[0] : LIGHT_STICKY_COLORS[0];
         const id = uuidv4();
@@ -36,7 +37,17 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
     // probably want to debounce the sync menu
     return (
         <div className="rounded-md flex justify-between py-10 px-5 relative z-10">
-            <h1 className="text-3xl font-bold text-text">Study Space</h1>
+            <div className='flex gap-2 items-center'>
+                <h1 className="text-3xl font-bold text-text ">Study Space</h1>
+                <Button
+                    variant='glassPlain'
+                    className='p-1 rounded-full flex items-center gap-2 pointer-events-none text-md'
+                >
+                    <span className='text-active'>{pomodoroCount}</span>
+                    
+                    <span>Sessions</span>
+                </Button>
+            </div>
             
             <div className='flex relative gap-2'>
 

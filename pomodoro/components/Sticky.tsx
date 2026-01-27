@@ -108,7 +108,7 @@ export default function StickyNote({
     >
       <AnimatePresence>
         <motion.div
-          className="w-full h-full flex flex-col rounded-lg overflow-hidden shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans border border-white/20"
+          className="w-full h-full flex flex-col rounded-lg shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans border border-white/20"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}

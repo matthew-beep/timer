@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNotesStore } from "@/store/useNotes";
 import { useThemeStore } from "@/store/useTheme";
+import { useTagsStore } from "@/store/useTags";
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 import { Button } from "@/components/Button";
 import { LuTag } from "react-icons/lu";
@@ -13,6 +14,7 @@ export default function StickyTagSelector({id, colorIndex } : {id: string, color
     const [showModal, setShowModal] = useState<boolean>(false);
     const updateNote = useNotesStore((s) => s.updateNote);
     const theme = useThemeStore((s) => s.theme);
+    const tags = useTagsStore((s) => s.tags);
 
     const stickyColors = theme === "dark" ? DARK_STICKY_COLORS : LIGHT_STICKY_COLORS;
     return (
@@ -26,9 +28,9 @@ export default function StickyTagSelector({id, colorIndex } : {id: string, color
             {showModal && (
                 <div className="
                     absolute
-                    bottom-full
+                    top-full
                     right-0
-                    mb-2
+                    mt-2
                     bg-black
                     text-white
                     rounded-md
