@@ -30,7 +30,7 @@ export default function NoteTagSelector({ id }: { id: string }) {
       {/* Display selected tags */}
       <div className="selected-tags">
         {noteTags.map(tag => (
-          <TagPill key={tag.id} tagId={tag.id} name={tag.name} color={tag.color} />
+          <TagPill key={tag.id} tagId={tag.id} name={tag.name} color={tag.color} id={id} />
         ))}
       </div>
 
