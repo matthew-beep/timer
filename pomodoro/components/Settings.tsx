@@ -209,7 +209,50 @@ export default function Settings({
             />
           </div>
           */}
+
+          <label className="text-xs font-medium tracking-wider mb-3 block">
+    SESSION COLORS
+  </label>
+  <div className="grid grid-cols-2 gap-4">
+    {/* Work Color */}
+    <div className="flex flex-col gap-2">
+      <label className="text-[10px] font-bold text-text/60 uppercase tracking-widest">
+        Work
+      </label>
+      <div className="flex items-center gap-2 bg-[var(--inputBg)] p-1.5 rounded-full border border-border">
+        <input
+          type="color"
+          value={useThemeStore.getState().colors.work}
+          onChange={(e) => useThemeStore.getState().updateColor('work', e.target.value)}
+          className="w-6 h-6 rounded-full overflow-hidden border-none bg-transparent cursor-pointer"
+        />
+        <span className="text-xs font-mono uppercase truncate">
+          {useThemeStore.getState().colors.work}
+        </span>
+      </div>
+    </div>
+
+    {/* Break Color */}
+    <div className="flex flex-col gap-2">
+      <label className="text-[10px] font-bold text-text/60 uppercase tracking-widest">
+        Break
+      </label>
+      <div className="flex items-center gap-2 bg-[var(--inputBg)] p-1.5 rounded-full border border-border">
+        <input
+          type="color"
+          value={useThemeStore.getState().colors.break}
+          onChange={(e) => useThemeStore.getState().updateColor('break', e.target.value)}
+          className="w-6 h-6 rounded-full overflow-hidden border-none bg-transparent cursor-pointer"
+        />
+        <span className="text-xs font-mono uppercase truncate">
+          {useThemeStore.getState().colors.break}
+        </span>
+      </div>
+    </div>
+  </div>
         </ModalSection>
+
+        
       )}
 
       {activeTab === 'theming' && (

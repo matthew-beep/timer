@@ -8,7 +8,7 @@ import { JSONContent } from '@tiptap/core';
 import { useEffect } from 'react';
 import StickyBottomBar from '@/components/StickyBottomBar';
 
-const Tiptap = ({ colorIndex, content, id, height, showToolbar, tagIds }: { tagIds: string[], colorIndex: number, content: JSONContent, id: string, height: number, showToolbar: boolean }) => {
+const Tiptap = ({ color, content, id, height, showToolbar, tagIds }: { tagIds: string[], color: string, content: JSONContent, id: string, height: number, showToolbar: boolean }) => {
     const updateNote = useNotesStore((s) => s.updateNote);
     const activeNoteId = useNotesStore(s => s.activeNoteId);
     const activeNote = activeNoteId === id;
@@ -32,7 +32,7 @@ const Tiptap = ({ colorIndex, content, id, height, showToolbar, tagIds }: { tagI
             const json: JSONContent = editor.getJSON();
             console.log("updating note content: ", json);
             console.log("plain text: " + editor.getText());
-            updateNote(id, { 
+            updateNote(id, {
                 text: json,
                 plainText: editor.getText()
             });
@@ -46,9 +46,9 @@ const Tiptap = ({ colorIndex, content, id, height, showToolbar, tagIds }: { tagI
         >
             {/* Editor layer */}
             <div
-                className="absolute inset-0 min-h-0 pl-3"
+                className="absolute inset-0 min-h-0 pl-3 z-0"
                 style={{
-                    paddingBottom: `${height < 250 || !activeNote ? "5px" : "50px"}`
+                    paddingBottom: `${height < 250 || !activeNote ? "5px" : "65px"}`
                 }}
             >
                 <EditorContent
@@ -60,10 +60,10 @@ const Tiptap = ({ colorIndex, content, id, height, showToolbar, tagIds }: { tagI
             {/* Menu overlay */}
             {editor && (
                 <StickyBottomBar
-                    colorIndex={colorIndex}
                     show={showToolbar}
                     id={id}
                     tagIds={tagIds}
+                    color={color}
                 >
                     <MenuBar editor={editor} />
                 </StickyBottomBar>

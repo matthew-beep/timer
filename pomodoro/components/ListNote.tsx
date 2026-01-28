@@ -1,13 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useNotesStore } from "@/store/useNotes";
+import { useNotesStore, StickyNote } from "@/store/useNotes";
+import { useTagsStore } from "@/store/useTags";
 import { Button } from "@/components/Button";
 import { generateHTML } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { JSONContent } from "@tiptap/core";
 import { useMemo } from "react";
-import { StickyNote } from "@/store/useNotes";
 import { IoTrashOutline } from "react-icons/io5";
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 import { useThemeStore } from "@/store/useTheme";
@@ -16,107 +16,100 @@ interface ListNoteProps extends StickyNote {
   index: number;
 }
 
-const normalizeNoteText = (text: unknown): JSONContent => {
-  if (text && typeof text === "object" && "type" in text) {
-    return text as JSONContent;
-  }
-
-  if (!text || (typeof text === "object" && Object.keys(text).length === 0)) {
-    return { type: "doc", content: [{ type: "paragraph" }] };
-  }
-
-  if (typeof text === "string") {
-    return {
-      type: "doc",
-      content: [
-        {
-          type: "paragraph",
-          content: text ? [{ type: "text", text }] : [],
-        },
-      ],
-    };
-  }
-
-  return { type: "doc", content: [{ type: "paragraph" }] };
-};
-
 export default function ListNote({
   index,
   text,
-  color,
   lastEdited,
   id,
-  colorIndex
+  colorIndex,
+  tagIds = []
 }: ListNoteProps) {
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const theme = useThemeStore((s) => s.theme);
+  const allTags = useTagsStore((s) => s.tags);
+
+  const noteTags = allTags.filter(t => tagIds.includes(t.id));
+
   const htmlContent = useMemo(() => {
     try {
-      const normalizedText = normalizeNoteText(text);
-      return generateHTML(normalizedText, [StarterKit]);
+      const normalized = (text && typeof text === 'object' && 'type' in text)
+        ? text as JSONContent
+        : { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: String(text) }] }] };
+
+      // StarterKit ensures we parse bold, italic, lists, etc.
+      return generateHTML(normalized, [StarterKit]);
     } catch {
       return "<p></p>";
     }
   }, [text]);
 
-  const formatNoteDate = (dateInput: string | number | Date) => {
-    const date = new Date(dateInput);
-    const now = new Date();
-
-    const isToday =
-      date.getDate() === now.getDate() &&
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear();
-
-    return isToday
-      ? date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-      : date.toLocaleDateString([], { month: "2-digit", day: "2-digit" });
-  };
   const bgColor = theme === "dark" ? DARK_STICKY_COLORS[colorIndex] : LIGHT_STICKY_COLORS[colorIndex];
 
   return (
     <motion.div
-      className="relative h-32 rounded-xl border p-2 flex flex-col justify-between"
+      onClick={() => console.log("Open full edit modal for:", id)}
+      className="group relative h-32 rounded-2xl border flex flex-col overflow-hidden cursor-pointer transition-all hover:bg-white/[0.03]"
       style={{
-        backgroundColor: `${bgColor}30`,
-        borderColor: bgColor,
+        backgroundColor: `${bgColor}15`,
+        borderColor: `${bgColor}40`,
+        backdropFilter: "blur(4px)",
       }}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+      transition={{ delay: index * 0.03 }}
     >
-      {/* CONTENT PREVIEW */}
-      <div className="flex-1 overflow-hidden relative">
-        <div
-          className="
-            prose prose-sm prose-invert
-            text-text
-            line-clamp-4
-            pointer-events-none
-          "
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
-        />
-      </div>
+      <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: bgColor }} />
 
-      {/* FOOTER */}
-      <div className="mt-2 flex items-center justify-between">
-        {/* TAGS PLACEHOLDER */}
-        <div className="flex gap-1">
-          {/* future tags go here */}
-          {/* <span className="text-xs px-2 py-0.5 rounded-full bg-white/10">tag</span> */}
+      <div className="p-3 flex-1 flex flex-col justify-between min-h-0">
+
+        {/* SCALED PREVIEW CONTENT */}
+        <div className="flex-1 overflow-hidden relative">
+          <div
+            /* The 'prose-xs' isn't a default, but we can simulate it with 
+               prose-sm and custom leading/font-size to keep styling 
+               while fitting more text.
+            */
+            className="
+              prose prose-invert prose-sm 
+              max-w-none
+              text-[12px] 
+              leading-[1.4]
+              text-text/90
+              line-clamp-3
+              pointer-events-none
+              /* targeting nested tiptap elements directly */
+              [&_p]:my-0 
+              [&_ul]:my-1 [&_ol]:my-1
+              [&_li]:my-0
+              [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-sm
+              [&_h1]:my-1 [&_h2]:my-1
+            "
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
+          {/* Subtle fade-out overlay so text doesn't hit the tags abruptly */}
+          <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-t from-[#0a1929]/10 to-transparent" />
         </div>
 
-        <div className="flex items-center gap-2">
-          {lastEdited && (
-            <span className="text-xs text-text/50">
-              {formatNoteDate(lastEdited)}
-            </span>
-          )}
+        {/* BOTTOM SECTION */}
+        <div className="mt-2 flex items-center justify-between">
+          <div className="flex flex-wrap gap-1 max-w-[70%]">
+            {noteTags.map(tag => (
+              <span
+                key={tag.id}
+                className="text-[9px] px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-text/50"
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
 
           <Button
             variant="plain"
-            className="h-5 w-5 flex items-center justify-center hover:text-red-500"
-            onClick={() => deleteNote(id)}
+            className="h-7 w-7 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400 transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteNote(id);
+            }}
           >
             <IoTrashOutline size={14} />
           </Button>

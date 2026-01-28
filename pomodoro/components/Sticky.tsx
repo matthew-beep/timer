@@ -48,7 +48,6 @@ export default function StickyNote({
   const [contextMenu, setContextMenu] = useState<boolean>(false);
 
   const [cursor, setCursor] = useState<string>("grab");
-  const [scale, setScale] = useState<number>(1);
   const [currHeight, setCurrHeight] = useState<number>(height);
   const resizeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -64,7 +63,7 @@ export default function StickyNote({
   }, [activeNoteId, id]);
 
 
-  
+
 
   return (
     <Rnd
@@ -108,17 +107,16 @@ export default function StickyNote({
     >
       <AnimatePresence>
         <motion.div
-          className="w-full h-full flex flex-col rounded-lg shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans border border-white/20"
+          className="overflow-hidden w-full h-full flex flex-col rounded-lg shadow-md hover:shadow-2xl transition-all duration-150 relative backdrop-blur-xl font-sans border border-white/20"
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           style={{
-            scale: scale,
             backgroundColor: `${bgColor}CC`,
           }}
           onMouseDown={() => {
             if (!activeNote) {
-              setContextMenu(false); 
+              setContextMenu(false);
             }
             setActiveNote(id);
           }}
@@ -128,9 +126,9 @@ export default function StickyNote({
           <motion.div
             className={`
             sticky-handle flex justify-between items-center 
-            font-semibold border-b border-white/5 h-12 p-2 relative z-50
+            font-semibold border-b border-white/5 h-12 p-2 relative z-50 rounded-t-lg 
           `}
-            style={{ 
+            style={{
               cursor: cursor,
               backgroundColor: `${bgColor}`,
 
@@ -194,14 +192,14 @@ export default function StickyNote({
           {/* Slide-Down Menu */}
           <AnimatePresence>
             {activeNote && contextMenu && (
-              <StickyContextMenu id={id} color={bgColor} tagIds={tagIds} colorIndex={colorIndex}/>
+              <StickyContextMenu id={id} color={bgColor} tagIds={tagIds} colorIndex={colorIndex} />
             )}
           </AnimatePresence>
 
           {/* Content */}
-          <div onMouseDown={() => setActiveNote(id)} className="w-full h-full flex relative">
-          {activeNote && contextMenu && (
-              <motion.div 
+          <div onMouseDown={() => setActiveNote(id)} className="w-full h-full flex flex-col relative overflow-hidden">
+            {activeNote && contextMenu && (
+              <motion.div
                 className="absolute inset-0 w-full h-full z-30 cursor-pointer" // Increased Z and removed pointer-events-none
                 initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
                 animate={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }} // Subtle dimming
@@ -210,26 +208,26 @@ export default function StickyNote({
               />
             )}
             {draw ?
-              (<StickyCanvas 
-                id={id} 
-                colorIndex={colorIndex}
-                paths={paths} 
-                inlineSvg={inlineSvg} 
+              (<StickyCanvas
+                id={id}
+                color={bgColor}
+                paths={paths}
+                inlineSvg={inlineSvg}
                 onColorChange={handleColorChange}
                 showToolbar={activeNote && currHeight > 250}
                 tagIds={tagIds}
               />
               )
               :
-              (<StickyText 
-                id={id} 
-                initialText={text} 
-                height={currHeight} 
-                colorIndex={colorIndex} 
-                showToolbar={activeNote && currHeight > 250} 
+              (<StickyText
+                id={id}
+                initialText={text}
+                height={currHeight}
+                color={bgColor}
+                showToolbar={activeNote && currHeight > 250}
                 tagIds={tagIds}
-                />
-                
+              />
+
               )
             }
 

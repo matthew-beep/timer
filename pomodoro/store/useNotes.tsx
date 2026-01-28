@@ -138,14 +138,15 @@ const transformSupabaseNote = (row: Tables<'sticky_notes'>): StickyNote => ({
 const transformToSupabaseNote = (note: StickyNote, userId: string) => ({
   id: note.id,
   user_id: userId,
-  x: note.x,
-  y: note.y,
-  width: note.width,
-  height: note.height,
-  z_index: note.zIndex,
+  // Round position and size values to integers (database expects INTEGER type)
+  x: Math.round(note.x),
+  y: Math.round(note.y),
+  width: Math.round(note.width),
+  height: Math.round(note.height),
+  z_index: Math.round(note.zIndex),
   text: note.text,
   color: note.color,
-  color_index: note.colorIndex,
+  color_index: Math.round(note.colorIndex ?? 0),
   mode: note.mode || 'text',
   plain_text: note.plainText,
   paths: note.paths || null,
@@ -352,6 +353,7 @@ export const useNotesStore = create<NotesStore>()(
             .from('sticky_notes')
             .upsert(supabaseNotes, { onConflict: 'id' });
           if (error) {
+            console.error('❌ Supabase upsert error:', error);
             // Categorize error
             const isTransient = isTransientError(error);
             timer.end({ success: false, error: error.message });
@@ -413,7 +415,7 @@ export const useNotesStore = create<NotesStore>()(
             return;
           }
           // Success - reset retry count
-          console.log(`✅ Synced ${dirtyNotes.length} notes`);
+          console.log(`✅ Synced ${dirtyNotes.length} notes to Supabase`);
 
           timer.end({ success: true, noteCount: dirtyNotes.length });
           telemetry.track('notes.sync.success', {

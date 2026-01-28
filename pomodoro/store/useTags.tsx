@@ -1,7 +1,7 @@
 // store/useTagsStore.ts
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import { StickyNote } from './useNotes';
+import { StickyNote, useNotesStore } from './useNotes';
 
 interface Tag {
   id: string;
@@ -18,7 +18,7 @@ interface PendingTagOperation {
 interface TagsStore {
   tags: Tag[];
   isLoading: boolean;
-  
+
   pendingOps: Map<string, PendingTagOperation>; // Per-note operations
 
   // Actions
@@ -27,7 +27,7 @@ interface TagsStore {
   createTag: (name: string, color?: string) => Promise<Tag>;
   deleteTag: (tagId: string) => Promise<void>;
   updateTag: (tagId: string, updates: Partial<Tag>) => Promise<void>;
-  syncTags: (newTags: Tag[]) => void;
+  syncTags: (newTags: Tag[]) => Promise<void>;
   clearTags: () => void;
 
   // Note-Tag associations
@@ -43,6 +43,31 @@ interface TagsStore {
 const tagOperationTimers = new Map<string, ReturnType<typeof setTimeout>>();
 const TAG_OPERATION_DEBOUNCE_MS = 500;
 
+// Color palette for tags
+const TAG_COLORS = [
+  '#ef4444', // red
+  '#f97316', // orange
+  '#f59e0b', // amber
+  '#eab308', // yellow
+  '#84cc16', // lime
+  '#22c55e', // green
+  '#10b981', // emerald
+  '#14b8a6', // teal
+  '#06b6d4', // cyan
+  '#0ea5e9', // sky
+  '#3b82f6', // blue
+  '#6366f1', // indigo
+  '#8b5cf6', // violet
+  '#a855f7', // purple
+  '#d946ef', // fuchsia
+  '#ec4899', // pink
+  '#f43f5e', // rose
+];
+
+const getRandomTagColor = () => {
+  return TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
+};
+
 export const useTagsStore = create<TagsStore>((set, get) => ({
   tags: [],
   isLoading: false,
@@ -54,32 +79,33 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
     set({ tags });
   },
   // Inside implementation
-  syncTags: (newTags: Tag[]) => {
+  syncTags: async (newTags: Tag[]) => {
     const currentTags = get().tags;
     const tagMap = new Map();
 
     // Add existing tags to map
     currentTags.forEach(t => tagMap.set(t.id, t));
-    
+
     // Add/Update with new tags fetched from the join
     newTags.forEach(t => tagMap.set(t.id, t));
 
     const mergedTags = Array.from(tagMap.values());
     set({ tags: mergedTags });
     console.log("Synced tags:", mergedTags);
+
     // If guest, keep localStorage in sync
-    const isGuest = !localStorage.getItem('supabase.auth.token'); // Or your auth check
-    if (isGuest) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       localStorage.setItem('sticky-tags', JSON.stringify(mergedTags));
     }
   },
   loadTags: async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (user) {
       // Load from Supabase for logged-in users
       set({ isLoading: true });
-      
+
       const { data, error } = await supabase
         .from('tags')
         .select('*')
@@ -89,6 +115,7 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
       if (!error && data) {
         set({ tags: data, isLoading: false });
       } else {
+        console.error('Failed to load tags from Supabase:', error);
         set({ isLoading: false });
       }
     } else {
@@ -99,14 +126,15 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
     }
   },
 
-  createTag: async (name: string, color = '#6b7280') => {
+  createTag: async (name: string, color?: string) => {
+    const tagColor = color || getRandomTagColor();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (user) {
       // Create in Supabase
       const { data, error } = await supabase
         .from('tags')
-        .insert({ user_id: user.id, name: name.trim(), color })
+        .insert({ user_id: user.id, name: name.trim(), color: tagColor })
         .select()
         .single();
 
@@ -118,9 +146,9 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
       const newTag: Tag = {
         id: crypto.randomUUID(),
         name: name.trim(),
-        color,
+        color: tagColor,
       };
-      
+
       const updatedTags = [...get().tags, newTag];
       set({ tags: updatedTags });
       localStorage.setItem('sticky-tags', JSON.stringify(updatedTags));
@@ -130,19 +158,42 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
 
   deleteTag: async (tagId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (user) {
       const { error } = await supabase.from('tags').delete().eq('id', tagId);
       if (error) throw error;
     }
-    
+
     // Update local state (for both logged-in and guest)
     const updatedTags = get().tags.filter(t => t.id !== tagId);
     set({ tags: updatedTags });
-    
+
+    // Remove tag from all notes in the notes store (for both logged-in and guest)
+    const notesStore = useNotesStore.getState();
+    notesStore.notes.forEach(note => {
+      if (note.tagIds?.includes(tagId)) {
+        notesStore.updateNote(note.id, {
+          tagIds: note.tagIds.filter(id => id !== tagId)
+        });
+      }
+    });
+
+    // Clear any pending operations involving this tag
+    const { pendingOps } = get();
+    pendingOps.forEach((ops, noteId) => {
+      ops.toAdd.delete(tagId);
+      ops.toRemove.delete(tagId);
+
+      // If no operations left for this note, remove the entry
+      if (ops.toAdd.size === 0 && ops.toRemove.size === 0) {
+        pendingOps.delete(noteId);
+      }
+    });
+    set({ pendingOps: new Map(pendingOps) });
+
     if (!user) {
       localStorage.setItem('sticky-tags', JSON.stringify(updatedTags));
-      
+
       // Also remove this tag from all notes in localStorage
       const storedNotes = localStorage.getItem('sticky-notes');
       if (storedNotes) {
@@ -158,7 +209,7 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
 
   updateTag: async (tagId: string, updates: Partial<Tag>) => {
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (user) {
       const { data, error } = await supabase
         .from('tags')
@@ -168,12 +219,12 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
         .single();
 
       if (error) throw error;
-      
+
       set((state) => ({
         tags: state.tags.map(t => t.id === tagId ? data : t)
       }));
     } else {
-      const updatedTags = get().tags.map(t => 
+      const updatedTags = get().tags.map(t =>
         t.id === tagId ? { ...t, ...updates } : t
       );
       set({ tags: updatedTags });
@@ -182,16 +233,12 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
   },
 
   addTagToNote: async (noteId: string, tagId: string) => {
-
+    console.log("adding tag to note: ", noteId, tagId);
     const { data: { user } } = await supabase.auth.getUser();
     const { pendingOps } = get();
 
 
-    let ops = pendingOps.get(noteId) || {
-      noteId,
-      toAdd: new Set(),
-      toRemove: new Set()
-    };
+    let ops = pendingOps.get(noteId);
 
     if (!ops) {
       ops = { noteId, toAdd: new Set(), toRemove: new Set() };
@@ -208,7 +255,18 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
 
     set({ pendingOps: new Map(pendingOps) });
 
-    
+    // Optimistically update the note's tagIds in the notes store
+    const notesStore = useNotesStore.getState();
+    const currentNote = notesStore.notes.find(n => n.id === noteId);
+    if (currentNote) {
+      const currentTagIds = currentNote.tagIds || [];
+      if (!currentTagIds.includes(tagId)) {
+        notesStore.updateNote(noteId, {
+          tagIds: [...currentTagIds, tagId]
+        });
+      }
+    }
+
     // Optimistically update localStorage for guests immediately
     if (!user) {
       const storedNotes = localStorage.getItem('sticky-notes');
@@ -240,17 +298,40 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
   },
 
   removeTagFromNote: async (noteId: string, tagId: string) => {
+    console.log("removing tag from note: ", noteId, tagId);
     const { data: { user } } = await supabase.auth.getUser();
-    
-    if (user) {
-      const { error } = await supabase
-        .from('note_tags')
-        .delete()
-        .eq('note_id', noteId)
-        .eq('tag_id', tagId);
-      if (error) throw error;
+    const { pendingOps } = get();
+
+    // Get or create pending ops for this note
+    let ops = pendingOps.get(noteId);
+
+    if (!ops) {
+      ops = { noteId, toAdd: new Set(), toRemove: new Set() };
+      pendingOps.set(noteId, ops);
+    }
+
+    // If we were going to add this tag, cancel that
+    if (ops.toAdd.has(tagId)) {
+      ops.toAdd.delete(tagId);
     } else {
-      // For guest users, update the note's tagIds in localStorage
+      // Otherwise, queue it for removal
+      ops.toRemove.add(tagId);
+    }
+
+    set({ pendingOps: new Map(pendingOps) });
+
+    // Optimistically update the note's tagIds in the notes store
+    const notesStore = useNotesStore.getState();
+    const currentNote = notesStore.notes.find(n => n.id === noteId);
+    if (currentNote) {
+      const currentTagIds = currentNote.tagIds || [];
+      notesStore.updateNote(noteId, {
+        tagIds: currentTagIds.filter(id => id !== tagId)
+      });
+    }
+
+    // Optimistically update localStorage for guests immediately
+    if (!user) {
       const storedNotes = localStorage.getItem('sticky-notes');
       if (storedNotes) {
         const notes: StickyNote[] = JSON.parse(storedNotes);
@@ -266,60 +347,106 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
         localStorage.setItem('sticky-notes', JSON.stringify(updatedNotes));
       }
     }
+
+    // Debounce the actual sync (reuse same timer as addTagToNote)
+    if (tagOperationTimers.has(noteId)) {
+      clearTimeout(tagOperationTimers.get(noteId)!);
+    }
+
+    const timer = setTimeout(() => {
+      get().flushTagOperations(noteId);
+    }, TAG_OPERATION_DEBOUNCE_MS);
+
+    tagOperationTimers.set(noteId, timer);
   },
 
-    // Execute the batched operations
+  // Execute the batched operations
   flushTagOperations: async (noteId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return; // Guest operations are already in localStorage
+    if (!user) {
+      console.log('⚠️ No user, skipping tag operations flush');
+      return; // Guest operations are already in localStorage
+    }
 
     const { pendingOps } = get();
     const ops = pendingOps.get(noteId);
-    
+
     if (!ops || (ops.toAdd.size === 0 && ops.toRemove.size === 0)) {
+      console.log(`⚠️ No operations to flush for note ${noteId}`);
       return;
     }
 
-    console.log(`Flushing tag operations for note ${noteId}:`, {
-      toAdd: Array.from(ops.toAdd),
-      toRemove: Array.from(ops.toRemove)
+    // Remove any tags from toAdd that are also in toRemove (shouldn't happen, but be safe)
+    const tagsToAdd = Array.from(ops.toAdd).filter(tagId => !ops.toRemove.has(tagId));
+    const tagsToRemove = Array.from(ops.toRemove);
+
+    console.log(`🔄 Flushing tag operations for note ${noteId}:`, {
+      toAdd: tagsToAdd,
+      toRemove: tagsToRemove,
+      userId: user.id
     });
 
     try {
-      // Batch delete
-      if (ops.toRemove.size > 0) {
-        const { error: deleteError } = await supabase
+      // Batch delete first (remove tags)
+      if (tagsToRemove.length > 0) {
+        console.log(`🗑️ Deleting ${tagsToRemove.length} tag associations...`);
+        const { data: deleteData, error: deleteError } = await supabase
           .from('note_tags')
           .delete()
           .eq('note_id', noteId)
-          .in('tag_id', Array.from(ops.toRemove));
+          .in('tag_id', tagsToRemove)
+          .select();
 
-        if (deleteError) throw deleteError;
+        if (deleteError) {
+          console.error('❌ Delete error:', deleteError);
+          throw deleteError;
+        }
+        console.log(`✅ Deleted ${deleteData?.length || 0} tag associations`);
       }
 
-      // Batch insert
-      if (ops.toAdd.size > 0) {
-        const inserts = Array.from(ops.toAdd).map(tagId => ({
+      // Batch insert (add tags) - use insert instead of upsert to avoid conflicts
+      if (tagsToAdd.length > 0) {
+        console.log(`➕ Inserting ${tagsToAdd.length} tag associations...`);
+        const inserts = tagsToAdd.map(tagId => ({
           note_id: noteId,
           tag_id: tagId
         }));
 
-        const { error: insertError } = await supabase
+        const { data: insertData, error: insertError } = await supabase
           .from('note_tags')
-          .upsert(inserts, { onConflict: 'note_id,tag_id' });
+          .insert(inserts)
+          .select();
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('❌ Insert error:', insertError);
+          // If it's a unique constraint violation, the tag might already exist
+          // This is okay - we can ignore it
+          if (insertError.code === '23505') {
+            console.log('⚠️ Some tags already exist (unique constraint), continuing...');
+          } else {
+            throw insertError;
+          }
+        } else {
+          console.log(`✅ Inserted ${insertData?.length || 0} tag associations`);
+        }
       }
 
-      // Clear this note's pending ops
+      // Clear this note's pending ops only after successful sync
       pendingOps.delete(noteId);
       set({ pendingOps: new Map(pendingOps) });
-      
-      console.log(`✅ Synced tag operations for note ${noteId}`);
-    } catch (error) {
-      console.error('Failed to flush tag operations:', error);
-      // Keep operations in queue for retry
-      // Could implement retry logic here
+
+      console.log(`✅ Successfully synced tag operations for note ${noteId}`);
+    } catch (err: unknown) {
+      console.error('❌ Failed to flush tag operations:', err);
+      const error = err as { message?: string; code?: string; details?: string; hint?: string };
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
+      // Keep operations in queue for retry - don't clear them on error
+      // TODO: Implement retry logic with exponential backoff
     }
   },
 
@@ -328,12 +455,12 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
     return allTags.filter(tag => tagIds.includes(tag.id));
   },
   clearTags: () => {
-    set({ 
-      tags: [], 
+    set({
+      tags: [],
       pendingOps: new Map(),
-      isLoading: false 
+      isLoading: false
     });
-    
+
     // Clear any pending timers
     tagOperationTimers.forEach(timer => clearTimeout(timer));
     tagOperationTimers.clear();

@@ -8,7 +8,7 @@ import { LuTag } from "react-icons/lu";
 import NoteTagSelector from "./NoteTagSelecter";
 
 
-export default function StickyTagSelector({id, colorIndex } : {id: string, colorIndex: number }) {
+export default function StickyTagSelector({id, colorIndex, setIsExpanded, isExpanded } : {id: string, colorIndex: number, setIsExpanded: (expanded: boolean) => void, isExpanded: boolean }) {
 
     
     const [showModal, setShowModal] = useState<boolean>(false);
@@ -20,7 +20,7 @@ export default function StickyTagSelector({id, colorIndex } : {id: string, color
     return (
         <Button
             className="flex items-center gap-1 rounded-full h-4 w-4 relative cursor-pointer"
-            onClick={() => setShowModal(!showModal)}
+            onClick={() => setIsExpanded(!isExpanded)}
             variant="plain"
         >
             <LuTag />

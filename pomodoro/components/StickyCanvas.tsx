@@ -19,7 +19,6 @@ import StickyBottomBar from "./StickyBottomBar";
 interface StickyCanvasProps {
   id: string;
   initialText?: string;
-  colorIndex: number;
   x?: number;
   y?: number;
   width?: number;
@@ -30,14 +29,14 @@ interface StickyCanvasProps {
   onColorChange: (color: string) => void;
   showToolbar: boolean;
   tagIds: string[];
-
+  color: string;
 }
 
 export default function StickyCanvas({
   id = "",
   paths = [],
   inlineSvg = "",
-  colorIndex = 0,
+  color = "",
   showToolbar,
   tagIds = [],
 }: StickyCanvasProps) {
@@ -108,7 +107,9 @@ export default function StickyCanvas({
 
 
   return (
-    <div className="w-full h-full relative outline-none overflow-hidden">
+    <div
+      className="w-full h-full relative outline-none overflow-hidden"
+    >
 
       {/* Top Bar */}
 
@@ -143,21 +144,21 @@ export default function StickyCanvas({
 
       {editCanvas &&
 
-    <StickyBottomBar
-        colorIndex={colorIndex}
-        tagIds={tagIds}
-        show={showToolbar}
-        id={id}
+        <StickyBottomBar
+          tagIds={tagIds}
+          show={showToolbar}
+          id={id}
+          color={color}
         >
-        <StickyCanvasToolbar
-          canvasRef={canvasRef}
-          strokeColor={strokeColor}
-          setStrokeColor={setStrokeColor}
-          eraserMode={eraserMode}
-          setEraserMode={setEraserMode}
-          disableEraser={disableEraser}
-        />
-      </StickyBottomBar>
+          <StickyCanvasToolbar
+            canvasRef={canvasRef}
+            strokeColor={strokeColor}
+            setStrokeColor={setStrokeColor}
+            eraserMode={eraserMode}
+            setEraserMode={setEraserMode}
+            disableEraser={disableEraser}
+          />
+        </StickyBottomBar>
       }
     </div>
   );

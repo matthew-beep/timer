@@ -100,49 +100,56 @@ input[type="color" i]::-moz-color-swatch {
   border-radius: 50%;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin: 0; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 
 
 
-/* Styles the whole scrollbar (width/height) */
+/* --- Ultra-Minimalist Dark Scrollbar --- */
+
+/* 1. Kill the arrows (Buttons) and the Corner */
+::-webkit-scrollbar-button,
+::-webkit-scrollbar-corner {
+  display: none !important;
+  width: 0;
+  height: 0;
+}
+
+/* 2. The container (Thinner for minimalism) */
 ::-webkit-scrollbar {
-  width: 8px;
-  /* vertical scrollbar width - made thinner */
-  height: 8px;
-  /* horizontal scrollbar height */
+  width: 4px;
+  height: 4px;
 }
 
-/* Styles the track (background) */
+/* 3. The Track - Pure transparent to avoid "lanes" */
 ::-webkit-scrollbar-track {
-  opacity: 0;
-  border-radius: 5px;
-  margin-right: 4px;
-  /* offset from the right */
+  background: transparent;
 }
 
-/* Styles the thumb (draggable handle) */
+/* 4. The Thumb - Darker and Rounded */
 ::-webkit-scrollbar-thumb {
-  background: #A9A9AB;
-  /* light gray */
-  border-radius: 5px;
-  border-right: 4px solid transparent;
-  /* creates offset from right edge */
-  background-clip: padding-box;
+  /* Darker Onyx color with higher opacity */
+  background: rgba(30, 30, 30, 0.8);
+  border-radius: 100px;
+  /* Add a tiny border of the same color to "fatten" it without losing rounding */
+  border: 1px solid rgba(30, 30, 30, 0.1);
 }
 
-/* Styles the thumb on hover */
+/* 5. Hover state - Almost solid black */
 ::-webkit-scrollbar-thumb:hover {
-  background: #8B8B8D;
-  /* slightly darker on hover */
-  background-clip: padding-box;
+  background: rgba(0, 0, 0, 0.9);
 }
 
+/* For Firefox - Applying the darker theme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(30, 30, 30, 0.8) transparent;
+}
 
 /* Basic editor styles */
 .tiptap {
