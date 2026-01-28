@@ -104,7 +104,7 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                       onClick={() => setSelectedTagId(tag.id === selectedTagId ? null : tag.id)}
                       className={`cursor-pointer transition-transform active:scale-95 ${selectedTagId === tag.id ? 'ring-2 ring-active ring-offset-2 ring-offset-cardBg rounded-full' : 'opacity-70'}`}
                     >
-                      <TagPill tagId={tag.id} name={tag.name} color={tag.color} />
+                      <TagPill tagId={tag.id} name={tag.name} color={tag.color} id={""}/>
                     </div>
                   ))}
                 </div>
