@@ -37,7 +37,7 @@ export default function NoteTagSelector({ id }: { id: string }) {
       {/* Tag picker */}
       <div className="tag-picker">
         {allTags.map(tag => (
-          <TagPill key={tag.id} tagId={tag.id} name={tag.name} color={tag.color} />
+          <TagPill key={tag.id} tagId={tag.id} name={tag.name} color={tag.color} id={tag.id} />
         ))}
       </div>
     </div>
