@@ -10,7 +10,7 @@ import { CiUndo } from "react-icons/ci";
 
 
 
-export function TimerControls() {
+export function TimerControls({handleStart} : {handleStart: () => void}) {
   const start = useTimer((s) => s.start);
   const pause = useTimer((s) => s.pause);
   const isRunning = useTimer((s) => s.isRunning);
@@ -51,7 +51,7 @@ export function TimerControls() {
           if (isRunning) {
             pause();
           } else {
-            start();
+            handleStart();
           }
         }}
         className="w-12 h-12 px-4 py-2 rounded-full flex items-center justify-center"

@@ -39,14 +39,15 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
         <div className="rounded-md flex justify-between py-10 px-5 relative z-10">
             <div className='flex gap-2 items-center'>
                 <h1 className="text-3xl font-bold text-text ">Study Space</h1>
-                <Button
+
+                {false && <Button
                     variant='glassPlain'
                     className='p-1 rounded-full flex items-center gap-2 pointer-events-none text-md'
                 >
                     <span className='text-active'>{pomodoroCount}</span>
                     
                     <span>Sessions</span>
-                </Button>
+                </Button>}
             </div>
             
             <div className='flex relative gap-2'>

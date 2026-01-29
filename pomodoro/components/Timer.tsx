@@ -4,7 +4,7 @@ import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
 import { useEffect, useRef, useState } from "react"; 
 import { RiCollapseDiagonalFill } from "react-icons/ri";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 export default function Timer() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
   const mode = useTimer((s) => s.mode);
@@ -12,11 +12,12 @@ export default function Timer() {
   const isRunning = useTimer((s) => s.isRunning);
   const audioRef = useRef<HTMLAudioElement>(null)
   const toggleCollapsed = useTimer(s => s.toggleCollapsed);
-
+  const pomodoroCount = useTimer(s => s.pomodoroCount);
   const justCompleted = useTimer(s => s.justCompleted);
   const complete = useTimer(s => s.complete);
   const clearCompletion = useTimer(s => s.clearCompletion);
   const start = useTimer(s => s.start);
+
   const [quote, setQuote] = useState<string | null>("The secret of getting ahead is getting started");
   const placeholder = "The secret of getting ahead is getting started";
   const method = useTimer(s => s.method);
@@ -42,14 +43,39 @@ export default function Timer() {
     };
   }, [timeRemaining, isRunning, mode]);
   
-  useEffect(() => {
-    if (!justCompleted) return;
+useEffect(() => {
+  if (!justCompleted || !audioRef.current) return;
 
-    audioRef.current?.play().catch(console.error);
+  const playAudio = async () => {
+    try {
+      audioRef.current!.currentTime = 0;
+      await audioRef.current!.play();
+    } catch (error) {
+      // This is where the "Request not allowed" error is caught
+      console.warn("Autoplay blocked. User needs to interact with the page first.");
+    }
+  };
 
-  }, [justCompleted]);
+  playAudio();
+}, [justCompleted]);
 
   const [isHovered, setIsHovered] = useState(false);
+
+  // Inside your Timer.tsx or where you manage the audio ref
+  const handleStart = async () => {
+    // Prime the audio so it can play later in the useEffect
+    if (audioRef.current) {
+      try {
+        // Play and immediately pause/reset
+        await audioRef.current.play();
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      } catch (e) {
+        console.log("Audio priming failed, will try again on next click");
+      }
+    }
+    start(); // Your Zustand start function
+  };
 
 
   return (
@@ -148,8 +174,52 @@ export default function Timer() {
         }}
       />
 
-      <TimerControls />
-      
+      {/* Session Progress Dots */}
+      <div className="flex justify-center items-center gap-2 py-2">
+        {method.name === "Pomodoro" ? (
+          Array.from({ length: 4 }).map((_, i) => {
+            const currentCyclePosition = pomodoroCount % 4;
+            
+            // If we are on session 4, we want to show dots 1, 2, 3 as finished.
+            // If pomodoroCount is 4, 8, etc., it means a full cycle was just finished.
+            const isCycleComplete = pomodoroCount > 0 && currentCyclePosition === 0;
+            
+            const isCompleted = isCycleComplete || currentCyclePosition > i;
+            const isActive = !isCycleComplete && currentCyclePosition === i;
+
+            // This is the hex for your 'active' theme color. 
+            // If you have it in a CSS variable, use 'var(--active)'
+            const activeThemeColor = "var(--active)"; 
+
+            return (
+              <motion.div
+                key={i}
+                initial={false}
+                animate={{
+                  scale: isActive ? 1.2 : 1,
+                  // When done: use theme color. When active: use theme color + glow. Otherwise: faint.
+                  boxShadow: isActive ? `0 0 12px var(--active)` : "none",
+                  opacity: isCompleted || isActive ? 1 : 0.3,
+                }}
+                className={`w-2 h-2 rounded-full border border-white/5 transition-colors ${isActive || isCompleted ? 'bg-active' : 'bg-gray-400'}`}
+                title={`Session ${i + 1}`}
+              />
+            );
+          })
+        ) : (
+          /* Cambridge Tally */
+          <div className="flex gap-1.5 items-center">
+            <span className="text-[10px] text-text/40 font-bold tracking-widest uppercase">Sessions</span>
+            {Array.from({ length: Math.min(pomodoroCount, 10) }).map((_, i) => (
+              <div key={i} className="w-1.5 h-1.5 rounded-full bg-active" />
+            ))}
+            <span className="text-xs font-medium text-text ml-1">{pomodoroCount}</span>
+          </div>
+        )}
+      </div>
+
+      <TimerControls  handleStart={handleStart} />
+
     </div>
   );
 }
