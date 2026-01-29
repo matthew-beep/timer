@@ -1,4 +1,11 @@
 import { create } from "zustand";
+import { persist } from 'zustand/middleware';
+import { saveUserSettings } from '@/lib/userSettings';
+import { getCurrentUser } from '@/lib/auth-helpers';
+
+const SETTINGS_DEBOUNCE_MS = 2000; // 2 seconds
+let timerSettingsSyncTimeout: ReturnType<typeof setTimeout> | null = null;
+
 type PomodoroMethod = {
   name: "Pomodoro";
   durations: {
@@ -34,7 +41,7 @@ export const CAMBRIDGE = {
     break: 17 * 60,
   },
 } as const;
-  
+
 
 interface TimerState {
   method: Method;
@@ -67,112 +74,116 @@ interface TimerState {
   toggleCollapsed: () => void;
 }
 
-export const useTimer = create<TimerState>((set, get) => ({
-  mode: "focus",
-  method: POMODORO,
-  durations: {...POMODORO.durations },
-  goal: null,
-  duration: POMODORO.durations.focus,
-  timeRemaining: POMODORO.durations.focus,
-  isRunning: false,
-  collapsed: false,
-  toggleCollapsed: () => {
-    set((s) => ({ collapsed: !s.collapsed }))
-  },
-  
-  setMethod: (method) => {
+export const useTimer = create<TimerState>(
 
-    const defaultMode = "focus";
+  (set, get) => ({
+    mode: "focus",
+    method: POMODORO,
+    durations: { ...POMODORO.durations },
+    goal: null,
+    duration: POMODORO.durations.focus,
+    timeRemaining: POMODORO.durations.focus,
+    isRunning: false,
+    collapsed: false,
+    toggleCollapsed: () => {
+      set((s) => ({ collapsed: !s.collapsed }))
+    },
 
-    set({
-      method,
-      mode: defaultMode,
-      durations: {...method.durations},
-      duration: method.durations.focus,
-      timeRemaining: method.durations.focus,
-      isRunning: false,
-    });
-  },
+    setMethod: (method) => {
 
-  setPomodoro: () => get().setMethod(POMODORO),
-  setCambridge: () => get().setMethod(CAMBRIDGE),
+      const defaultMode = "focus";
 
-  setMode: (mode) => {
-    const { durations } = get();
-
-    if (!(mode in durations)) return; // runtime safety + TS narrowing
-
-    const d = durations[mode];
-
-    set({
-      mode,
-      duration: d,
-      timeRemaining: d,
-      isRunning: false,
-    });
-  },
-
-  setDurationValue: (mode, valueMinutes) => {
-    const seconds = valueMinutes * 60;
-
-    set((s) => ({
-      durations: {
-        ...s.durations,
-        [mode]: seconds,
-      },
-    }));
-
-    // If you're editing the active mode, update duration + reset timer
-    if (get().mode === mode) {
       set({
-        duration: seconds,
-        timeRemaining: seconds,
+        method,
+        mode: defaultMode,
+        durations: { ...method.durations },
+        duration: method.durations.focus,
+        timeRemaining: method.durations.focus,
+        isRunning: false,
       });
-    }
-  },
+    },
 
-  start: () => set({ isRunning: true }),
-  pause: () => set({ isRunning: false }),
-  reset: () =>
-    set((state) => ({
-      timeRemaining: state.duration,
-      isRunning: false,
-    })),
+    setPomodoro: () => get().setMethod(POMODORO),
+    setCambridge: () => get().setMethod(CAMBRIDGE),
 
-  tick: () => {
-    const { timeRemaining, isRunning } = get();
-    if (!isRunning) return;
-    if (timeRemaining <= 1) {
-      set({ isRunning: false, timeRemaining: 0, justCompleted: true });
-    } else {
-      set({ timeRemaining: timeRemaining - 1 });
-    }
-  },
+    setMode: (mode) => {
+      const { durations } = get();
 
-  complete: () => {
-    const { mode, method, pomodoroCount } = get();
+      if (!(mode in durations)) return; // runtime safety + TS narrowing
 
-    if (method.name === "Pomodoro") {
-      if (mode === "focus") {
-        const next = pomodoroCount + 1;
-        const isLong = next % 4 === 0;
+      const d = durations[mode];
 
-        set({ pomodoroCount: next });
-        get().setMode(isLong ? "long" : "short");
-      } else {
-        get().setMode("focus");
+      set({
+        mode,
+        duration: d,
+        timeRemaining: d,
+        isRunning: false,
+      });
+    },
+
+    setDurationValue: (mode, valueMinutes) => {
+      const seconds = valueMinutes * 60;
+
+      set((s) => ({
+        durations: {
+          ...s.durations,
+          [mode]: seconds,
+        },
+      }));
+
+      // If you're editing the active mode, update duration + reset timer
+      if (get().mode === mode) {
+        set({
+          duration: seconds,
+          timeRemaining: seconds,
+        });
       }
-    }
+    },
 
-    if (method.name === "Cambridge") {
-      get().setMode(mode === "focus" ? "break" : "focus");
-    }
-  },
+    start: () => set({ isRunning: true }),
+    pause: () => set({ isRunning: false }),
+    reset: () =>
+      set((state) => ({
+        timeRemaining: state.duration,
+        isRunning: false,
+      })),
 
-  justCompleted: false,
+    tick: () => {
+      const { timeRemaining, isRunning } = get();
+      if (!isRunning) return;
+      if (timeRemaining <= 1) {
+        set({ isRunning: false, timeRemaining: 0, justCompleted: true });
+      } else {
+        set({ timeRemaining: timeRemaining - 1 });
+      }
+    },
 
-  clearCompletion: () => set({ justCompleted: false }),
+    complete: () => {
+      const { mode, method, pomodoroCount } = get();
 
-  pomodoroCount: 0,
-  updatePomodoroCount: () => set((state) => ({ pomodoroCount: state.pomodoroCount + 1})),
-}));
+      if (method.name === "Pomodoro") {
+        if (mode === "focus") {
+          const next = pomodoroCount + 1;
+          const isLong = next % 4 === 0;
+
+          set({ pomodoroCount: next });
+          get().setMode(isLong ? "long" : "short");
+        } else {
+          get().setMode("focus");
+        }
+      }
+
+      if (method.name === "Cambridge") {
+        get().setMode(mode === "focus" ? "break" : "focus");
+      }
+    },
+
+    justCompleted: false,
+
+    clearCompletion: () => set({ justCompleted: false }),
+
+    pomodoroCount: 0,
+    updatePomodoroCount: () => set((state) => ({ pomodoroCount: state.pomodoroCount + 1 })),
+  })
+
+);

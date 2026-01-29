@@ -47,7 +47,7 @@ export default function Settings({
   useEffect(() => {
     console.log("durations changed: ", durations);
   }, [durations]);
-  
+
 
 
 
@@ -113,7 +113,7 @@ export default function Settings({
         <ModalSection>
           <div className="flex items-center justify-between mb-2">
             <label className="text-xs font-medium tracking-wider">
-              {selectedTheme === 'dark' ? 'Pomodoro' : 'Cambridge'}
+              {method.name === 'Pomodoro' ? 'Pomodoro' : 'Cambridge'}
             </label>
             <Switch
               checked={method === POMODORO}
@@ -130,8 +130,8 @@ export default function Settings({
           </div>
           {Object.entries(durations).map(([mode, seconds]) => {
             // Determine what value to show: local typing state or the store value
-            const displayValue = localDurations[mode] !== undefined 
-              ? localDurations[mode] 
+            const displayValue = localDurations[mode] !== undefined
+              ? localDurations[mode]
               : Math.floor(seconds / 60).toString();
 
             return (
@@ -145,11 +145,11 @@ export default function Settings({
                   type="number"
                   value={displayValue}
                   onFocus={() => {
-                      // Optional: select all text on focus for easier editing
+                    // Optional: select all text on focus for easier editing
                   }}
                   onChange={(e) => {
                     const val = e.target.value;
-                    
+
                     // Allow the user to clear the input
                     setLocalDurations(prev => ({ ...prev, [mode]: val }));
 
@@ -211,48 +211,48 @@ export default function Settings({
           */}
 
           <label className="text-xs font-medium tracking-wider mb-3 block">
-    SESSION COLORS
-  </label>
-  <div className="grid grid-cols-2 gap-4">
-    {/* Work Color */}
-    <div className="flex flex-col gap-2">
-      <label className="text-[10px] font-bold text-text/60 uppercase tracking-widest">
-        Work
-      </label>
-      <div className="flex items-center gap-2 bg-[var(--inputBg)] p-1.5 rounded-full border border-border">
-        <input
-          type="color"
-          value={useThemeStore.getState().colors.work}
-          onChange={(e) => useThemeStore.getState().updateColor('work', e.target.value)}
-          className="w-6 h-6 rounded-full overflow-hidden border-none bg-transparent cursor-pointer"
-        />
-        <span className="text-xs font-mono uppercase truncate">
-          {useThemeStore.getState().colors.work}
-        </span>
-      </div>
-    </div>
+            SESSION COLORS
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            {/* Work Color */}
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold text-text/60 uppercase tracking-widest">
+                Work
+              </label>
+              <div className="flex items-center gap-2 bg-[var(--inputBg)] p-1.5 rounded-full border border-border">
+                <input
+                  type="color"
+                  value={useThemeStore.getState().colors.work}
+                  onChange={(e) => useThemeStore.getState().updateColor('work', e.target.value)}
+                  className="w-6 h-6 rounded-full overflow-hidden border-none bg-transparent cursor-pointer"
+                />
+                <span className="text-xs font-mono uppercase truncate">
+                  {useThemeStore.getState().colors.work}
+                </span>
+              </div>
+            </div>
 
-    {/* Break Color */}
-    <div className="flex flex-col gap-2">
-      <label className="text-[10px] font-bold text-text/60 uppercase tracking-widest">
-        Break
-      </label>
-      <div className="flex items-center gap-2 bg-[var(--inputBg)] p-1.5 rounded-full border border-border">
-        <input
-          type="color"
-          value={useThemeStore.getState().colors.break}
-          onChange={(e) => useThemeStore.getState().updateColor('break', e.target.value)}
-          className="w-6 h-6 rounded-full overflow-hidden border-none bg-transparent cursor-pointer"
-        />
-        <span className="text-xs font-mono uppercase truncate">
-          {useThemeStore.getState().colors.break}
-        </span>
-      </div>
-    </div>
-  </div>
+            {/* Break Color */}
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold text-text/60 uppercase tracking-widest">
+                Break
+              </label>
+              <div className="flex items-center gap-2 bg-[var(--inputBg)] p-1.5 rounded-full border border-border">
+                <input
+                  type="color"
+                  value={useThemeStore.getState().colors.break}
+                  onChange={(e) => useThemeStore.getState().updateColor('break', e.target.value)}
+                  className="w-6 h-6 rounded-full overflow-hidden border-none bg-transparent cursor-pointer"
+                />
+                <span className="text-xs font-mono uppercase truncate">
+                  {useThemeStore.getState().colors.break}
+                </span>
+              </div>
+            </div>
+          </div>
         </ModalSection>
 
-        
+
       )}
 
       {activeTab === 'theming' && (
@@ -308,7 +308,7 @@ export default function Settings({
                       updateSelectedBackground(i);
                     }}
                   >
-                    <Image 
+                    <Image
                       src={bg.thumbnail}
                       alt={bg.name}
                       width={1000}
