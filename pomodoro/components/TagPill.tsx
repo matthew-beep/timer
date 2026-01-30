@@ -37,7 +37,7 @@ export const TagPill: React.FC<TagPillProps> = ({
       }}
       className={`
         inline-flex items-center gap-1 px-2.5 py-0.5 
-        rounded-full border text-[10px] font-semibold tracking-wide
+        rounded-full border text-xs font-semibold tracking-wide
         transition-all duration-200 select-none relative overflow-hidden 
         ${className} ${isHovered && "shadow-md pr-1"}
       `}

@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useNotesStore } from '@/store/useNotes';
 import { useMemo, useState } from 'react';
 import ListNote from '@/components/ListNote';
-import Modal, { ModalSection, ModalDivider } from "@/components/Modal";
-import { IoAddOutline, IoSearchOutline, IoPricetagOutline } from 'react-icons/io5';
+import Modal, { ModalSection } from "@/components/Modal";
+import { IoAddOutline, IoSearchOutline } from 'react-icons/io5';
 import { Button } from "@/components/Button";
 import { useTagsStore } from '@/store/useTags';
 import { TagPill } from '@/components/TagPill';
@@ -15,18 +15,18 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
 
   const [searchQuery, setSearchQuery] = useState("");
   const [newTagName, setNewTagName] = useState("");
-  const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);  
+  const [addTagSection, setAddTagSection] = useState(false);
 
-  // Filter and Sort Logic
   const filteredNotes = useMemo(() => {
     let result = [...notes];
 
-    // Filter by Tag
-    if (selectedTagId) {
-      result = result.filter(n => n.tagIds?.includes(selectedTagId));
+    if (selectedTagIds.length > 0) {
+      result = result.filter(n => 
+        selectedTagIds.every(id => n.tagIds?.includes(id))
+      );
     }
 
-    // Filter by Search
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(n =>
@@ -34,19 +34,32 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
       );
     }
 
-    // Sort by Date
     return result.sort((a, b) => {
       const dateA = a.lastEdited ? new Date(a.lastEdited).getTime() : 0;
       const dateB = b.lastEdited ? new Date(b.lastEdited).getTime() : 0;
       return dateB - dateA;
     });
-  }, [notes, searchQuery, selectedTagId]);
+  }, [notes, searchQuery, selectedTagIds]);
+
+  const toggleTag = (id: string) => {
+    setSelectedTagIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(t => t !== id) 
+        : [...prev, id]
+    );
+  };
 
   const handleCreateTag = async () => {
     if (!newTagName.trim()) return;
     try {
-      await useTagsStore.getState().createTag(newTagName.trim());
+      // Assuming createTag returns the new tag or its ID
+      const newTag = await useTagsStore.getState().createTag(newTagName.trim());
+      
+      // Optional: auto-select the tag you just created
+      if (newTag?.id) setSelectedTagIds(prev => [...prev, newTag.id]);
+      
       setNewTagName('');
+      setAddTagSection(false);
     } catch (error) {
       console.error("Error creating tag:", error);
     }
@@ -71,8 +84,8 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
             defaultY={20}
             className='h-[85vh] p-0'
           >
-            {/* SEARCH & FILTER SECTION */}
             <ModalSection className="gap-3">
+              {/* SEARCH INPUT */}
               <div className="relative flex items-center">
                 <IoSearchOutline className="absolute left-3 text-text/40" size={16} />
                 <input
@@ -84,58 +97,97 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                 />
               </div>
 
-              {/* TAG FILTER BAR */}
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[10px] uppercase tracking-widest text-text/40 font-bold">Filters</span>
-                  {selectedTagId && (
-                    <button
-                      onClick={() => setSelectedTagId(null)}
-                      className="text-[10px] text-active hover:underline"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
-                <div className="flex overflow-x-auto gap-2 no-scrollbar pb-1">
-                  {tags.map((tag) => (
-                    <div
-                      key={tag.id}
-                      onClick={() => setSelectedTagId(tag.id === selectedTagId ? null : tag.id)}
-                      className={`cursor-pointer transition-transform active:scale-95 ${selectedTagId === tag.id ? 'rounded-full' : 'opacity-50'}`}
-                    >
-                      <TagPill tagId={tag.id} name={tag.name} color={tag.color} id={""}/>
-                    </div>
-                  ))}
-                </div>
+            {/* TAG FILTER & CREATE BAR */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[10px] uppercase tracking-widest text-text/40 font-bold">Filters</span>
+                {selectedTagIds.length > 0 && (
+                  <button
+                    onClick={() => setSelectedTagIds([])}
+                    className="text-[10px] text-active hover:underline"
+                  >
+                    Clear ({selectedTagIds.length})
+                  </button>
+                )}
               </div>
-            </ModalSection>
-
-            <ModalDivider />
-
-            {/* CREATE TAG SECTION */}
-            <ModalSection className="gap-2">
-              <div className="flex items-center gap-2 bg-text/5 rounded-xl px-2 border border-dashed border-white/10 focus-within:border-active/30 transition-all">
-                <IoPricetagOutline className="text-text/30" size={14} />
-                <input
-                  type='text'
-                  value={newTagName}
-                  placeholder='New tag name...'
-                  className="bg-transparent py-2 text-xs outline-none flex-1 text-text placeholder:text-text/30"
-                  onKeyDown={(e) => e.key === 'Enter' && handleCreateTag()}
-                  onChange={(e) => setNewTagName(e.target.value)}
-                />
-                <Button
-                  variant="plain"
-                  className="p-1 text-active hover:bg-active/10 rounded-lg"
-                  onClick={handleCreateTag}
+              
+              <div className='flex items-center justify-start gap-2 px-1 h-8'> {/* Added fixed height to prevent vertical jump */}
+                <Button 
+                  onClick={() => setAddTagSection(!addTagSection)} 
+                  className={`rounded-md w-6 h-6 flex items-center justify-center shrink-0 transition-colors ${addTagSection ? 'bg-active text-white' : ''}`}
                 >
-                  <IoAddOutline size={18} />
+                  <IoAddOutline 
+                    size={16} 
+                    className={`transition-transform duration-200 ${addTagSection ? 'rotate-45' : ''}`} 
+                  />
                 </Button>
+                
+                {/* This container handles the horizontal scroll */}
+                <div className="flex-1 overflow-x-auto no-scrollbar py-1 flex items-center h-full">
+                  <motion.div 
+                    layout 
+                    className="flex items-center gap-2"
+                  >
+                    <AnimatePresence mode="popLayout">
+                      {/* INLINE ADD TAG INPUT */}
+                      {addTagSection && (
+                        <motion.div 
+                          key="add-tag-input"
+                          initial={{ opacity: 0, width: 0, x: -10 }}
+                          animate={{ opacity: 1, width: 'auto', x: 0 }}
+                          exit={{ opacity: 0, width: 0, x: -10 }}
+                          className="flex items-center gap-2 bg-active/10 rounded-full pl-3 pr-1 border border-active/30 shrink-0 overflow-hidden"
+                        >
+                          <input
+                            autoFocus
+                            type='text'
+                            value={newTagName}
+                            placeholder='Tag name...'
+                            className="bg-transparent text-xs outline-none w-20 text-text placeholder:text-active/40"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleCreateTag();
+                                if (e.key === 'Escape') setAddTagSection(false);
+                            }}
+                            onChange={(e) => setNewTagName(e.target.value)}
+                          />
+                          <button 
+                            onClick={handleCreateTag}
+                            className="w-5 h-5 rounded-full bg-active text-white flex items-center justify-center shrink-0"
+                          >
+                            <IoAddOutline size={14} />
+                          </button>
+                        </motion.div>
+                      )}
+
+                      {/* TAG PILLS */}
+                      {[...tags]
+                        .sort((a, b) => {
+                          const aSelected = selectedTagIds.includes(a.id) ? 1 : 0;
+                          const bSelected = selectedTagIds.includes(b.id) ? 1 : 0;
+                          return bSelected - aSelected;
+                        })
+                        .map((tag) => (
+                          <motion.div
+                            layout
+                            key={tag.id}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            onClick={() => toggleTag(tag.id)}
+                            className={`cursor-pointer transition-all active:scale-95 shrink-0 ${
+                              !selectedTagIds.includes(tag.id) && 'opacity-40 hover:opacity-100'
+                            }`}
+                          >
+                            <TagPill tagId={tag.id} name={tag.name} color={tag.color} id={""}/>
+                          </motion.div>
+                        ))}
+                    </AnimatePresence>
+                  </motion.div>
+                </div>
               </div>
+            </div>
             </ModalSection>
 
-            {/* NOTES LIST */}
+            {/* NOTES LIST CONTENT */}
             <ModalSection className='flex-1 overflow-y-auto min-h-0 custom-scrollbar'>
               <div className="flex flex-col gap-3">
                 {filteredNotes.length > 0 ? (
@@ -144,13 +196,12 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                   ))
                 ) : (
                   <div className="py-10 text-center text-text/20 text-xs italic">
-                    No notes found
+                    No notes found matching these criteria
                   </div>
                 )}
               </div>
             </ModalSection>
 
-            {/* FOOTER ACTION */}
             <div className="p-4 mt-auto">
               <Button variant="glassPlain" className="flex h-10 justify-center items-center rounded-xl text-text w-full gap-2 border border-white/5 hover:bg-white/5">
                 <IoAddOutline size={20} />

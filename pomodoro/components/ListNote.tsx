@@ -50,7 +50,7 @@ export default function ListNote({
       onClick={() => console.log("Open full edit modal for:", id)}
       className="group relative h-32 rounded-2xl border flex flex-col overflow-hidden cursor-pointer transition-all hover:bg-white/[0.03]"
       style={{
-        backgroundColor: `${bgColor}15`,
+        backgroundColor: `${bgColor}`,
         borderColor: `${bgColor}40`,
         backdropFilter: "blur(4px)",
       }}
@@ -58,7 +58,6 @@ export default function ListNote({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
     >
-      <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: bgColor }} />
 
       <div className="p-3 flex-1 flex flex-col justify-between min-h-0">
 
@@ -86,9 +85,13 @@ export default function ListNote({
             "
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
-          {/* Subtle fade-out overlay so text doesn't hit the tags abruptly */}
-          <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-t from-[#0a1929]/10 to-transparent" />
-        </div>
+            <div 
+              className="absolute bottom-0 left-0 w-full h-full pointer-events-none"
+              style={{
+                background: `linear-gradient(to bottom, transparent, ${bgColor})`,
+              }}
+            />        
+          </div>
 
         {/* BOTTOM SECTION */}
         <div className="mt-2 flex items-center justify-between">

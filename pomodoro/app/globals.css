@@ -110,46 +110,53 @@ input[type=number]::-webkit-outer-spin-button {
 
 
 
-/* --- Ultra-Minimalist Dark Scrollbar --- */
-
-/* 1. Kill the arrows (Buttons) and the Corner */
-::-webkit-scrollbar-button,
-::-webkit-scrollbar-corner {
-  display: none !important;
-  width: 0;
-  height: 0;
-}
-
-/* 2. The container (Thinner for minimalism) */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 2px;
 }
 
-/* 3. The Track - Pure transparent to avoid "lanes" */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(123, 78, 230, 0.8); /* your purple */
+}
+
+/* Minimal, modern scrollbars (cross-browser) */
+:root {
+  --scrollbar-bg: transparent;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.18);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg);
+}
+
+/* WebKit-based browsers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* 4. The Thumb - Darker and Rounded */
 ::-webkit-scrollbar-thumb {
-  /* Darker Onyx color with higher opacity */
-  background: rgba(30, 30, 30, 0.8);
-  border-radius: 100px;
-  /* Add a tiny border of the same color to "fatten" it without losing rounding */
-  border: 1px solid rgba(30, 30, 30, 0.1);
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent; /* creates padding and keeps thumb crisp */
+  background-clip: padding-box;
 }
 
-/* 5. Hover state - Almost solid black */
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--scrollbar-thumb-hover);
 }
 
-/* For Firefox - Applying the darker theme */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(30, 30, 30, 0.8) transparent;
-}
 
 /* Basic editor styles */
 .tiptap {
