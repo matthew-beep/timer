@@ -27,7 +27,7 @@ export default function ListNote({
   const deleteNote = useNotesStore((s) => s.deleteNote);
   const theme = useThemeStore((s) => s.theme);
   const allTags = useTagsStore((s) => s.tags);
-
+  const setExpandedNote = useNotesStore((s) => s.setExpandedNote);
   const noteTags = allTags.filter(t => tagIds.includes(t.id));
 
   const htmlContent = useMemo(() => {
@@ -47,7 +47,10 @@ export default function ListNote({
 
   return (
     <motion.div
-      onClick={() => console.log("Open full edit modal for:", id)}
+      onClick={() => {
+        console.log("Open full edit modal for:", id);
+        setExpandedNote(id);
+      }}
       className="group relative h-32 rounded-2xl border flex flex-col overflow-hidden cursor-pointer transition-all hover:bg-white/[0.03]"
       style={{
         backgroundColor: `${bgColor}`,

@@ -60,7 +60,9 @@ type NotesStore = {
   activeNoteId?: string;
   viewMode: "list" | "grid";
   updateViewMode: (mode: "list" | "grid") => void;
-
+  isNoteExpanded: boolean; // New state
+  expandedNoteId: string | null; // New state
+  setExpandedNote: (id: string | null) => void;  
   // Supabase sync actions
   loadFromSupabase: () => Promise<void>;
   syncToSupabase: () => Promise<void>;
@@ -171,9 +173,15 @@ export const useNotesStore = create<NotesStore>()(
       viewMode: "grid",
       hasLoadedFromSupabase: false,
       isFetchingFromSupabase: false,
+      isNoteExpanded: false, // New state
+      expandedNoteId: null, // New state
 
       updateViewMode: (mode) => set({ viewMode: mode }),
       setActiveNote: (id) => set({ activeNoteId: id }),
+      setExpandedNote: (id) => set({ 
+        expandedNoteId: id, 
+        isNoteExpanded: !!id, // If id exists, it's true. If null, it's false.
+      }),
 
       initialize: async () => {
         const user = getCurrentUser();

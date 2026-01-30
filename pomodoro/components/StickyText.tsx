@@ -32,7 +32,7 @@ export default function StickyText({
       className="bg-transparent w-full h-full resize-none outline-none p-3 text-white text-sm"
       placeholder="Enter text..."
     />*/
-    <div className="flex-1 min-h-0 pt-3 z-0">
+    <div className="flex-1 min-h-0 pt-3 z-0 h-full">
       <Tiptap content={initialText} id={id} height={height} color={color} showToolbar={showToolbar} tagIds={tagIds} />
     </div>
 

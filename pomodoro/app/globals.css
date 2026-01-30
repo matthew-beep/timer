@@ -108,53 +108,37 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
+/* --- Global Hairline Scrollbar (Forced Render) --- */
 
-
+/* 1. Set the size (2px is the sweet spot for visibility vs minimalism) */
 ::-webkit-scrollbar {
-  width: 2px;
+  width: 2px !important;
+  height: 2px !important;
 }
 
+/* 2. Track Piece - Crucial for "waking up" the custom renderer */
+::-webkit-scrollbar-track-piece {
+  background-color: transparent !important;
+}
+
+/* 3. The Thumb - Clean and simple */
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 1);
-  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  /* Using a tiny border instead of outline for better scaling at 2px */
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 10px !important;
 }
 
+/* 4. Hover State */
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(123, 78, 230, 0.8); /* your purple */
+  background-color: var(--primaryMode, #00d3f2) !important;
 }
 
-/* Minimal, modern scrollbars (cross-browser) */
-:root {
-  --scrollbar-bg: transparent;
-  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.18);
-}
-
-/* Firefox */
+/* 5. Firefox Support */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-bg);
-}
-
-/* WebKit-based browsers */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 999px;
-  border: 2px solid transparent; /* creates padding and keeps thumb crisp */
-  background-clip: padding-box;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 

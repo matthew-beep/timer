@@ -12,7 +12,6 @@ import { TagPill } from '@/components/TagPill';
 export default function NotesList({ showList, setShowList }: { showList: boolean, setShowList: (mode: "grid" | "list") => void }) {
   const notes = useNotesStore((s) => s.notes);
   const tags = useTagsStore((s) => s.tags);
-
   const [searchQuery, setSearchQuery] = useState("");
   const [newTagName, setNewTagName] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);  
@@ -49,14 +48,14 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
     );
   };
 
-  const handleCreateTag = async () => {
+  const handleCreateTag = async (newTagName: string) => {
     if (!newTagName.trim()) return;
     try {
       // Assuming createTag returns the new tag or its ID
-      const newTag = await useTagsStore.getState().createTag(newTagName.trim());
+      await useTagsStore.getState().createTag(newTagName.trim());
       
       // Optional: auto-select the tag you just created
-      if (newTag?.id) setSelectedTagIds(prev => [...prev, newTag.id]);
+      //if (newTag?.id) setSelectedTagIds(prev => [...prev, newTag.id]);
       
       setNewTagName('');
       setAddTagSection(false);
@@ -111,7 +110,7 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                 )}
               </div>
               
-              <div className='flex items-center justify-start gap-2 px-1 h-8'> {/* Added fixed height to prevent vertical jump */}
+              <div className='flex items-start justify-start gap-2 px-1 h-12 min-h-[40px]'> {/* Added fixed height to prevent vertical jump */}
                 <Button 
                   onClick={() => setAddTagSection(!addTagSection)} 
                   className={`rounded-md w-6 h-6 flex items-center justify-center shrink-0 transition-colors ${addTagSection ? 'bg-active text-white' : ''}`}
@@ -123,42 +122,47 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                 </Button>
                 
                 {/* This container handles the horizontal scroll */}
-                <div className="flex-1 overflow-x-auto no-scrollbar py-1 flex items-center h-full">
+                <div className="flex-1 overflow-x-auto no-scrollbar flex h-full">
                   <motion.div 
                     layout 
-                    className="flex items-center gap-2"
+                    className="flex items-start gap-2"
                   >
                     <AnimatePresence mode="popLayout">
                       {/* INLINE ADD TAG INPUT */}
                       {addTagSection && (
                         <motion.div 
                           key="add-tag-input"
-                          initial={{ opacity: 0, width: 0, x: -10 }}
-                          animate={{ opacity: 1, width: 'auto', x: 0 }}
-                          exit={{ opacity: 0, width: 0, x: -10 }}
-                          className="flex items-center gap-2 bg-active/10 rounded-full pl-3 pr-1 border border-active/30 shrink-0 overflow-hidden"
+                          initial={{ opacity: 0, width: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, width: 'auto', scale: 1 }}
+                          exit={{ opacity: 0, width: 0, scale: 0.9 }}
+                          style={{
+                            backgroundColor: `var(--color-active)15`, // Matches TagPill ~8% opacity
+                            color: 'var(--color-active)',
+                            borderColor: `var(--color-active)30` // Matches TagPill ~20% opacity
+                          }}
+                          className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-xs font-semibold tracking-wide shrink-0 overflow-hidden shadow-sm"
                         >
                           <input
                             autoFocus
                             type='text'
                             value={newTagName}
-                            placeholder='Tag name...'
-                            className="bg-transparent text-xs outline-none w-20 text-text placeholder:text-active/40"
+                            placeholder='New Tag'
+                            className="bg-transparent text-xs outline-none w-16 text-active placeholder:text-active/50 font-semibold tracking-wide"
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleCreateTag();
+                                if (e.key === 'Enter') handleCreateTag(newTagName);
                                 if (e.key === 'Escape') setAddTagSection(false);
                             }}
                             onChange={(e) => setNewTagName(e.target.value)}
                           />
+                          
                           <button 
-                            onClick={handleCreateTag}
-                            className="w-5 h-5 rounded-full bg-active text-white flex items-center justify-center shrink-0"
+                            onClick={() => handleCreateTag(newTagName)}
+                            className="flex items-center justify-center hover:bg-active/20 rounded-full transition-colors p-0.5 -mr-1"
                           >
-                            <IoAddOutline size={14} />
+                            <IoAddOutline size={14} strokeWidth={4} />
                           </button>
                         </motion.div>
                       )}
-
                       {/* TAG PILLS */}
                       {[...tags]
                         .sort((a, b) => {
@@ -166,20 +170,24 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
                           const bSelected = selectedTagIds.includes(b.id) ? 1 : 0;
                           return bSelected - aSelected;
                         })
-                        .map((tag) => (
-                          <motion.div
-                            layout
-                            key={tag.id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            onClick={() => toggleTag(tag.id)}
-                            className={`cursor-pointer transition-all active:scale-95 shrink-0 ${
-                              !selectedTagIds.includes(tag.id) && 'opacity-40 hover:opacity-100'
-                            }`}
-                          >
-                            <TagPill tagId={tag.id} name={tag.name} color={tag.color} id={""}/>
-                          </motion.div>
-                        ))}
+                        .map((tag) => {
+                          const isSelected = selectedTagIds.includes(tag.id);
+                          return (
+                            <motion.div
+                              layout="position" // Prevents the 'scaling' jump by only animating position
+                              key={tag.id}
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ 
+                                opacity: 1, 
+                                scale: 1,
+                              }}
+                              onClick={() => toggleTag(tag.id)}
+                              className={`cursor-pointer transition-opacity duration-200 active:scale-95 shrink-0 ${isSelected ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
+                            >
+                              <TagPill tagId={tag.id} name={tag.name} color={tag.color} id={tag.id}/>
+                            </motion.div>
+                          );
+                        })}
                     </AnimatePresence>
                   </motion.div>
                 </div>

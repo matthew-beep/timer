@@ -15,6 +15,8 @@ import Overlay from "@/components/Overlay";
 import MergeNotesModal from "@/components/MergeNotesModal";
 import { useTimer } from "@/store/useTimer";
 import { motion, AnimatePresence } from "motion/react";
+import { useNotesStore } from "@/store/useNotes";
+import ExpandedNote from "@/components/ExpandedNote";
 
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
@@ -22,6 +24,7 @@ export default function Home() {
   const { user, session, isLoading } = useAuthStore();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const collapsed = useTimer((s) => s.collapsed);
+  const isNoteExpanded = useNotesStore((s) => s.isNoteExpanded);
   useEffect(() => {
     console.log("user changed: ", user);
     console.log("session changed: ", session);
@@ -39,14 +42,14 @@ export default function Home() {
         >
           <AnimatePresence>
             {false && (
-              <motion.div 
+              <motion.div
                 className="w-full relative"
-                initial={{ opacity: 0, scale: 0.9, y:100 }}
-                animate={{ opacity: 1, scale: 1, y:0 }}
-                exit={{ 
-                  opacity: 0, 
+                initial={{ opacity: 0, scale: 0.9, y: 100 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{
+                  opacity: 0,
                   scale: 0.9,
-                  transition: { duration: 0.1}
+                  transition: { duration: 0.1 }
                 }}
                 transition={{ duration: 0.3, delay: 1 }}
               >
@@ -55,14 +58,14 @@ export default function Home() {
             )}
           </AnimatePresence>
           <AnimatePresence>
-            
+
             {!collapsed && (
-              <motion.div 
+              <motion.div
                 className="w-full h-full relative"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ 
-                  opacity: 0, 
+                exit={{
+                  opacity: 0,
                   scale: 0.9,
                   transition: { duration: 0.25 }
                 }}
@@ -78,8 +81,8 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ 
-                  opacity: 0, 
+                exit={{
+                  opacity: 0,
                   y: 10,
                   transition: { duration: 0.25 }
                 }}
@@ -99,6 +102,10 @@ export default function Home() {
 
         <Overlay isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} blur="xl" slide="top">
           <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+        </Overlay>
+
+        <Overlay isOpen={isNoteExpanded} onClose={() => useNotesStore.getState().setExpandedNote(null)} blur="xl" slide="top">
+          <ExpandedNote />
         </Overlay>
 
 
