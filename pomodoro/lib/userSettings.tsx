@@ -39,6 +39,8 @@ export async function saveUserSettings(
         .upsert({
             user_id: userId,
             ...settings,
+        },{
+            onConflict: 'user_id', // ← This is the key!
         })
         .select()
         .single();
