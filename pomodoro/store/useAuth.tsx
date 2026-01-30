@@ -5,7 +5,8 @@ import { createOrGetProfile } from '@/lib/createProfile';
 import type { User, Session, AuthError } from '@supabase/supabase-js';
 import type { Tables } from '@/types/supabase';
 import { telemetry } from '@/lib/telemetry';
-
+import { useThemeStore } from './useTheme';
+import { useTimer } from './useTimer';
 
 
 interface AuthStore {
@@ -112,7 +113,13 @@ export const useAuthStore = create<AuthStore>()(
           });
 
           if (session?.user) {
-            await get().loadProfile();
+            // Load all user-specific data in parallel
+            await Promise.all([
+              get().loadProfile(),
+              useThemeStore.getState().loadSettingsFromSupabase(),
+              // Add timer when ready:
+              useTimer.getState().loadSettingsFromSupabase(),
+            ]);
           }
         } catch (error) {
           console.error('Auth initialization error:', error);
