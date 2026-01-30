@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { persist } from 'zustand/middleware';
 import { saveUserSettings } from '@/lib/userSettings';
 import { getCurrentUser } from '@/lib/auth-helpers';
+import { fetchUserSettings } from '@/lib/userSettings';
+import { useThemeStore } from './useTheme';
 
 const SETTINGS_DEBOUNCE_MS = 2000; // 2 seconds
 let timerSettingsSyncTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -72,118 +74,173 @@ interface TimerState {
 
   collapsed: boolean;
   toggleCollapsed: () => void;
+
+
+    // Sync actions
+    loadSettingsFromSupabase: () => Promise<void>;
+    queueSettingsSync: () => void;
+    syncSettingsToSupabase: () => Promise<void>;
 }
 
-export const useTimer = create<TimerState>(
+export const useTimer = create<TimerState>()(
+  persist(
+    (set, get) => ({
+      mode: "focus",
+      method: POMODORO,
+      durations: { ...POMODORO.durations },
+      goal: null,
+      duration: POMODORO.durations.focus,
+      timeRemaining: POMODORO.durations.focus,
+      isRunning: false,
+      collapsed: false,
+      toggleCollapsed: () => {
+        set((s) => ({ collapsed: !s.collapsed }))
+      },
 
-  (set, get) => ({
-    mode: "focus",
-    method: POMODORO,
-    durations: { ...POMODORO.durations },
-    goal: null,
-    duration: POMODORO.durations.focus,
-    timeRemaining: POMODORO.durations.focus,
-    isRunning: false,
-    collapsed: false,
-    toggleCollapsed: () => {
-      set((s) => ({ collapsed: !s.collapsed }))
-    },
-
-    setMethod: (method) => {
-
-      const defaultMode = "focus";
-
-      set({
-        method,
-        mode: defaultMode,
-        durations: { ...method.durations },
-        duration: method.durations.focus,
-        timeRemaining: method.durations.focus,
-        isRunning: false,
-      });
-    },
-
-    setPomodoro: () => get().setMethod(POMODORO),
-    setCambridge: () => get().setMethod(CAMBRIDGE),
-
-    setMode: (mode) => {
-      const { durations } = get();
-
-      if (!(mode in durations)) return; // runtime safety + TS narrowing
-
-      const d = durations[mode];
-
-      set({
-        mode,
-        duration: d,
-        timeRemaining: d,
-        isRunning: false,
-      });
-    },
-
-    setDurationValue: (mode, valueMinutes) => {
-      const seconds = valueMinutes * 60;
-
-      set((s) => ({
-        durations: {
-          ...s.durations,
-          [mode]: seconds,
-        },
-      }));
-
-      // If you're editing the active mode, update duration + reset timer
-      if (get().mode === mode) {
+      setMethod: (method) => {
+        const defaultMode = "focus";
         set({
-          duration: seconds,
-          timeRemaining: seconds,
+          method,
+          mode: defaultMode,
+          durations: { ...method.durations },
+          duration: method.durations.focus,
+          timeRemaining: method.durations.focus,
+          isRunning: false,
         });
-      }
-    },
+      },
 
-    start: () => set({ isRunning: true }),
-    pause: () => set({ isRunning: false }),
-    reset: () =>
-      set((state) => ({
-        timeRemaining: state.duration,
-        isRunning: false,
-      })),
+      setPomodoro: () => {
+        get().setMethod(POMODORO)
+        get().queueSettingsSync();
+      },
+      setCambridge: () => {
+        get().setMethod(CAMBRIDGE)
+        get().queueSettingsSync();
+      },
 
-    tick: () => {
-      const { timeRemaining, isRunning } = get();
-      if (!isRunning) return;
-      if (timeRemaining <= 1) {
-        set({ isRunning: false, timeRemaining: 0, justCompleted: true });
-      } else {
-        set({ timeRemaining: timeRemaining - 1 });
-      }
-    },
+      setMode: (mode) => {
+        const { durations } = get();
+        if (!(mode in durations)) return;
+        const d = durations[mode];
+        set({
+          mode,
+          duration: d,
+          timeRemaining: d,
+          isRunning: false,
+        });
+      },
 
-    complete: () => {
-      const { mode, method, pomodoroCount } = get();
+      setDurationValue: (mode, valueMinutes) => {
+        const seconds = valueMinutes * 60;
+        set((s) => ({
+          durations: {
+            ...s.durations,
+            [mode]: seconds,
+          },
+        }));
 
-      if (method.name === "Pomodoro") {
-        if (mode === "focus") {
-          const next = pomodoroCount + 1;
-          const isLong = next % 4 === 0;
-
-          set({ pomodoroCount: next });
-          get().setMode(isLong ? "long" : "short");
-        } else {
-          get().setMode("focus");
+        if (get().mode === mode) {
+          set({
+            duration: seconds,
+            timeRemaining: seconds,
+          });
         }
-      }
+        get().queueSettingsSync();
+      },
 
-      if (method.name === "Cambridge") {
-        get().setMode(mode === "focus" ? "break" : "focus");
-      }
-    },
+      loadSettingsFromSupabase: async () => {
+        const user = getCurrentUser();
+        if (!user) return;
+        try {
+          const settings = await fetchUserSettings(user.id);
+          if (!settings) return;
+          set({
+            method: settings.timer_method === 'Pomodoro' ? POMODORO : CAMBRIDGE,
+            durations: settings.timer_durations,
+          });
+          const themeStore = useThemeStore.getState();
+          themeStore.updateColor('work', settings.timer_colors.work);
+          themeStore.updateColor('break', settings.timer_colors.break);
+          console.log('✅ Loaded timer settings from Supabase');
+        } catch (error) {
+          console.error('Failed to load timer settings:', error);
+        }
+      },
 
-    justCompleted: false,
+      queueSettingsSync: () => {
+        const user = getCurrentUser();
+        if (!user) return;
+        if (timerSettingsSyncTimeout) {
+          clearTimeout(timerSettingsSyncTimeout);
+        }
+        timerSettingsSyncTimeout = setTimeout(() => {
+          get().syncSettingsToSupabase();
+        }, SETTINGS_DEBOUNCE_MS);
+      },
 
-    clearCompletion: () => set({ justCompleted: false }),
+      syncSettingsToSupabase: async () => {
+        const user = getCurrentUser();
+        if (!user) return;
+        const { method, durations } = get();
+        const themeStore = useThemeStore.getState();
+        try {
+          await saveUserSettings(user.id, {
+            timer_method: method.name,
+            timer_durations: durations,
+            timer_colors: themeStore.colors,
+          });
+          console.log('✅ Synced timer settings to Supabase');
+        } catch (error) {
+          console.error('Failed to sync timer settings:', error);
+        }
+      },
 
-    pomodoroCount: 0,
-    updatePomodoroCount: () => set((state) => ({ pomodoroCount: state.pomodoroCount + 1 })),
-  })
+      start: () => set({ isRunning: true }),
+      pause: () => set({ isRunning: false }),
+      reset: () =>
+        set((state) => ({
+          timeRemaining: state.duration,
+          isRunning: false,
+        })),
 
+      tick: () => {
+        const { timeRemaining, isRunning } = get();
+        if (!isRunning) return;
+        if (timeRemaining <= 1) {
+          set({ isRunning: false, timeRemaining: 0, justCompleted: true });
+        } else {
+          set({ timeRemaining: timeRemaining - 1 });
+        }
+      },
+
+      complete: () => {
+        const { mode, method, pomodoroCount } = get();
+        if (method.name === "Pomodoro") {
+          if (mode === "focus") {
+            const next = pomodoroCount + 1;
+            const isLong = next % 4 === 0;
+            set({ pomodoroCount: next });
+            get().setMode(isLong ? "long" : "short");
+          } else {
+            get().setMode("focus");
+          }
+        }
+        if (method.name === "Cambridge") {
+          get().setMode(mode === "focus" ? "break" : "focus");
+        }
+      },
+
+      justCompleted: false,
+      clearCompletion: () => set({ justCompleted: false }),
+      pomodoroCount: 0,
+      updatePomodoroCount: () => set((state) => ({ pomodoroCount: state.pomodoroCount + 1 })),
+    }),
+    {
+      name: "timer-settings",
+      partialize: (state) => ({ 
+        method: state.method, 
+        durations: state.durations 
+      }),
+    }
+  )
 );
