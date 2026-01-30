@@ -154,10 +154,24 @@ export const useTimer = create<TimerState>()(
         try {
           const settings = await fetchUserSettings(user.id);
           if (!settings) return;
+
+          const currentMode = get().mode;
+
           set({
             method: settings.timer_method === 'Pomodoro' ? POMODORO : CAMBRIDGE,
             durations: settings.timer_durations,
           });
+
+          if (!get().isRunning) {
+            const newDuration = settings.timer_durations[currentMode];
+            if (newDuration !== undefined) {
+              set({
+                duration: newDuration,
+                timeRemaining: newDuration,
+              });
+            }
+          }
+          
           const themeStore = useThemeStore.getState();
           themeStore.updateColor('work', settings.timer_colors.work);
           themeStore.updateColor('break', settings.timer_colors.break);
