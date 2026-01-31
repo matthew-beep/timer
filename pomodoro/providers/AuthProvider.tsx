@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/store/useAuth';
 import { useNotesStore } from '@/store/useNotes';
 import { supabase } from '@/lib/supabase';
+import { useTimer } from '@/store/useTimer';
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const initialize = useAuthStore((s) => s.initialize);

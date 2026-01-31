@@ -116,9 +116,9 @@ export default function Settings({
               {method.name === 'Pomodoro' ? 'Pomodoro' : 'Cambridge'}
             </label>
             <Switch
-              checked={method === POMODORO}
+              // Compare by name string instead of object reference
+              checked={method.name === 'Pomodoro'} 
               onChange={(e) => {
-                console.log("toggle timer mode");
                 if (e.target.checked) {
                   setPomodoro();
                 } else {

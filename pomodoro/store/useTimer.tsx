@@ -229,6 +229,8 @@ export const useTimer = create<TimerState>()(
 
       complete: () => {
         const { mode, method, pomodoroCount } = get();
+        
+        // 1. Handle Pomodoro Logic
         if (method.name === "Pomodoro") {
           if (mode === "focus") {
             const next = pomodoroCount + 1;
@@ -238,9 +240,17 @@ export const useTimer = create<TimerState>()(
           } else {
             get().setMode("focus");
           }
-        }
-        if (method.name === "Cambridge") {
-          get().setMode(mode === "focus" ? "break" : "focus");
+        } 
+        
+        // 2. Handle Cambridge Logic
+        else if (method.name === "Cambridge") {
+          if (mode === "focus") {
+            // Increment the count here so the "Cambridge Tally" updates
+            set({ pomodoroCount: pomodoroCount + 1 });
+            get().setMode("break");
+          } else {
+            get().setMode("focus");
+          }
         }
       },
 
@@ -251,6 +261,21 @@ export const useTimer = create<TimerState>()(
     }),
     {
       name: "timer-settings",
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          // 1. Get the duration for the mode we just loaded from localStorage
+          const savedDuration = state.durations[state.mode];
+          
+          // 2. If it exists, force the timer to match it immediately
+          if (savedDuration) {
+            state.duration = savedDuration;
+            state.timeRemaining = savedDuration;
+          }
+          
+          // 3. Optional: Reset running state so the timer doesn't "ghost" start on refresh
+          state.isRunning = false;
+        }
+      },
       partialize: (state) => ({ 
         method: state.method, 
         durations: state.durations 

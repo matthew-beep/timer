@@ -27,7 +27,7 @@ export default function Timer() {
     .padStart(2, "0");
 
   const seconds = (timeRemaining % 60).toString().padStart(2, "0");
-
+  useEffect(() => {console.log(pomodoroCount)}, [pomodoroCount]);
 
   useEffect(() => {
     const minutes = Math.floor(timeRemaining / 60);
@@ -42,22 +42,22 @@ export default function Timer() {
       document.title = 'Study Space';
     };
   }, [timeRemaining, isRunning, mode]);
-  
-useEffect(() => {
-  if (!justCompleted || !audioRef.current) return;
 
-  const playAudio = async () => {
-    try {
-      audioRef.current!.currentTime = 0;
-      await audioRef.current!.play();
-    } catch (error) {
-      // This is where the "Request not allowed" error is caught
-      console.warn("Autoplay blocked. User needs to interact with the page first.");
-    }
-  };
+  useEffect(() => {
+    if (!justCompleted || !audioRef.current) return;
 
-  playAudio();
-}, [justCompleted]);
+    const playAudio = async () => {
+      try {
+        audioRef.current!.currentTime = 0;
+        await audioRef.current!.play();
+      } catch (error) {
+        // This is where the "Request not allowed" error is caught
+        console.warn("Autoplay blocked. User needs to interact with the page first.");
+      }
+    };
+
+    playAudio();
+  }, [justCompleted]);
 
   const [isHovered, setIsHovered] = useState(false);
 
