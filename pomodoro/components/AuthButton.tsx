@@ -3,36 +3,25 @@
 
 import { useAuthStore } from "@/store/useAuth";
 import { Button } from "./Button";
-import { IoPersonOutline, IoLogOutOutline, IoCloseOutline } from "react-icons/io5";
+import { IoPersonOutline, IoLogOutOutline, IoCloseOutline, IoPeopleOutline, IoLogInOutline } from "react-icons/io5";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AccountButtonProps {
   onSignInClick: () => void;
+  onJoinRoomClick: () => void;
 
 }
 
-export default function AccountButton({ onSignInClick }: AccountButtonProps) {
+export default function AccountButton({ onSignInClick, onJoinRoomClick }: AccountButtonProps) {
   const { user, signOut } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
 
+  // Determine display values based on auth state
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const email = user?.email || '';
+  const headerTitle = user ? "Profile" : "Guest";
 
-  // Guest user - simple click to open auth modal
-  if (!user) {
-    return (
-      <Button
-        className="flex items-center justify-center p-2 rounded-full"
-        onClick={onSignInClick}
-        variant='glassPlain'
-      >
-        <IoPersonOutline size={18} strokeWidth={0.5} />
-      </Button>
-    );
-  }
-
-  // Authenticated user - show dropdown on hover
   return (
     <div
       className="relative"
@@ -44,7 +33,7 @@ export default function AccountButton({ onSignInClick }: AccountButtonProps) {
         onClick={() => {
           setIsOpen(!isOpen)
         }}
-        tooltip={isOpen ? undefined : (user ? "Profile" : "Sign In")}
+        tooltip={isOpen ? undefined : (user ? "Profile" : "Account")}
       >
         <IoPersonOutline size={18} strokeWidth={0.5} />
       </Button>
@@ -60,7 +49,7 @@ export default function AccountButton({ onSignInClick }: AccountButtonProps) {
           >
             <div className="flex flex-col">
               <div className="flex justify-between h-auto px-2 py-1 items-center">
-                <h4 className="font-semibold text-sm font-sans uppercase">Profile</h4>
+                <h4 className="font-semibold text-sm font-sans uppercase">{headerTitle}</h4>
                 <Button
                   variant="plain"
                   className="flex items-center gap-2 p-1 justify-start rounded-full hover:bg-white/10 text-sm transition-colors text-red-300 hover:text-red-200 !hover:text-text"
@@ -73,21 +62,53 @@ export default function AccountButton({ onSignInClick }: AccountButtonProps) {
               </div>
               <div className="p-2 flex flex-col gap-2">
                 <div className="py-2 border-b border-white/10">
-                  <p className="text-sm truncate">{displayName}</p>
-                  <p className="text-xs text-text/50 truncate">{email}</p>
+                  {user ? (
+                    <>
+                      <p className="text-sm truncate">{displayName}</p>
+                      <p className="text-xs text-text/50 truncate">{email}</p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-text/50">No active user</p>
+                  )}
                 </div>
 
                 <Button
                   variant="plain"
-                  className="flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-red-300 hover:text-red-200"
+                  className={`flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-text`}
                   onClick={() => {
-                    signOut();
+                    onJoinRoomClick();
                     setIsOpen(false);
                   }}
                 >
-                  <IoLogOutOutline size={16} />
-                  Sign Out
+                  <IoPeopleOutline size={16} />
+                  Join Room
                 </Button>
+
+                {user ? (
+                  <Button
+                    variant="plain"
+                    className="flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-red-300 hover:text-red-200"
+                    onClick={() => {
+                      signOut();
+                      setIsOpen(false);
+                    }}
+                  >
+                    <IoLogOutOutline size={16} />
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Button
+                    variant="plain"
+                    className="flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-active"
+                    onClick={() => {
+                      onSignInClick();
+                      setIsOpen(false);
+                    }}
+                  >
+                    <IoLogInOutline size={16} />
+                    Sign In
+                  </Button>
+                )}
               </div>
             </div>
           </motion.div>

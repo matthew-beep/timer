@@ -6,6 +6,7 @@ import { IoSettingsOutline, IoAddOutline, IoPersonOutline } from 'react-icons/io
 import { useThemeStore } from '@/store/useTheme';
 import { useTimer } from '@/store/useTimer';
 import AuthButton from './AuthButton';
+import RoomModal from './RoomModal';
 
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 
@@ -13,14 +14,13 @@ import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
 
 
-export default function Header({ showSettings, setShowSettings, setShowAuthModal, showAuthModal }: { showSettings: boolean, setShowSettings: (show: boolean) => void, setShowAuthModal: (show: boolean) => void, showAuthModal: boolean }) {
+export default function Header({ showSettings, setShowSettings, setShowAuthModal, showAuthModal, setRoomModalOpen, roomModalOpen }: { showSettings: boolean, setShowSettings: (show: boolean) => void, setShowAuthModal: (show: boolean) => void, showAuthModal: boolean, setRoomModalOpen: (show: boolean) => void, roomModalOpen: boolean }) {
 
     const addNote = useNotesStore((s) => s.addNote);
     const notes = useNotesStore((s) => s.notes);
-    const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     const theme = useThemeStore((s) => s.theme);
     const pomodoroCount = useTimer((s) => s.pomodoroCount);
-    
+
     const addSticky = () => {
         const stickyColor = theme == "dark" ? DARK_STICKY_COLORS[0] : LIGHT_STICKY_COLORS[0];
         const id = uuidv4();
@@ -45,30 +45,38 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
                     className='p-1 rounded-full flex items-center gap-2 pointer-events-none text-md'
                 >
                     <span className='text-active'>{pomodoroCount}</span>
-                    
+
                     <span>Sessions</span>
                 </Button>}
             </div>
-            
+
             <div className='flex relative gap-2'>
 
                 {false &&
+                    <Button
+                        className="flex items-center justify-center p-2 rounded-full"
+                        onClick={addSticky}
+                        variant='glassPlain'
+                    >
+                        <IoAddOutline size={18} strokeWidth={0.5} />
+                    </Button>}
                 <Button
                     className="flex items-center justify-center p-2 rounded-full"
-                    onClick={addSticky}
-                    variant='glassPlain'
-                >
-                    <IoAddOutline size={18} strokeWidth={0.5} />
-                </Button>}
-                <Button
-                    className="flex items-center justify-center p-2 rounded-full"
-                    onClick={() => setShowSettings(!settingsOpen)}
+                    onClick={() => setShowSettings(!showSettings)}
                     variant='glassPlain'
                 >
                     <IoSettingsOutline size={18} strokeWidth={0.5} />
                 </Button>
-                <AuthButton onSignInClick={() => setShowAuthModal(!showAuthModal)} />
+                <AuthButton
+                    onSignInClick={() => setShowAuthModal(!showAuthModal)}
+                    onJoinRoomClick={() => setRoomModalOpen(true)}
+                />
             </div>
+
+            <RoomModal
+                isOpen={roomModalOpen}
+                onClose={() => setRoomModalOpen(false)}
+            />
 
         </div>
     );

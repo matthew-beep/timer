@@ -10,11 +10,8 @@ import { CiUndo } from "react-icons/ci";
 
 
 
-export function TimerControls({handleStart} : {handleStart: () => void}) {
-  const start = useTimer((s) => s.start);
-  const pause = useTimer((s) => s.pause);
+export function TimerControls({ handleStart, handlePause, handleReset, disabled }: { handleStart: () => void, handlePause: () => void, handleReset: () => void, disabled: boolean }) {
   const isRunning = useTimer((s) => s.isRunning);
-  const reset = useTimer((s) => s.reset);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -41,15 +38,15 @@ export function TimerControls({handleStart} : {handleStart: () => void}) {
 
 
   return (
-    <div className="flex gap-4 w-full items-center justify-center">
-      <Button onClick={reset} variant="plain" className="p-2 rounded-full flex items-center justify-center">
+    <div className={`flex gap-4 w-full items-center justify-center ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}>
+      <Button onClick={handleReset} variant="plain" className="p-2 rounded-full flex items-center justify-center">
         <CiUndo size={24} />
       </Button>
 
       <Button
         onClick={() => {
           if (isRunning) {
-            pause();
+            handlePause();
           } else {
             handleStart();
           }
@@ -82,7 +79,7 @@ export function TimerControls({handleStart} : {handleStart: () => void}) {
               initial={{
                 opacity: 0,
                 scale: 0.5,
-                
+
               }}
               animate={{
                 opacity: 1,

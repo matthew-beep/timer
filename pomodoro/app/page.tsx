@@ -17,23 +17,19 @@ import { useTimer } from "@/store/useTimer";
 import { motion, AnimatePresence } from "motion/react";
 import { useNotesStore } from "@/store/useNotes";
 import ExpandedNote from "@/components/ExpandedNote";
+import RoomModal from "@/components/RoomModal";
 
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
 
-  const { user, session, isLoading } = useAuthStore();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [roomModalOpen, setRoomModalOpen] = useState<boolean>(false);
   const collapsed = useTimer((s) => s.collapsed);
   const isNoteExpanded = useNotesStore((s) => s.isNoteExpanded);
-  useEffect(() => {
-    console.log("user changed: ", user);
-    console.log("session changed: ", session);
-    console.log("isLoading changed: ", isLoading);
-  }, [user, isLoading, session]);
 
   return (
     <>
-      <Header showSettings={showSettings} setShowSettings={setShowSettings} setShowAuthModal={setShowAuthModal} showAuthModal={showAuthModal} />
+      <Header showSettings={showSettings} setShowSettings={setShowSettings} setShowAuthModal={setShowAuthModal} showAuthModal={showAuthModal} setRoomModalOpen={setRoomModalOpen} roomModalOpen={roomModalOpen} />
       <div className="relative h-full">
         <NotesContainer />
 
@@ -106,6 +102,10 @@ export default function Home() {
 
         <Overlay isOpen={isNoteExpanded} onClose={() => useNotesStore.getState().setExpandedNote(null)} blur="xl" slide="top">
           <ExpandedNote />
+        </Overlay>
+
+        <Overlay isOpen={roomModalOpen} onClose={() => setRoomModalOpen(false)} blur="xl" slide="top">
+          <RoomModal isOpen={roomModalOpen} onClose={() => setRoomModalOpen(false)} />
         </Overlay>
 
 
