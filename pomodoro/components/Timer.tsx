@@ -2,7 +2,7 @@ import { useTimer } from "@/store/useTimer";
 import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { RiCollapseDiagonalFill } from "react-icons/ri";
 import { motion, AnimatePresence } from "motion/react";
 import { useRoomStore } from "@/store/useRoom";
@@ -23,6 +23,7 @@ export default function Timer() {
   // Room Store
   const isHost = useRoomStore(s => s.isHost);
   const roomCode = useRoomStore(s => s.roomCode);
+  const roomName = useRoomStore(s => s.roomName);
   const broadcastStart = useRoomStore(s => s.broadcastStart);
   const broadcastPause = useRoomStore(s => s.broadcastPause);
   const broadcastReset = useRoomStore(s => s.broadcastReset);
@@ -30,7 +31,7 @@ export default function Timer() {
   const endRoom = useRoomStore(s => s.endRoom);
   const leaveRoom = useRoomStore(s => s.leaveRoom);
 
-
+  useEffect(() => { console.log("Room Name:", roomName) }, [roomName]);
 
   const method = useTimer(s => s.method);
 
@@ -63,14 +64,12 @@ export default function Timer() {
         await audioRef.current!.play();
       } catch (error) {
         // This is where the "Request not allowed" error is caught
-        console.warn("Autoplay blocked. User needs to interact with the page first.");
+        console.warn("Autoplay blocked. User needs to interact with the page first: ", error);
       }
     };
 
     playAudio();
   }, [justCompleted]);
-
-  const [isHovered, setIsHovered] = useState(false);
 
   // Inside your Timer.tsx or where you manage the audio ref
   const handleStart = async () => {
@@ -111,9 +110,9 @@ export default function Timer() {
       className="flex flex-col w-[420px] p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display relative"
     >
       {roomCode && (
-        <div className="absolute top-2 right-4 flex items-center gap-2">
-          <div className="px-2 py-1 bg-white/5 rounded-lg text-xs font-mono text-text/50 border border-white/10 flex gap-2 items-center">
-            <span>ROOM: <span className="text-active select-all">{roomCode}</span></span>
+        <div className=" flex items-center gap-2 w-full justify-between">
+          <div className="px-2 py-1 bg-text/5 rounded-lg text-xs font-mono text-text/50 border border-border/10 flex gap-2 items-center">
+            <span>ROOM: <span className="text-active select-all">{roomName ? roomName : roomCode}</span></span>
             {isHost ? (
               <span className="text-green-400 bg-green-400/10 px-1 rounded">HOST</span>
             ) : (
@@ -121,7 +120,7 @@ export default function Timer() {
             )}
           </div>
           <div className="relative group">
-            <div className="px-2 py-1 bg-white/5 rounded-lg text-xs text-text/50 border border-white/10 cursor-help">
+            <div className="px-2 py-1 bg-text/5 rounded-lg text-xs text-text/50 border border-border/10 cursor-help">
               {members.length} <span className="opacity-50">online</span>
             </div>
             {/* Member List Tooltip */}
@@ -136,8 +135,8 @@ export default function Timer() {
 
           {isHost ? (
             <Button
-              variant="plain"
-              className="text-xs text-red-400 hover:text-red-300"
+              variant="danger"
+              className="text-xs text-red-400 hover:text-red-300 py-1 px-3 rounded-xl"
               onClick={endRoom}
               title="End Room for everyone"
             >
@@ -160,6 +159,8 @@ export default function Timer() {
         className="flex flex-col gap-2"
       >
         <div className="flex justify-between items-center font-sans">
+
+
           <h4 className="text-text/50">TIMER</h4>
           <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
             <RiCollapseDiagonalFill />

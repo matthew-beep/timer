@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Work_Sans, Cormorant_Garamond, DM_Serif_Display } fr
 import "./globals.css";
 import AuthProvider from "@/providers/AuthProvider";
 import ThemeProvider from "@/providers/ThemeProvider";
+import RoomProvider from "@/providers/RoomProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,9 +57,11 @@ export default function RootLayout({
     >
       <body className="antialiased">
         <AuthProvider>
-          <ThemeProvider>
-            {children}
-          </ThemeProvider>
+          <RoomProvider>
+            <ThemeProvider>
+              {children}
+            </ThemeProvider>
+          </RoomProvider>
         </AuthProvider>
       </body>
     </html>

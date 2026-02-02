@@ -196,7 +196,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           {mode === "signin" ? "Don't have an account?" : "Already have an account?"}{" "}
           <button
             onClick={toggleMode}
-            className="text-text hover:text-text/80 font-medium ml-1 outline-none cursor-pointer"
+            className="text-text hover:text-text/80 font-medium ml-1 outline-none cursor-pointer rounded-full"
           >
             {mode === "signin" ? "Sign Up" : "Log In"}
           </button>

@@ -5,7 +5,7 @@ import { useThemeStore } from "@/store/useTheme";
 import Tooltip from "@mui/material/Tooltip";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "glass" | "plain" | "glassPlain";
+  variant?: "primary" | "secondary" | "ghost" | "glass" | "plain" | "glassPlain" | "danger";
   isActive?: boolean; // Add this prop
   tooltip?: string;
 }
@@ -34,6 +34,7 @@ export function Button({
           "hover:scale-105 text-active bg-active/20 border-active/30 border": variant === "glass",
           "text-text/50 hover:bg-[var(--hoverBg)] hover:text-text ": variant === "plain" && !isActive,
           "text-text bg-[var(--hoverBg)]": variant === "plain" && isActive,
+          "bg-red-200 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30": variant === "danger",
           "hover:scale-105 text-text border-white/10 border bg-cardBg/60 backdrop-blur-md hover:bg-text/20 shadow-md hover:shadow-2xl transition-all duration-150": variant === "glassPlain",
         },
         className

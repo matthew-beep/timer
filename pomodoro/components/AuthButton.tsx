@@ -2,25 +2,28 @@
 'use client';
 
 import { useAuthStore } from "@/store/useAuth";
+import { useRoomStore } from "@/store/useRoom";
 import { Button } from "./Button";
-import { IoPersonOutline, IoLogOutOutline, IoCloseOutline, IoPeopleOutline, IoLogInOutline } from "react-icons/io5";
+import { IoPersonOutline, IoLogOutOutline, IoCloseOutline, IoPeopleOutline, IoLogInOutline, IoEye } from "react-icons/io5";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface AccountButtonProps {
   onSignInClick: () => void;
   onJoinRoomClick: () => void;
-
 }
 
 export default function AccountButton({ onSignInClick, onJoinRoomClick }: AccountButtonProps) {
   const { user, signOut } = useAuthStore();
+  const { roomCode, isHost } = useRoomStore();
   const [isOpen, setIsOpen] = useState(false);
 
-  // Determine display values based on auth state
+  // Determine display values based on auth state and room status
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const email = user?.email || '';
   const headerTitle = user ? "Profile" : "Guest";
+  const isInRoom = !!roomCode;
+  const buttonText = isInRoom ? "Room Details" : "Join Room";
 
   return (
     <div
@@ -74,14 +77,22 @@ export default function AccountButton({ onSignInClick, onJoinRoomClick }: Accoun
 
                 <Button
                   variant="plain"
-                  className={`flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-text`}
+                  className={`flex items-center gap-2 justify-start px-3 py-2 rounded-xl hover:bg-white/10 text-sm transition-colors text-text ${
+                    isInRoom ? 'bg-primary/20 text-primary' : ''
+                  }`}
                   onClick={() => {
-                    onJoinRoomClick();
-                    setIsOpen(false);
+                    if (isInRoom) {
+                      // Show room details when already in a room
+                      setIsOpen(false);
+                      // The room details will be shown by RoomStatusButton
+                    } else {
+                      onJoinRoomClick();
+                      setIsOpen(false);
+                    }
                   }}
                 >
-                  <IoPeopleOutline size={16} />
-                  Join Room
+                  {isInRoom ? <IoEye size={16} /> : <IoPeopleOutline size={16} />}
+                  {buttonText}
                 </Button>
 
                 {user ? (

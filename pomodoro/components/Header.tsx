@@ -7,6 +7,7 @@ import { useThemeStore } from '@/store/useTheme';
 import { useTimer } from '@/store/useTimer';
 import AuthButton from './AuthButton';
 import RoomModal from './RoomModal';
+import RoomStatusButton from './RoomStatusButton';
 
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 
@@ -50,7 +51,10 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
                 </Button>}
             </div>
 
-            <div className='flex relative gap-2'>
+            <div className='flex relative gap-2 items-center'>
+
+                {/* Room Status Button - shows for hosts and joined users */}
+                <RoomStatusButton onRoomModalOpen={() => setRoomModalOpen(true)} />
 
                 {false &&
                     <Button
@@ -72,12 +76,6 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
                     onJoinRoomClick={() => setRoomModalOpen(true)}
                 />
             </div>
-
-            <RoomModal
-                isOpen={roomModalOpen}
-                onClose={() => setRoomModalOpen(false)}
-            />
-
         </div>
     );
 }

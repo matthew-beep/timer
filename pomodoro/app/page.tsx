@@ -103,10 +103,11 @@ export default function Home() {
         <Overlay isOpen={isNoteExpanded} onClose={() => useNotesStore.getState().setExpandedNote(null)} blur="xl" slide="top">
           <ExpandedNote />
         </Overlay>
-
+        
         <Overlay isOpen={roomModalOpen} onClose={() => setRoomModalOpen(false)} blur="xl" slide="top">
           <RoomModal isOpen={roomModalOpen} onClose={() => setRoomModalOpen(false)} />
         </Overlay>
+
 
 
         <MergeNotesModal />
