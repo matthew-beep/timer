@@ -3,29 +3,186 @@ export type PetId = keyof typeof PET_CONFIGS;
 export interface PetProps {
   id: PetId;
   scale?: number;
+  containerWidth?: number;
 }
 
-export const PET_CONFIGS = {
-  "rottweiler": {
-    id: "rottweiler",
-    spriteSheet: '/sprites/rottweiler',
-    frameSize: 64,
+export interface BehaviorStep {
+  action: string; // 'idle', 'walk', 'sit', etc.
+  duration?: { min: number; max: number }; // seconds for stationary
+  distance?: { min: number; max: number }; // pixels for movement
+  direction?: 'left' | 'right' | 'random';
+}
+
+export interface BehaviorSequence {
+  name: string;
+  steps: BehaviorStep[];
+  weight?: number; // probability weight
+}
+
+export interface AnimationConfig {
+  url: string;
+  frames: number;
+  speed: number;
+}
+
+export interface PetConfig {
+  id: string;
+  size: number; // pixel size of the sprite (assuming square)
+  defaultScale?: number;
+  animations: {
+    [key: string]: AnimationConfig;
+  };
+  behaviors: {
+    focus: BehaviorSequence[];
+    break: BehaviorSequence[];
+  };
+}
+
+export const PET_CONFIGS: Record<string, PetConfig> = {
+  rottweiler: {
+    id: 'rottweiler',
     size: 64,
+    defaultScale: 2,
     animations: {
       idle: { url: '/sprites/rottweiler/idle.png', frames: 6, speed: 0.8 },
       walk: { url: '/sprites/rottweiler/run.png', frames: 5, speed: 0.4 },
+      sit: { url: '/sprites/rottweiler/sit.png', frames: 8, speed: 0.6 },
+      sleep: { url: '/sprites/rottweiler/sleep.png', frames: 8, speed: 1.0 },
+    },
+    behaviors: {
+      focus: [
+        {
+          name: 'patrol',
+          weight: 3,
+          steps: [
+            // Increased distance to cover up to half the screen
+            { action: 'walk', distance: { min: 200, max: 600 }, direction: 'random' },
+            { action: 'idle', duration: { min: 4, max: 10 } }
+          ]
+        },
+        {
+          name: 'inspect',
+          weight: 2,
+          steps: [
+            { action: 'walk', distance: { min: 100, max: 300 } },
+            { action: 'sit', duration: { min: 5, max: 12 } },
+            { action: 'idle', duration: { min: 2, max: 5 } }
+          ]
+        },
+        {
+          name: 'short_nap',
+          weight: 1,
+          steps: [
+            { action: 'sit', duration: { min: 2, max: 4 } },
+            { action: 'sleep', duration: { min: 10, max: 30 } },
+            { action: 'sit', duration: { min: 2, max: 4 } }
+          ]
+        }
+      ],
+      break: [
+        {
+          name: 'playful',
+          weight: 1,
+          steps: [
+            // High activity - zooming across the bar
+            { action: 'walk', distance: { min: 400, max: 900 }, direction: 'random' },
+            { action: 'walk', distance: { min: 300, max: 600 }, direction: 'random' },
+            { action: 'idle', duration: { min: 1, max: 3 } }
+          ]
+        },
+        {
+          name: 'long_nap',
+          weight: 2,
+          steps: [
+            { action: 'sleep', duration: { min: 60, max: 120 } }
+          ]
+        }
+      ]
     }
   },
-  "turtle": {
-    id: "turtle",
-    spriteSheet: '/sprites/turtle',
-    frameSize: 64,
+  turtle: {
+    id: 'turtle',
     size: 64,
+    defaultScale: 1,
     animations: {
       idle: { url: '/sprites/turtle/idle.png', frames: 8, speed: 0.8 },
-      walk: { url: '/sprites/turtle/walk.png', frames: 8, speed: 0.4 },
+      walk: { url: '/sprites/turtle/walk.png', frames: 8, speed: 1.2 },
+      sit: { url: '/sprites/turtle/idle.png', frames: 8, speed: 0.8 },
+      sleep: { url: '/sprites/turtle/idle.png', frames: 8, speed: 1.5 },
+    },
+    behaviors: {
+      focus: [
+        {
+          name: 'slow_patrol',
+          weight: 1,
+          steps: [
+            // Turtles move less, but still more than before
+            { action: 'walk', distance: { min: 50, max: 150 }, direction: 'random' },
+            { action: 'idle', duration: { min: 10, max: 20 } }
+          ]
+        },
+        {
+          name: 'hiding',
+          weight: 1,
+          steps: [
+            { action: 'idle', duration: { min: 20, max: 60 } }
+          ]
+        }
+      ],
+      break: [
+        {
+          name: 'wander',
+          weight: 1,
+          steps: [
+            // During breaks, the turtle actually puts in some miles
+            { action: 'walk', distance: { min: 200, max: 700 }, direction: 'random' },
+            { action: 'idle', duration: { min: 5, max: 10 } }
+          ]
+        }
+      ]
     }
   },
+  cat: {
+    id: 'cat',
+    size: 64,
+    defaultScale: 1,
+    animations: {
+      idle: { url: '/sprites/cat/idle.png', frames: 6, speed: 0.8 },
+      walk: { url: '/sprites/cat/run.png', frames: 6, speed: 0.4 },
+      sit: { url: '/sprites/cat/idle.png', frames: 8, speed: 0.8 },
+      sleep: { url: '/sprites/cat/sleep.png', frames: 4, speed: 1.5 },
+    },
+    behaviors: {
+      focus: [
+        {
+          name: 'slow_patrol',
+          weight: 1,
+          steps: [
+            { action: 'walk', distance: { min: 150, max: 400 }, direction: 'random' },
+            { action: 'idle', duration: { min: 10, max: 20 } }
+          ]
+        },
+        {
+          name: 'hiding',
+          weight: 1,
+          steps: [
+            { action: 'idle', duration: { min: 20, max: 60 } }
+          ]
+        }
+      ],
+      break: [
+        {
+          name: 'wander',
+          weight: 1,
+          steps: [
+            // Cats love to explore the whole bar
+            { action: 'walk', distance: { min: 300, max: 1000 }, direction: 'random' },
+            { action: 'idle', duration: { min: 5, max: 10 } }
+          ]
+        }
+      ]
+    }
+  }
 } as const;
 
 

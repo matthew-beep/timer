@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { PetRenderer } from "@/components/Pet";
 import ProgressBar from "@/components/Progress";
 import Settings from "@/components/Settings";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 
 
 import { useAuthStore } from "@/store/useAuth";
@@ -19,9 +19,11 @@ import { useNotesStore } from "@/store/useNotes";
 import ExpandedNote from "@/components/ExpandedNote";
 import RoomModal from "@/components/RoomModal";
 
+import { usePetStore } from "@/store/usePetStore";
+
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
-
+  const containerRef = useRef<HTMLDivElement>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [roomModalOpen, setRoomModalOpen] = useState<boolean>(false);
   const collapsed = useTimer((s) => s.collapsed);
@@ -34,7 +36,8 @@ export default function Home() {
         <NotesContainer />
 
         <div
-          className="w-fit mx-auto flex flex-col items-center justify-center h-full z-0 relative p-10"
+          ref={containerRef}
+          className="flex flex-col items-center justify-center h-full z-0 relative p-10"
         >
           <AnimatePresence>
             {false && (
@@ -54,25 +57,6 @@ export default function Home() {
             )}
           </AnimatePresence>
           <AnimatePresence>
-
-            {!collapsed && (
-              <motion.div
-                className="w-full h-full relative"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.9,
-                  transition: { duration: 0.25 }
-                }}
-                transition={{ duration: 0.3 }}
-              >
-                <PetRenderer id="turtle" scale={1} />
-                <PetRenderer id="rottweiler" scale={2} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
             {!collapsed && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -88,8 +72,6 @@ export default function Home() {
               </motion.div>
             )}
           </AnimatePresence>
-          {!collapsed && <div className="w-full h-full"></div>}
-
         </div>
 
         <Overlay isOpen={showSettings} onClose={() => setShowSettings(false)} slide="right">
@@ -103,7 +85,7 @@ export default function Home() {
         <Overlay isOpen={isNoteExpanded} onClose={() => useNotesStore.getState().setExpandedNote(null)} blur="xl" slide="top">
           <ExpandedNote />
         </Overlay>
-        
+
         <Overlay isOpen={roomModalOpen} onClose={() => setRoomModalOpen(false)} blur="xl" slide="top">
           <RoomModal isOpen={roomModalOpen} onClose={() => setRoomModalOpen(false)} />
         </Overlay>

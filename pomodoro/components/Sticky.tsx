@@ -57,13 +57,6 @@ export default function StickyNote({
   };
 
   const bgColor = theme === "dark" ? DARK_STICKY_COLORS[colorIndex] : LIGHT_STICKY_COLORS[colorIndex];
-  useEffect(() => {
-    console.log("activeNoteId changed: ", activeNoteId, " for note id: ", id);
-    console.log("is active: ", activeNote);
-  }, [activeNoteId, id]);
-
-
-
 
   return (
     <Rnd

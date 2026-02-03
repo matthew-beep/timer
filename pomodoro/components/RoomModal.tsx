@@ -268,7 +268,7 @@ export default function RoomModal({ isOpen, onClose }: RoomModalProps) {
             </div>
             {isHost && (
               <p className="text-xs text-text/50 mt-2 flex items-center gap-1">
-                <LuCrown className="w-3 h-3" color="yellow" /> You are the host
+                <LuCrown className="w-3 h-3" color="#D4AF37" /> You are the host
               </p>
             )}
           </div>
@@ -318,7 +318,7 @@ export default function RoomModal({ isOpen, onClose }: RoomModalProps) {
                         </span>
                       </div>
                       {index === 0 && (
-                        <LuCrown className="w-3 h-3 text-primary" color="yellow" title="Host" />
+                        <LuCrown className="w-3 h-3 text-primary" color="#D4AF37" title="Host" />
                       )}
                     </div>
                     {isHost && index !== 0 && !isMe && (

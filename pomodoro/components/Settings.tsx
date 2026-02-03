@@ -12,6 +12,9 @@ import { motion } from "framer-motion";
 import { POMODORO } from "@/store/useTimer";
 import Image from "next/image";
 
+import { PET_CONFIGS } from "@/config/PetConfig";
+import { usePetStore } from "@/store/usePetStore";
+
 type TabType = 'timer' | 'theming' | 'pets'
 
 export default function Settings({
@@ -48,30 +51,20 @@ export default function Settings({
     console.log("durations changed: ", durations);
   }, [durations]);
 
-
-
-
   const tabs = [
     {
       id: 'timer' as TabType,
       label: 'Timer',
-      //icon: Clock,
     },
     {
       id: 'theming' as TabType,
       label: 'Theming',
-      //icon: Palette,
     },
     {
       id: 'pets' as TabType,
       label: 'Pets',
-      //icon: Cat,
     },
   ]
-
-  /*
-    pomodoro: 
-  */
 
   return (
     <Modal
@@ -117,7 +110,7 @@ export default function Settings({
             </label>
             <Switch
               // Compare by name string instead of object reference
-              checked={method.name === 'Pomodoro'} 
+              checked={method.name === 'Pomodoro'}
               onChange={(e) => {
                 if (e.target.checked) {
                   setPomodoro();
@@ -174,42 +167,6 @@ export default function Settings({
             );
           })}
 
-          {/* Custom Input Fields for Work and Break Durations 
-
-          <div className="flex flex-col gap-2">
-            <label htmlFor="work-timer" className="tracking-wider text-xs font-medium">
-              WORK DURATION:
-            </label>
-            <input
-              id="work-timer"
-              type="text"
-              value={workTimerLength}
-              onChange={(e) => {
-                setWorkTimerLength(e.target.value);
-                setDurationValue("focus", Number(e.target.value));
-              }}
-              placeholder={`${durations.focus / 60}`}
-              className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-[var(--placeholder)] text-text rounded-full border border-border outline-none"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="break-timer" className="tracking-wider text-xs font-medium">
-              BREAK DURATION:
-            </label>
-            <input
-              id="break-timer"
-              type="text"
-              value={breakTimerLength}
-              onChange={(e) => {
-                setBreakTimerLength(e.target.value);
-                setDurationValue("short", Number(e.target.value));
-              }}
-              placeholder={`${durations.short / 60}`}
-              className="p-2 active:outline-none focus:ring-2 focus:ring-blue-500 bg-[var(--inputBg)] placeholder:text-[var(--placeholder)] text-text rounded-full border border-border outline-none"
-            />
-          </div>
-          */}
-
           <label className="text-xs font-medium tracking-wider mb-3 block">
             SESSION COLORS
           </label>
@@ -251,8 +208,6 @@ export default function Settings({
             </div>
           </div>
         </ModalSection>
-
-
       )}
 
       {activeTab === 'theming' && (
@@ -378,26 +333,43 @@ export default function Settings({
 
       {activeTab === 'pets' && (
         <ModalSection>
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 10,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-            }}
-            className="space-y-4"
-          >
-            <div
-              className={`text-center py-12 text-text`}
-            >
-              <p className="text-sm">Pet system coming soon!</p>
-              <p className="text-xs mt-2">
-                Animated companions will keep you company while you work.
-              </p>
-            </div>
-          </motion.div>
+          <div className="grid grid-cols-2 gap-4">
+            {Object.values(PET_CONFIGS).map((pet) => {
+              const isActive = usePetStore.getState().activePets.includes(pet.id);
+
+              return (
+                <button
+                  key={pet.id}
+                  onClick={() => usePetStore.getState().togglePet(pet.id as any)}
+                  className={`
+                    flex flex-col items-center gap-3 p-4 rounded-xl border transition-all
+                    ${isActive
+                      ? 'bg-text/10 border-text/50'
+                      : 'bg-text/5 border-transparent hover:bg-text/10'
+                    }
+                  `}
+                >
+                  <div
+                    className="w-16 h-16"
+                    style={{
+                      backgroundImage: `url(${pet.animations.idle.url})`,
+                      backgroundSize: `${pet.size * pet.animations.idle.frames}px 100%`,
+                      imageRendering: 'pixelated',
+                      backgroundPosition: '0 0'
+                    }}
+                  />
+                  <div className="text-center">
+                    <p className="text-sm font-medium capitalize">{pet.id}</p>
+                    {isActive && <div className="mt-1 w-1.5 h-1.5 rounded-full bg-green-400 mx-auto" />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-6 p-3 bg-text/5 rounded-lg text-xs text-text/60 text-center">
+            <p>Pets behave differently during <strong>Focus</strong> and <strong>Break</strong> modes!</p>
+          </div>
         </ModalSection>
       )}
     </Modal>

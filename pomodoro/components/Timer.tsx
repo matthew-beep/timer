@@ -6,6 +6,7 @@ import { use, useEffect, useRef, useState } from "react";
 import { RiCollapseDiagonalFill } from "react-icons/ri";
 import { motion, AnimatePresence } from "motion/react";
 import { useRoomStore } from "@/store/useRoom";
+import { PetRenderer } from "@/components/Pet";
 
 export default function Timer() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
@@ -155,18 +156,21 @@ export default function Timer() {
         </div>
       )}
 
-      <motion.div
-        className="flex flex-col gap-2"
-      >
-        <div className="flex justify-between items-center font-sans">
+
+      {false &&
+        <motion.div
+          className="flex flex-col gap-2"
+        >
+          <div className="flex justify-between items-center font-sans">
 
 
-          <h4 className="text-text/50">TIMER</h4>
-          <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
-            <RiCollapseDiagonalFill />
-          </Button>
-        </div>
-        {/*
+            <h4 className="text-text/50">TIMER</h4>
+
+            <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
+              <RiCollapseDiagonalFill />
+            </Button>
+          </div>
+          {/*
         <div className="font-display flex justify-between items-center">
           <input
             type="text"
@@ -175,8 +179,8 @@ export default function Timer() {
           />
         </div>
         */}
-      </motion.div>
-
+        </motion.div>
+      }
       {/* Mode Buttons */}
       <div className={`grid ${method && method.name === "Pomodoro" ? "grid-cols-3" : "grid-cols-2"} gap-2 font-sans text-md`}>
         <Button
@@ -265,10 +269,6 @@ export default function Timer() {
 
             const isCompleted = isCycleComplete || currentCyclePosition > i;
             const isActive = !isCycleComplete && currentCyclePosition === i;
-
-            // This is the hex for your 'active' theme color. 
-            // If you have it in a CSS variable, use 'var(--active)'
-            const activeThemeColor = "var(--active)";
 
             return (
               <motion.div
