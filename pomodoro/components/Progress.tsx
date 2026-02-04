@@ -17,6 +17,7 @@ const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
 
 export default function ProgressBar() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
   const notes = useNotesStore((s) => s.notes);
   const timeRemaining = useTimer((s) => s.timeRemaining);
   const duration = useTimer((s) => s.duration);
@@ -29,13 +30,17 @@ export default function ProgressBar() {
 
   const theme = useThemeStore((s) => s.theme);
   const addNote = useNotesStore((s) => s.addNote);
-
+  const activePets = usePetStore((s) => s.activePets);
   useLayoutEffect(() => {
-    if (!containerRef.current) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const updateWidth = () => setContainerWidth(el.clientWidth);
+    updateWidth();
     const observer = new ResizeObserver((entries) => {
-      // Logic for container width if needed
+      const width = entries[0]?.contentRect.width;
+      if (width != null) setContainerWidth(width);
     });
-    observer.observe(containerRef.current);
+    observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
@@ -67,13 +72,14 @@ export default function ProgressBar() {
             className="w-full h-16 relative"
           >
             <AnimatePresence>
-              {usePetStore(s => s.activePets).map((petId) => (
-                <PetRenderer
-                  key={petId}
-                  id={petId}
-                  containerWidth={containerRef.current?.clientWidth}
-                />
-              ))}
+              {containerWidth > 0 &&
+                activePets.map((petId) => (
+                  <PetRenderer
+                    key={petId}
+                    id={petId}
+                    containerWidth={containerWidth}
+                  />
+                ))}
             </AnimatePresence>
           </div>
           <div className='flex items-center h-10 gap-2 mb-1'>

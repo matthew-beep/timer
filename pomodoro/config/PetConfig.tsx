@@ -55,8 +55,7 @@ export const PET_CONFIGS: Record<string, PetConfig> = {
           name: 'patrol',
           weight: 3,
           steps: [
-            // Increased distance to cover up to half the screen
-            { action: 'walk', distance: { min: 200, max: 600 }, direction: 'random' },
+            { action: 'walk', distance: { min: 300, max: 900 }, direction: 'random' },
             { action: 'idle', duration: { min: 4, max: 10 } }
           ]
         },
@@ -64,7 +63,7 @@ export const PET_CONFIGS: Record<string, PetConfig> = {
           name: 'inspect',
           weight: 2,
           steps: [
-            { action: 'walk', distance: { min: 100, max: 300 } },
+            { action: 'walk', distance: { min: 200, max: 500 } },
             { action: 'sit', duration: { min: 5, max: 12 } },
             { action: 'idle', duration: { min: 2, max: 5 } }
           ]
@@ -84,9 +83,8 @@ export const PET_CONFIGS: Record<string, PetConfig> = {
           name: 'playful',
           weight: 1,
           steps: [
-            // High activity - zooming across the bar
-            { action: 'walk', distance: { min: 400, max: 900 }, direction: 'random' },
-            { action: 'walk', distance: { min: 300, max: 600 }, direction: 'random' },
+            { action: 'walk', distance: { min: 500, max: 1200 }, direction: 'random' },
+            { action: 'walk', distance: { min: 400, max: 800 }, direction: 'random' },
             { action: 'idle', duration: { min: 1, max: 3 } }
           ]
         },
@@ -116,8 +114,7 @@ export const PET_CONFIGS: Record<string, PetConfig> = {
           name: 'slow_patrol',
           weight: 1,
           steps: [
-            // Turtles move less, but still more than before
-            { action: 'walk', distance: { min: 50, max: 150 }, direction: 'random' },
+            { action: 'walk', distance: { min: 100, max: 300 }, direction: 'random' },
             { action: 'idle', duration: { min: 10, max: 20 } }
           ]
         },
@@ -134,8 +131,7 @@ export const PET_CONFIGS: Record<string, PetConfig> = {
           name: 'wander',
           weight: 1,
           steps: [
-            // During breaks, the turtle actually puts in some miles
-            { action: 'walk', distance: { min: 200, max: 700 }, direction: 'random' },
+            { action: 'walk', distance: { min: 300, max: 1000 }, direction: 'random' },
             { action: 'idle', duration: { min: 5, max: 10 } }
           ]
         }
@@ -158,7 +154,7 @@ export const PET_CONFIGS: Record<string, PetConfig> = {
           name: 'slow_patrol',
           weight: 1,
           steps: [
-            { action: 'walk', distance: { min: 150, max: 400 }, direction: 'random' },
+            { action: 'walk', distance: { min: 250, max: 600 }, direction: 'random' },
             { action: 'idle', duration: { min: 10, max: 20 } }
           ]
         },
@@ -175,8 +171,7 @@ export const PET_CONFIGS: Record<string, PetConfig> = {
           name: 'wander',
           weight: 1,
           steps: [
-            // Cats love to explore the whole bar
-            { action: 'walk', distance: { min: 300, max: 1000 }, direction: 'random' },
+            { action: 'walk', distance: { min: 400, max: 1200 }, direction: 'random' },
             { action: 'idle', duration: { min: 5, max: 10 } }
           ]
         }
