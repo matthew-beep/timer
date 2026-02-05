@@ -60,6 +60,9 @@ type NotesStore = {
   activeNoteId?: string;
   viewMode: "list" | "grid";
   updateViewMode: (mode: "list" | "grid") => void;
+  gridTagFilterIds: string[];
+  setGridTagFilter: (ids: string[]) => void;
+  toggleGridTagFilter: (tagId: string) => void;
   isNoteExpanded: boolean; // New state
   expandedNoteId: string | null; // New state
   setExpandedNote: (id: string | null) => void;  
@@ -171,12 +174,20 @@ export const useNotesStore = create<NotesStore>()(
       mergeState: 'idle',
       guestNotes: [],
       viewMode: "grid",
+      gridTagFilterIds: [],
       hasLoadedFromSupabase: false,
       isFetchingFromSupabase: false,
       isNoteExpanded: false, // New state
       expandedNoteId: null, // New state
 
       updateViewMode: (mode) => set({ viewMode: mode }),
+      setGridTagFilter: (ids) => set({ gridTagFilterIds: ids }),
+      toggleGridTagFilter: (tagId) =>
+        set((s) => ({
+          gridTagFilterIds: s.gridTagFilterIds.includes(tagId)
+            ? s.gridTagFilterIds.filter((id) => id !== tagId)
+            : [...s.gridTagFilterIds, tagId],
+        })),
       setActiveNote: (id) => set({ activeNoteId: id }),
       setExpandedNote: (id) => set({ 
         expandedNoteId: id, 
@@ -728,6 +739,7 @@ export const useNotesStore = create<NotesStore>()(
           return {
             notes: [],
             viewMode: state.viewMode,
+            gridTagFilterIds: state.gridTagFilterIds,
             hasLoadedFromSupabase: true
             // Don't persist dirty/pending/mergeState/isFetching
           };
@@ -737,6 +749,7 @@ export const useNotesStore = create<NotesStore>()(
         return {
           notes: state.notes,
           viewMode: state.viewMode,
+          gridTagFilterIds: state.gridTagFilterIds,
           hasLoadedFromSupabase: false
         };
       },

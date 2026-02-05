@@ -13,6 +13,7 @@ interface StickyBottomBarProps {
   show: boolean;
   tagIds: string[];
   color: string;
+  variant?: "default" | "expanded";
 }
 
 export default function StickyBottomBar({
@@ -20,18 +21,21 @@ export default function StickyBottomBar({
   id,
   show,
   tagIds,
-  color
+  color,
+  variant = "default",
 }: StickyBottomBarProps) {
   const tags = useTagsStore((s) => s.tags);
   const addTagToNote = useTagsStore((s) => s.addTagToNote);
   const stickyTags = tags.filter(tag => tagIds.includes(tag.id));
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const isExpandedVariant = variant === "expanded";
+
   if (!show) return null;
 
   return (
     <motion.div
-      className="absolute bottom-0 left-0 w-full z-30 pointer-events-auto h-auto flex flex-col pt-8"
+      className={`absolute bottom-0 left-0 w-full z-30 pointer-events-auto h-auto flex flex-col ${isExpandedVariant ? "pt-6" : "pt-8"}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: 0.1 }}
@@ -41,13 +45,13 @@ export default function StickyBottomBar({
       }}
     >
       {/* SECTION 1: SELECTED TAGS */}
-      <div className="flex flex-wrap gap-1 px-2 pb-2 items-center min-h-[32px]">
+      <div className={`flex flex-wrap gap-1.5 items-center min-h-[32px] ${isExpandedVariant ? "px-4 pb-3" : "px-2 pb-2"}`}>
         {stickyTags.length > 0 ? (
           stickyTags.map((tag) => (
-            <TagPill key={tag.id} tagId={tag.id} name={tag.name} color={tag.color} id={id}/>
+            <TagPill key={tag.id} tagId={tag.id} name={tag.name} color={tag.color} id={id} compact={!isExpandedVariant} />
           ))
         ) : (
-          <span className="text-[10px] text-text/40 ml-1">No tags assigned</span>
+          <span className={isExpandedVariant ? "text-sm text-text/40 ml-1" : "text-[10px] text-text/40 ml-1"}>No tags assigned</span>
         )}
       </div>
 
@@ -58,10 +62,10 @@ export default function StickyBottomBar({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-cardBg/5 border-t border-text/10"
+            className={`overflow-hidden border-t border-text/10 ${isExpandedVariant ? "bg-cardBg/10" : "bg-cardBg/5"}`}
           >
-            <div className="p-2 flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
-              <p className="w-full text-[10px] font-bold text-text/40 uppercase tracking-widest mb-1">
+            <div className={`flex flex-wrap gap-2 overflow-y-auto ${isExpandedVariant ? "p-4 max-h-48" : "p-2 max-h-32 gap-1.5"}`}>
+              <p className={`w-full font-bold text-text/40 uppercase tracking-widest mb-1 ${isExpandedVariant ? "text-sm" : "text-[10px]"}`}>
                 Add Tags
               </p>
               {tags.map(tag => {
@@ -71,10 +75,10 @@ export default function StickyBottomBar({
                     key={tag.id}
                     onClick={() => !isAlreadyTagged && addTagToNote(id, tag.id)}
                     disabled={isAlreadyTagged}
-                    className={`text-xs text-text px-2 py-0.5 rounded-full border transition-colors ${isAlreadyTagged
-                      ? 'border-text/5 text-text/20'
-                      : 'border-text/10 hover:bg-text/10'
-                      }`}
+                    className={`rounded-full border transition-colors ${isExpandedVariant
+                      ? `text-sm px-3 py-1.5 ${isAlreadyTagged ? "border-text/5 text-text/20" : "border-text/10 hover:bg-text/10 text-text"}`
+                      : `text-xs text-text px-2 py-0.5 ${isAlreadyTagged ? "border-text/5 text-text/20" : "border-text/10 hover:bg-text/10"}`
+                    }`}
                   >
                     + {tag.name}
                   </button>
@@ -86,16 +90,16 @@ export default function StickyBottomBar({
       </AnimatePresence>
 
       {/* SECTION 3: TOOLBAR */}
-      <div className="flex items-center justify-between gap-2 border-t border-text/10 p-1">
-        <div className="flex items-center justify-between gap-1 flex-1">
+      <div className={`flex items-center justify-between gap-2 border-t border-text/10 ${isExpandedVariant ? "p-3" : "p-1"}`}>
+        <div className={`flex items-center justify-between gap-2 flex-1 ${isExpandedVariant ? "min-h-[40px]" : ""}`}>
           {children}
         </div>
         <Button
-          className="flex items-center gap-1 rounded-full h-6 w-6 justify-center cursor-pointer p-1"
+          className={`rounded-full justify-center cursor-pointer ${isExpandedVariant ? "h-9 w-9 p-2" : "h-6 w-6 p-1"}`}
           onClick={() => setIsExpanded(!isExpanded)}
           variant="plain"
         >
-          <LuTag className={isExpanded ? "text-text" : "text-text/60"} />
+          <LuTag className={isExpanded ? "text-text" : "text-text/60"} size={isExpandedVariant ? 20 : 16} />
         </Button>
       </div>
     </motion.div>

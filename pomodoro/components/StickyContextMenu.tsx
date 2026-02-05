@@ -22,11 +22,9 @@ export default function StickyContextMenu({
   id,
   color,
   colorIndex,
-  tagIds
 }: StickyContextMenuProps) {
   const theme = useThemeStore((s) => s.theme);
   const stickyColors = theme === "dark" ? DARK_STICKY_COLORS : LIGHT_STICKY_COLORS;
-  const tags = useTagsStore((s) => s.tags);
   const updateNote = useNotesStore((s) => s.updateNote);
   return (
     <motion.div 
@@ -39,7 +37,7 @@ export default function StickyContextMenu({
         backgroundColor: color 
       }} // Exactly the height of your h-12 header
       transition={{   
-        duration: 0.4
+        duration: 0.1
       }}
       
     > 

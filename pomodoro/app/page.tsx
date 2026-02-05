@@ -1,6 +1,7 @@
 "use client";
 
 import Timer from "@/components/Timer";
+import TimerToolbar from "@/components/TimerToolbar";
 import Header from "@/components/Header";
 import { PetRenderer } from "@/components/Pet";
 import ProgressBar from "@/components/Progress";
@@ -27,11 +28,34 @@ export default function Home() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [roomModalOpen, setRoomModalOpen] = useState<boolean>(false);
   const collapsed = useTimer((s) => s.collapsed);
+  const timeRemaining = useTimer((s) => s.timeRemaining);
+  const duration = useTimer((s) => s.duration);
   const isNoteExpanded = useNotesStore((s) => s.isNoteExpanded);
+
+  const showNotch = collapsed && typeof timeRemaining === "number" && typeof duration === "number";
 
   return (
     <>
       <Header showSettings={showSettings} setShowSettings={setShowSettings} setShowAuthModal={setShowAuthModal} showAuthModal={showAuthModal} setRoomModalOpen={setRoomModalOpen} roomModalOpen={roomModalOpen} />
+      {/* Header notch: when timer is minimized */}
+      <AnimatePresence>
+        {showNotch && (
+          <motion.div
+            key="timer-notch"
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            exit={{ y: -100 }}
+            transition={{ type: "spring", damping: 20, stiffness: 120 }}
+            className="fixed top-0 left-1/2 -translate-x-1/2 z-50 pt-2"
+          >
+            <div className=" px-4 py-2">
+              <div className="text-[1.2rem] font-display tabular-nums">
+                <TimerToolbar />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="relative h-full">
         <NotesContainer />
 
@@ -39,34 +63,14 @@ export default function Home() {
           ref={containerRef}
           className="flex flex-col items-center justify-center h-full z-0 relative p-10"
         >
-          <AnimatePresence>
-            {false && (
-              <motion.div
-                className="w-full relative"
-                initial={{ opacity: 0, scale: 0.9, y: 100 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{
-                  opacity: 0,
-                  scale: 0.9,
-                  transition: { duration: 0.1 }
-                }}
-                transition={{ duration: 0.3, delay: 1 }}
-              >
-                <h2 className="text-5xl text-text text-shadow-lg text-shadow-white">The secret of getting ahead is getting started</h2>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {!collapsed && (
               <motion.div
+                key="full-timer"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{
-                  opacity: 0,
-                  y: 10,
-                  transition: { duration: 0.25 }
-                }}
-                transition={{ duration: 0.3, delay: 0.2 }}
+                exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
+                transition={{ duration: 0.3 }}
               >
                 <Timer />
               </motion.div>

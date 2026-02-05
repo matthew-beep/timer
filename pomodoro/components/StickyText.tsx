@@ -12,6 +12,7 @@ interface StickyTextProps {
   color: string;
   showToolbar: boolean;
   tagIds: string[];
+  variant?: "default" | "expanded";
 }
 
 export default function StickyText({
@@ -21,20 +22,11 @@ export default function StickyText({
   color,
   showToolbar,
   tagIds = [],
+  variant = "default",
 }: StickyTextProps) {
   return (
-
-
-    /*
-    <textarea
-      value={text}
-      onChange={(e) => saveText(e.target.value)}
-      className="bg-transparent w-full h-full resize-none outline-none p-3 text-white text-sm"
-      placeholder="Enter text..."
-    />*/
     <div className="flex-1 min-h-0 pt-3 z-0 h-full">
-      <Tiptap content={initialText} id={id} height={height} color={color} showToolbar={showToolbar} tagIds={tagIds} />
+      <Tiptap content={initialText} id={id} height={height} color={color} showToolbar={showToolbar} tagIds={tagIds} variant={variant} />
     </div>
-
   );
 }

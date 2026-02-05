@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useNotesStore } from "@/store/useNotes";
 import StickyNote from "@/components/Sticky";
 import NotesList from "@/components/NotesList";
@@ -8,11 +9,19 @@ export default function NotesContainer() {
     const notes = useNotesStore((s) => s.notes);
     const viewMode = useNotesStore((s) => s.viewMode);
     const updateViewMode = useNotesStore((s) => s.updateViewMode);
+    const gridTagFilterIds = useNotesStore((s) => s.gridTagFilterIds);
+
+    const gridNotes = useMemo(() => {
+        if (gridTagFilterIds.length === 0) return notes;
+        return notes.filter((n) =>
+            gridTagFilterIds.every((id) => n.tagIds?.includes(id))
+        );
+    }, [notes, gridTagFilterIds]);
 
     return (
         <div className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none overflow-hidden">
             {viewMode === 'grid' ? (
-                notes.map((note) => (
+                gridNotes.map((note) => (
                     <StickyNote
                         key={note.id}
                         mode={note.mode}

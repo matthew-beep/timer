@@ -1,11 +1,10 @@
 import { useTimer } from "@/store/useTimer";
 import { TimerController } from "@/components/TimerController";
-import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
-import { useEffect, useRef } from "react"; 
-
-import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
 import { RiExpandDiagonalFill } from "react-icons/ri";
+import { usePetStore } from "@/store/usePetStore";
+import { PET_CONFIGS } from "@/config/PetConfig";
 
 export default function TimerToolbar() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
@@ -46,16 +45,22 @@ export default function TimerToolbar() {
     };
   }, [timeRemaining, isRunning, mode]);
 
-  useEffect(() => { 
-    console.log("Timer method changed to:", method?.name);
-    console.log("mode: ", mode);
-  }, [method, mode]);
-  
   useEffect(() => {
     if (!justCompleted) return;
-
     audioRef.current?.play().catch(console.error);
+  }, [justCompleted]);
 
+  useEffect(() => {
+    if (!justCompleted) return;
+    const activePets = usePetStore.getState().activePets;
+    const showDialogue = usePetStore.getState().showDialogue;
+    if (activePets.length === 0) return;
+    const randomPetId = activePets[Math.floor(Math.random() * activePets.length)];
+    const pet = PET_CONFIGS[randomPetId as keyof typeof PET_CONFIGS];
+    if (pet?.dialogue?.onTimer?.length) {
+      const text = pet.dialogue.onTimer[Math.floor(Math.random() * pet.dialogue.onTimer.length)];
+      showDialogue(randomPetId, text, 3000);
+    }
   }, [justCompleted]);
 
 
@@ -79,7 +84,6 @@ export default function TimerToolbar() {
         ref={audioRef} 
         src="/sounds/small-dog.wav" 
         onEnded={() => {
-          console.log('Audio finished playing!');
           complete();
           clearCompletion();
           start();

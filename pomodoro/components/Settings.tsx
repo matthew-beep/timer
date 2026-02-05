@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import { POMODORO } from "@/store/useTimer";
 import Image from "next/image";
 
-import { PET_CONFIGS } from "@/config/PetConfig";
+import { PET_CONFIGS, PetId } from "@/config/PetConfig";
 import { usePetStore } from "@/store/usePetStore";
 
 type TabType = 'timer' | 'theming' | 'pets'
@@ -39,17 +39,15 @@ export default function Settings({
   const backgroundMode = useThemeStore((s) => s.backgroundMode);
   const updateBackgroundMode = useThemeStore((s) => s.updateBackgroundMode);
   const updateSelectedBackground = useThemeStore((s) => s.updateSelectedBackground);
+  const selectedBackground = useThemeStore((s) => s.selectedBackground);
+  const selectedGradient = useThemeStore((s) => s.selectedGradient);
   const [settingsBackgroundMode, setSettingsBackgroundMode] = useState(backgroundMode);
   const [settingsTheme, setSettingsTheme] = useState(selectedTheme);
 
-  const [workTimerLength, setWorkTimerLength] = useState("");
-  const [breakTimerLength, setBreakTimerLength] = useState("");
   const [activeTab, setActiveTab] = useState<TabType>('timer')
   const [localDurations, setLocalDurations] = useState<{ [key: string]: string }>({});
 
-  useEffect(() => {
-    console.log("durations changed: ", durations);
-  }, [durations]);
+  const activePets = usePetStore((s) => s.activePets);
 
   const tabs = [
     {
@@ -254,25 +252,31 @@ export default function Settings({
                 />
               </div>
               <div className="grid grid-cols-2 gap-3">
-                {BACKGROUND_CONFIGS.map((bg, i) => (
-                  <button
-                    key={bg.name}
-                    className="pb-1 relative flex flex-col justify-center items-center overflow-hidden rounded-xl border border-border transition-all bg-text/5 hover:bg-text/10 hover:border-text/20"
-                    onClick={() => {
-                      updateBackgroundMode("video");
-                      updateSelectedBackground(i);
-                    }}
-                  >
-                    <Image
-                      src={bg.thumbnail}
-                      alt={bg.name}
-                      width={1000}
-                      height={1000}
-                      className="rounded-md mb-2 object-cover w-full h-full"
-                    />
-                    <span className="text-xs">{bg.name}</span>
-                  </button>
-                ))}
+                {BACKGROUND_CONFIGS.map((bg, i) => {
+                  const isSelected = backgroundMode === "video" && selectedBackground === i;
+                  return (
+                    <button
+                      key={bg.name}
+                      className={`
+                        pb-1 relative flex flex-col justify-center items-center overflow-hidden rounded-xl transition-all
+                        ${isSelected ? "bg-text/10" : "bg-text/5 hover:bg-text/10"}
+                      `}
+                      onClick={() => {
+                        updateBackgroundMode("video");
+                        updateSelectedBackground(i);
+                      }}
+                    >
+                      <Image
+                        src={bg.thumbnail}
+                        alt={bg.name}
+                        width={1000}
+                        height={1000}
+                        className="rounded-md mb-2 object-cover w-full h-full"
+                      />
+                      <span className="text-xs">{bg.name}</span>
+                    </button>
+                  );
+                })}
               </div>
             </ModalSection>
           ) : (
@@ -300,30 +304,37 @@ export default function Settings({
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                {themes.filter((theme) => theme.mode === settingsTheme).map((theme) => (
-                  <button
-                    key={theme.name}
-                    className="relative flex flex-col justify-center items-center group p-3 rounded-xl border border-border transition-all bg-text/5 hover:bg-text/10 hover:border-text/20"
-                    onClick={() => {
-                      updateBackgroundMode("mesh");
-                      updateSelectedGradient(themes.indexOf(theme));
-                      updateTheme(settingsTheme);
-                    }}
-                  >
-                    <div className="flex gap-1 mb-2">
-                      {theme.preview.map((color, i) => (
-                        <div
-                          key={i}
-                          className="h-6 w-6 rounded-md"
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-xs text-text/70 font-medium">
-                      {theme.name}
-                    </span>
-                  </button>
-                ))}
+                {themes.filter((theme) => theme.mode === settingsTheme).map((theme) => {
+                  const gradientIndex = themes.indexOf(theme);
+                  const isSelected = backgroundMode === "mesh" && selectedGradient === gradientIndex;
+                  return (
+                    <button
+                      key={theme.name}
+                      className={`
+                        relative flex flex-col justify-center items-center group p-3 rounded-xl transition-all
+                        ${isSelected ? "bg-text/10" : "bg-text/5 hover:bg-text/10"}
+                      `}
+                      onClick={() => {
+                        updateBackgroundMode("mesh");
+                        updateSelectedGradient(gradientIndex);
+                        updateTheme(settingsTheme);
+                      }}
+                    >
+                      <div className="flex gap-1 mb-2">
+                        {theme.preview.map((color, i) => (
+                          <div
+                            key={i}
+                            className="h-6 w-6 rounded-md"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-text/70 font-medium">
+                        {theme.name}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </ModalSection>
           )}
@@ -340,11 +351,11 @@ export default function Settings({
               return (
                 <button
                   key={pet.id}
-                  onClick={() => usePetStore.getState().togglePet(pet.id as any)}
+                  onClick={() => usePetStore.getState().togglePet(pet.id as PetId)}
                   className={`
-                    flex flex-col items-center gap-3 p-4 rounded-xl border transition-all
+                    flex flex-col items-center gap-3 p-4 rounded-xl transition-all
                     ${isActive
-                      ? 'bg-text/10 border-text/50'
+                      ? 'bg-text/10'
                       : 'bg-text/5 border-transparent hover:bg-text/10'
                     }
                   `}
@@ -360,7 +371,6 @@ export default function Settings({
                   />
                   <div className="text-center">
                     <p className="text-sm font-medium capitalize">{pet.id}</p>
-                    {isActive && <div className="mt-1 w-1.5 h-1.5 rounded-full bg-green-400 mx-auto" />}
                   </div>
                 </button>
               );

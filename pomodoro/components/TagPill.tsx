@@ -11,7 +11,8 @@ interface TagPillProps {
   onRemove?: () => void;
   className?: string;
   color: string;
-  id: string;
+  id: string; // For legacy removeTagFromNote fallback (noteId or tagId depending on caller)
+  compact?: boolean;
 }
 
 export const TagPill: React.FC<TagPillProps> = ({
@@ -20,7 +21,8 @@ export const TagPill: React.FC<TagPillProps> = ({
   onRemove,
   className = "",
   color,
-  id
+  id,
+  compact = true,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { removeTagFromNote } = useTagsStore(); // Get the deleteTag function
@@ -36,13 +38,13 @@ export const TagPill: React.FC<TagPillProps> = ({
         borderColor: `${color}30`
       }}
       className={`
-        inline-flex items-center gap-1 px-2.5 py-0.5 
-        rounded-full border text-xs font-semibold tracking-wide
+        inline-flex items-center gap-1 rounded-full border font-semibold tracking-wide
         transition-all duration-200 select-none relative overflow-hidden 
+        ${compact ? "px-2.5 py-0.5 text-xs" : "px-3 py-1 text-sm"}
         ${className} ${isHovered && "shadow-md pr-1"}
       `}
     >
-      <span className="truncate max-w-[80px]">{name}</span>
+      <span className={compact ? "truncate max-w-[80px]" : "truncate max-w-[140px]"}>{name}</span>
 
       <AnimatePresence>
         {isHovered && (
@@ -50,7 +52,15 @@ export const TagPill: React.FC<TagPillProps> = ({
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: "auto", opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            onClick={() => removeTagFromNote(id, tagId)} // Handle deletion on click
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onRemove) {
+                onRemove();
+              } else {
+                // Legacy: remove tag from a specific note when no custom handler is provided
+                removeTagFromNote(id, tagId);
+              }
+            }}
             className="flex items-center justify-center hover:bg-black/10 rounded-sm transition-colors"
           >
             <IoIosClose size={16} />

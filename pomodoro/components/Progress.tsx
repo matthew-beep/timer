@@ -11,6 +11,7 @@ import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 import { v4 as uuidv4 } from 'uuid';
 import { PetRenderer } from './Pet';
 import { usePetStore } from "@/store/usePetStore";
+import { useTagsStore } from "@/store/useTags";
 
 import TimerToolbar from './TimerToolbar';
 const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
@@ -26,7 +27,25 @@ export default function ProgressBar() {
   const updateViewMode = useNotesStore((s) => s.updateViewMode);
   const mode = useTimer((s) => s.mode);
   const viewMode = useNotesStore((s) => s.viewMode);
+  const gridTagFilterIds = useNotesStore((s) => s.gridTagFilterIds);
+  const toggleGridTagFilter = useNotesStore((s) => s.toggleGridTagFilter);
+  const setGridTagFilter = useNotesStore((s) => s.setGridTagFilter);
+  const tags = useTagsStore((s) => s.tags);
   const [showText, setShowText] = useState(false);
+  const [showGridTagPopover, setShowGridTagPopover] = useState(false);
+  const gridTagPopoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleGridToggleMouseEnter = () => {
+    if (gridTagPopoverTimeout.current) {
+      clearTimeout(gridTagPopoverTimeout.current);
+      gridTagPopoverTimeout.current = null;
+    }
+    setShowGridTagPopover(true);
+  };
+
+  const handleGridToggleMouseLeave = () => {
+    gridTagPopoverTimeout.current = setTimeout(() => setShowGridTagPopover(false), 150);
+  };
 
   const theme = useThemeStore((s) => s.theme);
   const addNote = useNotesStore((s) => s.addNote);
@@ -83,26 +102,82 @@ export default function ProgressBar() {
             </AnimatePresence>
           </div>
           <div className='flex items-center h-10 gap-2 mb-1'>
-            <div className="relative bg-cardBg/60 p-1 rounded-full backdrop-blur-md border border-white/10 flex items-center h-10 w-24">
-              <div className="absolute inset-0 p-1 flex">
-                <motion.div
-                  className="h-full w-1/2 bg-active/20 border border-active/30 rounded-full"
-                  animate={{ x: viewMode === 'grid' ? 0 : '100%' }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                />
+            <div className="relative">
+              <div className="relative bg-cardBg/60 p-1 rounded-full backdrop-blur-md border border-white/10 flex items-center h-10 w-24">
+                <div className="absolute inset-0 p-1 flex">
+                  <motion.div
+                    className="h-full w-1/2 bg-active/20 border border-active/30 rounded-full"
+                    animate={{ x: viewMode === 'grid' ? 0 : '100%' }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                </div>
+                <button
+                  onClick={() => updateViewMode("grid")}
+                  onMouseEnter={handleGridToggleMouseEnter}
+                  onMouseLeave={handleGridToggleMouseLeave}
+                  className={`relative flex-1 flex justify-center items-center h-full z-10 ${viewMode === 'grid' ? 'text-active' : 'text-text/50'}`}
+                >
+                  <LuLayoutGrid size={18} />
+                </button>
+                <button
+                  onClick={() => updateViewMode("list")}
+                  className={`relative flex-1 flex justify-center items-center h-full z-10 ${viewMode === 'list' ? 'text-active' : 'text-text/50'}`}
+                >
+                  <LuList size={18} />
+                </button>
               </div>
-              <button
-                onClick={() => updateViewMode("grid")}
-                className={`relative flex-1 flex justify-center items-center h-full z-10 ${viewMode === 'grid' ? 'text-active' : 'text-text/50'}`}
-              >
-                <LuLayoutGrid size={18} />
-              </button>
-              <button
-                onClick={() => updateViewMode("list")}
-                className={`relative flex-1 flex justify-center items-center h-full z-10 ${viewMode === 'list' ? 'text-active' : 'text-text/50'}`}
-              >
-                <LuList size={18} />
-              </button>
+
+              <AnimatePresence>
+                {showGridTagPopover && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute bottom-full font-sans left-0 mb-1 p-2 rounded-lg bg-cardBg/90 backdrop-blur-md border border-white/10 shadow-lg min-w-[160px] max-w-[220px]"
+                    onMouseEnter={handleGridToggleMouseEnter}
+                    onMouseLeave={handleGridToggleMouseLeave}
+                  >
+                    <p className="text-xs text-text/70 mb-2 px-1">Show on grid</p>
+                    {tags.length === 0 ? (
+                      <p className="text-xs text-text/50 italic">No tags yet</p>
+                    ) : (
+                      <div className="flex flex-wrap gap-1.5">
+                        {tags.map((tag) => {
+                          const selected = gridTagFilterIds.includes(tag.id);
+                          return (
+                            <button
+                              key={tag.id}
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                toggleGridTagFilter(tag.id);
+                              }}
+                              className={`rounded-full px-2.5 py-1 text-xs font-medium border transition-colors ${selected ? 'ring-1 ring-offset-1 ring-offset-cardBg' : 'border-transparent'}`}
+                              style={{
+                                backgroundColor: selected ? `${tag.color}25` : `${tag.color}12`,
+                                color: tag.color,
+                                borderColor: selected ? `${tag.color}50` : 'transparent',
+                              }}
+                            >
+                              {tag.name}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {gridTagFilterIds.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setGridTagFilter([])}
+                        className="text-[10px] text-active mt-2 px-1 hover:underline"
+                      >
+                        Show all notes
+                      </button>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <Button

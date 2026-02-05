@@ -2,10 +2,12 @@ import { useTimer } from "@/store/useTimer";
 import { TimerController } from "@/components/TimerController";
 import { TimerControls } from "@/components/TimerControls";
 import { Button } from "./Button";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RiCollapseDiagonalFill } from "react-icons/ri";
 import { motion, AnimatePresence } from "motion/react";
 import { useRoomStore } from "@/store/useRoom";
+import { usePetStore } from "@/store/usePetStore";
+import { PET_CONFIGS } from "@/config/PetConfig";
 import { PetRenderer } from "@/components/Pet";
 
 export default function Timer() {
@@ -64,12 +66,25 @@ export default function Timer() {
         audioRef.current!.currentTime = 0;
         await audioRef.current!.play();
       } catch (error) {
-        // This is where the "Request not allowed" error is caught
         console.warn("Autoplay blocked. User needs to interact with the page first: ", error);
       }
     };
 
     playAudio();
+  }, [justCompleted]);
+
+  useEffect(() => {
+    if (!justCompleted) return;
+    const activePets = usePetStore.getState().activePets;
+    const showDialogue = usePetStore.getState().showDialogue;
+    if (activePets.length === 0) return;
+    const randomPetId = activePets[Math.floor(Math.random() * activePets.length)];
+    const pet = PET_CONFIGS[randomPetId as keyof typeof PET_CONFIGS];
+    if (pet?.dialogue?.onTimer?.length) {
+      const list = pet.dialogue.onTimer;
+      const text = list[Math.floor(Math.random() * list.length)];
+      showDialogue(randomPetId, text, 3000);
+    }
   }, [justCompleted]);
 
   // Inside your Timer.tsx or where you manage the audio ref
@@ -110,6 +125,15 @@ export default function Timer() {
     <div
       className="flex flex-col w-[420px] p-6 space-y-4 rounded-3xl bg-cardBg backdrop-blur-xs saturate-80 border-border border font-display relative"
     >
+      {/* Minimize to header notch */}
+      <Button
+        variant="plain"
+        className="absolute top-4 right-4 rounded-full p-2 hover:bg-white/10 transition-colors z-10"
+        onClick={toggleCollapsed}
+        title="Minimize to notch"
+      >
+        <RiCollapseDiagonalFill size={18} />
+      </Button>
       {roomCode && (
         <div className=" flex items-center gap-2 w-full justify-between">
           <div className="px-2 py-1 bg-text/5 rounded-lg text-xs font-mono text-text/50 border border-border/10 flex gap-2 items-center">
@@ -157,30 +181,6 @@ export default function Timer() {
       )}
 
 
-      {false &&
-        <motion.div
-          className="flex flex-col gap-2"
-        >
-          <div className="flex justify-between items-center font-sans">
-
-
-            <h4 className="text-text/50">TIMER</h4>
-
-            <Button variant="plain" className="rounded-full p-2" onClick={toggleCollapsed}>
-              <RiCollapseDiagonalFill />
-            </Button>
-          </div>
-          {/*
-        <div className="font-display flex justify-between items-center">
-          <input
-            type="text"
-            placeholder={placeholder}
-            className={`w-full py-2.5 outline-none text-md text-text placeholder:text-text`}
-          />
-        </div>
-        */}
-        </motion.div>
-      }
       {/* Mode Buttons */}
       <div className={`grid ${method && method.name === "Pomodoro" ? "grid-cols-3" : "grid-cols-2"} gap-2 font-sans text-md`}>
         <Button

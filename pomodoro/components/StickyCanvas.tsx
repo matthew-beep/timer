@@ -5,14 +5,10 @@ import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { useNotesStore } from "@/store/useNotes";
 import { Button } from "./Button";
 import type { CanvasPath } from "react-sketch-canvas";
-import { CiUndo, CiRedo } from "react-icons/ci";
-import { motion } from "framer-motion";
 import { useState } from "react";
-import { RxEraser } from "react-icons/rx";
 import StaticCanvas from "./StaticCanvas";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { CiEdit } from "react-icons/ci";
-import ColorPickerButton from "./ColorPickerButton";
 import StickyCanvasToolbar from "./CanvasMenuBar";
 import StickyBottomBar from "./StickyBottomBar";
 
@@ -30,6 +26,7 @@ interface StickyCanvasProps {
   showToolbar: boolean;
   tagIds: string[];
   color: string;
+  variant?: "default" | "expanded";
 }
 
 export default function StickyCanvas({
@@ -39,6 +36,7 @@ export default function StickyCanvas({
   color = "",
   showToolbar,
   tagIds = [],
+  variant = "default",
 }: StickyCanvasProps) {
 
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
@@ -149,6 +147,7 @@ export default function StickyCanvas({
           show={showToolbar}
           id={id}
           color={color}
+          variant={variant}
         >
           <StickyCanvasToolbar
             canvasRef={canvasRef}

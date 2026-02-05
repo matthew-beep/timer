@@ -22,15 +22,9 @@ export default function ExpandedNote() {
     const updateNote = useNotesStore((s) => s.updateNote);
     const deleteNote = useNotesStore((s) => s.deleteNote);
     const theme = useThemeStore((s) => s.theme);
-
-    const [contextMenu, setContextMenu] = useState<boolean>(false);
-    const [localMode, setLocalMode] = useState<"draw" | "text">("text");
-
     const note = notes.find((n) => n.id === expandedNoteId);
-
-    useEffect(() => {
-        if (note?.mode) setLocalMode(note.mode);
-    }, [note?.mode]);
+    const [contextMenu, setContextMenu] = useState<boolean>(false);
+    const [localMode, setLocalMode] = useState<"draw" | "text">(note?.mode || "text");
 
     if (!note) return null;
 
@@ -74,20 +68,10 @@ export default function ExpandedNote() {
                 className="absolute inset-0 bg-black/60 backdrop-blur-md"
             />
 
-            {/* 2. Ambient Glow (Matches Note Color) */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 0.15, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute w-[600px] h-[600px] rounded-full blur-[120px] pointer-events-none"
-                style={{ backgroundColor: bgColor }}
-            />
 
             {/* 3. Main Modal Container */}
             <motion.div
-                className="w-full max-w-5xl h-[85vh] mx-4 flex flex-col overflow-hidden relative 
-                           bg-neutral-900/90 backdrop-blur-2xl rounded-[32px] 
-                           border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]"
+                className={`w-full max-w-5xl h-[85vh] mx-4 flex flex-col overflow-hidden relative rounded-[32px] border shadow-[0_12px_40px_-12px_rgba(0,0,0,0.25)] ${theme === "dark" ? "bg-zinc-900/95 border-white/10 rotate-[0.5deg]" : "bg-zinc-50 border-zinc-200/80 -rotate-[0.5deg]"}`}
                 initial={{ opacity: 0, y: 30, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 30, scale: 0.95 }}
@@ -98,9 +82,11 @@ export default function ExpandedNote() {
                 }}
             >
                 {/* Header Section */}
-                <div className="flex justify-between items-center px-8 py-5 bg-white/[0.03] border-b border-white/5">
-                    {/* Left: Enhanced Mode Toggle */}
-                    <div className="flex items-center gap-1 bg-black/30 p-1 rounded-xl border border-white/5">
+                <div className="flex justify-between items-center px-6 py-4 bg-white/[0.03] border-b border-white/5 shrink-0">
+                    {/* Left: Drag handle + Mode Toggle */}
+                    <div className="flex items-center gap-3">
+
+                        <div className="flex items-center gap-1 bg-black/30 p-1 rounded-xl border border-white/5">
                         <button
                             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
                                 localMode === "text"
@@ -123,6 +109,7 @@ export default function ExpandedNote() {
                             <LuPenTool size={18} />
                             <span>Draw</span>
                         </button>
+                        </div>
                     </div>
 
                     {/* Right: Action Group */}
@@ -164,7 +151,7 @@ export default function ExpandedNote() {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     onClick={() => setContextMenu(false)}
-                                    className="absolute inset-0 z-30 bg-black/40 backdrop-blur-sm cursor-pointer"
+                                    className="absolute inset-0 z-40 bg-black/40 backdrop-blur-sm cursor-pointer"
                                 />
                                 <motion.div 
                                     initial={{ opacity: 0, y: -10 }}
@@ -184,12 +171,12 @@ export default function ExpandedNote() {
                     </AnimatePresence>
 
                     {/* Scrollable Editor Wrapper */}
-                    <div className="w-full h-full overflow-y-auto px-8 md:px-24 py-12 scroll-smooth">
-                        <div className="max-w-4xl mx-auto h-full">
+                    <div className="w-full h-full overflow-y-auto py-5 scroll-smooth">
+                        <div className="h-full">
                             {localMode === "draw" ? (
                                 <StickyCanvas
                                     id={id}
-                                    color="transparent"
+                                    color={bgColor}
                                     paths={paths}
                                     inlineSvg={inlineSvg}
                                     onColorChange={() => {}}
@@ -201,7 +188,7 @@ export default function ExpandedNote() {
                                     id={id}
                                     initialText={text}
                                     height={800}
-                                    color="transparent"
+                                    color={bgColor}
                                     showToolbar={true}
                                     tagIds={tagIds}
                                 />
@@ -209,12 +196,6 @@ export default function ExpandedNote() {
                         </div>
                     </div>
                 </div>
-
-                {/* Subtle bottom accent - ties back to the sticky note color */}
-                <div
-                    className="h-1.5 w-full opacity-50"
-                    style={{ backgroundColor: bgColor }}
-                />
             </motion.div>
         </div>
     );

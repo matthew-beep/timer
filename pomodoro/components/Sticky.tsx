@@ -19,6 +19,7 @@ import { useThemeStore } from "@/store/useTheme";
 import { LuPenTool } from "react-icons/lu";
 
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "./Themes";
+import { GoScreenFull } from "react-icons/go";
 
 
 export default function StickyNote({
@@ -50,6 +51,7 @@ export default function StickyNote({
   const [cursor, setCursor] = useState<string>("grab");
   const [currHeight, setCurrHeight] = useState<number>(height);
   const resizeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const setExpandedNote = useNotesStore((s) => s.setExpandedNote);
 
   const handleColorChange = (color: string) => {
     //updateNote(id, { color });
@@ -160,6 +162,15 @@ export default function StickyNote({
               </button>
             </div>
             <div className="flex items-center">
+              <Button
+                className="w-8 h-8 flex items-center justify-center transition-all duration-150 rounded-full"
+                onClick={() => setExpandedNote(id)}
+                variant="plain"
+              >
+                <GoScreenFull
+                  size={16}
+                />
+              </Button>
               <Button
                 className="w-8 h-8 flex items-center justify-center transition-all duration-150 rounded-full"
                 onClick={() => setContextMenu(!contextMenu)}
