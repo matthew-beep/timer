@@ -94,7 +94,6 @@ export const useThemeStore = create<ThemeStore>()(
             selectedBackground: settings.selected_background,
           });
           
-          console.log('✅ Loaded theme settings from Supabase');
         } catch (error) {
           console.error('Failed to load theme settings:', error);
         }
@@ -129,7 +128,6 @@ export const useThemeStore = create<ThemeStore>()(
             selected_background: selectedBackground,
           });
           
-          console.log('✅ Synced theme settings to Supabase');
         } catch (error) {
           console.error('Failed to sync theme settings:', error);
         }

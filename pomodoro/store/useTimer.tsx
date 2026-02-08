@@ -175,7 +175,6 @@ export const useTimer = create<TimerState>()(
           const themeStore = useThemeStore.getState();
           themeStore.updateColor('work', settings.timer_colors.work);
           themeStore.updateColor('break', settings.timer_colors.break);
-          console.log('✅ Loaded timer settings from Supabase');
         } catch (error) {
           console.error('Failed to load timer settings:', error);
         }
@@ -203,7 +202,6 @@ export const useTimer = create<TimerState>()(
             timer_durations: durations,
             timer_colors: themeStore.colors,
           });
-          console.log('✅ Synced timer settings to Supabase');
         } catch (error) {
           console.error('Failed to sync timer settings:', error);
         }

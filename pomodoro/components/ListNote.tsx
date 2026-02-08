@@ -47,10 +47,7 @@ export default function ListNote({
 
   return (
     <motion.div
-      onClick={() => {
-        console.log("Open full edit modal for:", id);
-        setExpandedNote(id);
-      }}
+      onClick={() => setExpandedNote(id)}
       className="group relative h-32 rounded-2xl border flex flex-col overflow-hidden cursor-pointer transition-all hover:bg-white/[0.03]"
       style={{
         backgroundColor: `${bgColor}`,

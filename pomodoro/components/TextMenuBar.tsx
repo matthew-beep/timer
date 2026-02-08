@@ -146,7 +146,7 @@ export default function MenuBar({ editor }: MenuBarProps) {
           Paragraph
         </button>
         <button
-          onClick={() => {editor.chain().focus().toggleHeading({ level: 1 }).run(); console.log("Toggled H1")}}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           className={editorState.isHeading1 ? 'is-active' : ''}
         >
           H1

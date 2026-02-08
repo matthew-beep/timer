@@ -32,10 +32,6 @@ class Telemetry {
             properties,
             timestamp: Date.now()
         };
-        // Always log in development
-        if (process.env.NODE_ENV === 'development') {
-            console.log('📊 Telemetry:', { ...payload, userId: user?.id });
-        }
         if (!this.enabled) return;
         // Send to analytics service (PostHog, Mixpanel, etc.)
         if (typeof window !== 'undefined' && (window as any).analytics) {

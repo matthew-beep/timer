@@ -49,16 +49,12 @@ export const useAuthStore = create<AuthStore>()(
           return;
         }
 
-        if (isLoadingProfile) {
-          console.log('⏭️  Profile load already in progress, skipping');
-          return;
-        }
+        if (isLoadingProfile) return;
 
         const timer = telemetry.startTimer('auth.profile.load');
         telemetry.track('auth.profile.load.started');
 
         try {
-          console.log("loading profile from load profile");
           set({ isLoadingProfile: true });
 
           const profile = await createOrGetProfile(user);
@@ -70,7 +66,6 @@ export const useAuthStore = create<AuthStore>()(
 
           timer.end({ success: true });
           telemetry.track('auth.profile.load.success');
-          console.log('✅ Profile loaded');
 
         } catch (error) {
           timer.end({ success: false, error: (error as Error).message });
@@ -89,7 +84,6 @@ export const useAuthStore = create<AuthStore>()(
           return;
         }
 
-        console.log('Initializing auth store...');
         set({ isLoading: true });
 
         try {
@@ -124,7 +118,6 @@ export const useAuthStore = create<AuthStore>()(
         } catch (error) {
           console.error('Auth initialization error:', error);
         } finally {
-          console.log('🔓 Init finally block - setting loading: false');
           set({ isInitialized: true, isLoading: false });
         }
       },
@@ -184,7 +177,6 @@ export const useAuthStore = create<AuthStore>()(
 
           timer.end({ success: true });
           telemetry.track('auth.sign_up.success');
-          console.log("Sign up data:", data);
 
         } catch (error) {
           timer.end({ success: false, error: (error as Error).message });
@@ -200,12 +192,10 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       signInWithGoogle: async () => {
-        console.log('🔵 signInWithGoogle called');
         try {
           set({ isLoading: true, error: null });
 
           const redirectUrl = `${window.location.origin}/auth/callback`;
-          console.log('Redirecting to:', redirectUrl);
 
           const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
@@ -231,7 +221,6 @@ export const useAuthStore = create<AuthStore>()(
 
         try {
           set({ isLoading: true, error: null });
-          console.log("Signing out...");
 
           const { error } = await supabase.auth.signOut();
 
@@ -239,7 +228,6 @@ export const useAuthStore = create<AuthStore>()(
 
           timer.end({ success: true });
           telemetry.track('auth.sign_out.success');
-          console.log("Sign out complete - auth state change will update store");
 
         } catch (error) {
           timer.end({ success: false, error: (error as Error).message });

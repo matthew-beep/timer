@@ -81,25 +81,20 @@ const setupChannelListeners = (
 ): RealtimeChannel => {
   return channel
     .on('broadcast', { event: 'timer_start' }, () => {
-      console.log('[Room] Received broadcast: timer_start');
       useTimer.getState().start();
     })
     .on('broadcast', { event: 'timer_pause' }, () => {
-      console.log('[Room] Received broadcast: timer_pause');
       useTimer.getState().pause();
     })
     .on('broadcast', { event: 'timer_reset' }, () => {
-      console.log('[Room] Received broadcast: timer_reset');
       useTimer.getState().reset();
     })
     .on('broadcast', { event: 'timer_state' }, (payload: { payload: TimerState }) => {
-      console.log('[Room] Received timer state sync:', payload.payload);
       const timerState = useTimer.getState();
 
       // Sync state if not currently running (or forced sync)
       // If host says running, we should match it
       if (!timerState.isRunning && payload.payload.isRunning) {
-        console.log('[Room] Auto-starting timer to match host');
         // Update time first
         useTimer.setState({
           timeRemaining: payload.payload.timeRemaining,
@@ -121,7 +116,6 @@ const setupChannelListeners = (
     })
     // ❌ Removed separate 'room_name' listener in favor of bundled settings
     .on('broadcast', { event: 'room_settings' }, (payload: { payload: RoomSettings }) => {
-      console.log('[Room] Received room settings update:', payload.payload);
       // Host is authority, should not receive settings updates usually, but good for sync
       if (!isHost) {
         const newSettings = payload.payload;
@@ -142,14 +136,12 @@ const setupChannelListeners = (
       }
     })
     .on('broadcast', { event: 'member_kicked' }, (payload: { payload: { memberName: string } }) => {
-      console.log('[Room] Member kicked:', payload.payload.memberName);
       if (memberName === payload.payload.memberName) {
         getState().leaveRoom();
         alert("You have been removed from the room.");
       }
     })
     .on('broadcast', { event: 'room_ended' }, () => {
-      console.log('[Room] Received broadcast: room_ended');
       getState().leaveRoom();
       alert("The host has ended the room.");
     })
@@ -160,13 +152,11 @@ const setupChannelListeners = (
         .map((p) => p.name)
         .filter((n): n is string => Boolean(n));
 
-      console.log('[Room] Presence sync:', memberNames);
       setState({ members: memberNames });
     })
     // Host-only: Listen for sync requests from new/refreshing guests
     .on('broadcast', { event: 'request_timer_state' }, () => {
       if (isHost) {
-        console.log('[Room] Received state request - syncing client');
         const state = getState();
         const timerState = useTimer.getState();
 
@@ -206,7 +196,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   lastSync: null,
 
   createRoom: async (hostName = 'Host', roomName = 'Study Room', settings = {}) => {
-    console.log('[Room] Creating room...');
     set({ connectionStatus: 'connecting' });
 
     const code = Array.from({ length: 6 }, () =>
@@ -226,7 +215,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 
     channel.subscribe(async (status: string) => {
       if (status === 'SUBSCRIBED') {
-        console.log(`[Room] Subscribed to room:${code} as Host`);
         set({ connectionStatus: 'connected' });
         await channel.track({ name: hostName, isHost: true });
 
@@ -263,12 +251,10 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       memberName: hostName
     });
 
-    console.log(`[Room] Room created with code: ${code}`);
     return code;
   },
 
   joinRoom: async (code: string, name: string) => {
-    console.log(`[Room] Joining room: ${code} as ${name}`);
     set({ connectionStatus: 'connecting' });
 
     const channel = supabase.channel(`room:${code}`);
@@ -276,7 +262,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 
     channel.subscribe(async (status: string) => {
       if (status === 'SUBSCRIBED') {
-        console.log(`[Room] Subscribed to room:${code}`);
         set({ connectionStatus: 'connected' });
         await channel.track({ name, isHost: false });
 
@@ -312,7 +297,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   },
 
   leaveRoom: () => {
-    console.log('[Room] Leaving room...');
     const { channel } = get();
     if (channel) {
       channel.unsubscribe();
@@ -331,7 +315,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   },
 
   endRoom: () => {
-    console.log('[Room] Ending room...');
     const { channel, leaveRoom } = get();
     if (channel) {
       channel.send({ type: 'broadcast', event: 'room_ended' });
@@ -340,28 +323,24 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   },
 
   broadcastStart: () => {
-    console.log('[Room] Broadcasting: timer_start');
     const { channel } = get();
     channel?.send({ type: 'broadcast', event: 'timer_start' });
     get().broadcastTimerState(useTimer.getState());
   },
 
   broadcastPause: () => {
-    console.log('[Room] Broadcasting: timer_pause');
     const { channel } = get();
     channel?.send({ type: 'broadcast', event: 'timer_pause' });
     get().broadcastTimerState(useTimer.getState());
   },
 
   broadcastReset: () => {
-    console.log('[Room] Broadcasting: timer_reset');
     const { channel } = get();
     channel?.send({ type: 'broadcast', event: 'timer_reset' });
     get().broadcastTimerState(useTimer.getState());
   },
 
   broadcastTimerState: (state: TimerState) => {
-    console.log('[Room] Broadcasting timer state:', state);
     const { channel } = get();
     channel?.send({
       type: 'broadcast',
@@ -432,7 +411,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 
     try {
       const session: RoomSession = JSON.parse(sessionStr);
-      console.log('[Room] Restoring session:', session);
 
       // 1. Hydrate State immediately
       set({
@@ -452,7 +430,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 
       channel.subscribe(async (status: string) => {
         if (status === 'SUBSCRIBED') {
-          console.log(`[Room] Restored subscription to room:${session.roomCode}`);
           set({ connectionStatus: 'connected' });
 
           await channel.track({
@@ -461,8 +438,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
           });
 
           if (session.isHost) {
-            // HOST: Re-assert authority
-            console.log('[Room] Host restored - broadcasting authoritative state');
             channel.send({
               type: 'broadcast',
               event: 'room_settings',
@@ -479,8 +454,6 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
             });
 
           } else {
-            // GUEST: Request sync
-            console.log('[Room] Guest restored - requesting state');
             channel.send({
               type: 'broadcast',
               event: 'request_timer_state'

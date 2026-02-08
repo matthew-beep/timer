@@ -26,7 +26,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                 
                 // Handle refresh token errors gracefully
                 if (error?.message?.includes('Refresh Token')) {
-                    console.log('🧹 Invalid refresh token detected, clearing session...');
                     await supabase.auth.signOut();
                     useAuthStore.setState({ 
                         user: null, 
@@ -43,12 +42,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         // 3. Setup centralized listener
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                console.log('🔔 AuthProvider Event:', event, 'Session:', !!session?.user);
-
-                // ✅ CRITICAL: Handle INITIAL_SESSION event
+                // Handle INITIAL_SESSION event
                 if (event === 'INITIAL_SESSION') {
                     if (session?.user && !hasProcessedInitialSession.current) {
-                        console.log('🔵 Processing initial session for:', session.user.email);
                         hasProcessedInitialSession.current = true;
                         
                         // Update auth store
@@ -69,13 +65,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                 }
 
                 // Skip token refresh events
-                if (event === 'TOKEN_REFRESHED') {
-                    console.log('✅ Token refreshed successfully');
-                    return;
-                }
+                if (event === 'TOKEN_REFRESHED') return;
 
                 if (event === 'SIGNED_IN' && session?.user) {
-                    console.log('🟢 SIGNED_IN event for:', session.user.email);
                     useAuthStore.setState({
                         session,
                         user: session.user,
@@ -90,7 +82,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                 }
 
                 if (event === 'SIGNED_OUT') {
-                    console.log('🔴 SIGNED_OUT event - cleaning up');
                     hasProcessedInitialSession.current = false;
                     
                     // Clear notes
@@ -117,10 +108,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             }
         );
 
-        return () => {
-            console.log('🧹 Cleanup AuthProvider listener');
-            subscription.unsubscribe();
-        };
+        return () => subscription.unsubscribe();
     }, [initialize, initializeNotes, handleSignIn]);
 
     return <>{children}</>;

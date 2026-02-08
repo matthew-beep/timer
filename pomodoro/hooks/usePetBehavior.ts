@@ -82,15 +82,7 @@ export const usePetBehavior = (petId: string, mode: 'focus' | 'break', container
         }
     
         const actualDirection = targetX > currentX ? 'right' : 'left';
-        console.log('🧮 computeWalkTarget:', {
-            currentX: currentX.toFixed(1),
-            targetX: targetX.toFixed(1),
-            computedDirection: direction,
-            actualDirection,
-            needsCorrection: direction !== actualDirection,
-        });
         if (direction !== actualDirection) {
-            console.log('⚠️ Direction mismatch detected, correcting!');
             direction = actualDirection;
         }
         return { targetX, direction };
@@ -98,10 +90,7 @@ export const usePetBehavior = (petId: string, mode: 'focus' | 'break', container
 
     const goToNextStep = () => {
 
-        if (!isMountedRef.current) {
-            console.log('🚫 goToNextStep called but component unmounted, aborting');
-            return;
-        }
+        if (!isMountedRef.current) return;
 
         currentStepIndex.current += 1;
         if (currentStepIndex.current >= currentSequence.current.length) {
@@ -112,23 +101,9 @@ export const usePetBehavior = (petId: string, mode: 'focus' | 'break', container
     };
 
     const executeStep = (step: BehaviorStep) => {
-        if (!isMountedRef.current) {
-            console.log('🚫 executeStep called but component unmounted, aborting');
-            return;
-        }
+        if (!isMountedRef.current) return;
         if (!pet) return;
         const maxPos = effectiveWidth - pet.size;
-
-        console.log('🎬 Executing step:', {
-            pet: petId,
-            action: step.action,
-            currentX: xRef.current,
-            direction: state.direction,
-            container: effectiveWidth,
-            petExists: !!pet,
-            petSize: pet?.size,
-            effectiveWidth,
-        });
 
         if (step.distance) {
             if (maxPos <= 0) return;
@@ -140,15 +115,6 @@ export const usePetBehavior = (petId: string, mode: 'focus' | 'break', container
 
             const actualDistance = Math.abs(targetX - currentX);
             const duration = actualDistance / 320;
-
-            console.log('🚶 Movement:', {
-                pet: petId,
-                from: currentX,
-                to: targetX,
-                computedDirection: direction,
-                expectedDirection: targetX > currentX ? 'right' : 'left',
-                match: direction === (targetX > currentX ? 'right' : 'left') ? '✅' : '❌',
-            });
 
             xRef.current = targetX;
             animationCompleteRef.current = () => {
@@ -169,16 +135,6 @@ export const usePetBehavior = (petId: string, mode: 'focus' | 'break', container
             const actionDuration = randomInRange(step.duration);
             const lockedX = xRef.current;
 
-            console.log('🛑 STATIONARY:', {
-                pet: petId,
-                action: step.action,
-                currentX: lockedX,
-                settingX: lockedX,
-                settingDuration: 0,
-                settingAnimating: false,
-                waitingFor: `${actionDuration.toFixed(1)}s`,
-            });
-
             setState(prev => ({
                 ...prev,
                 x: lockedX,
@@ -191,20 +147,15 @@ export const usePetBehavior = (petId: string, mode: 'focus' | 'break', container
 
             setTimeout(() => {
                 if (!isMountedRef.current) return;
-                console.log('⏰ STATIONARY complete, moving to next step');
                 goToNextStepRef.current();
             }, actionDuration * 1000);
         }
     };
 
     const startNewSequence = () => {
-        if (!isMountedRef.current) {
-            console.log('🚫 startNewSequence called but component unmounted, aborting');
-            return;
-        }
+        if (!isMountedRef.current) return;
 
         if (!hasPlayedSpawnRef.current && pet.behaviors.spawn) {
-            console.log('🎬 Playing spawn animation:', pet.behaviors.spawn.name);
             hasPlayedSpawnRef.current = true;
             currentSequence.current = pet.behaviors.spawn.steps;
             currentStepIndex.current = 0;
@@ -295,9 +246,8 @@ export const usePetBehavior = (petId: string, mode: 'focus' | 'break', container
             t = setTimeout(() => startNewSequenceRef.current(), 0);
         }
         
-        // ✅ Cleanup
+        // Cleanup
         return () => {
-            console.log(`🧹 Cleaning up pet: ${petId}`);
             isMountedRef.current = false;
             hasPlayedSpawnRef.current = false;
             if (t) clearTimeout(t);

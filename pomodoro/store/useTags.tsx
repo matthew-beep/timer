@@ -91,7 +91,6 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
 
     const mergedTags = Array.from(tagMap.values());
     set({ tags: mergedTags });
-    console.log("Synced tags:", mergedTags);
 
     // If guest, keep localStorage in sync
     const { data: { user } } = await supabase.auth.getUser();
@@ -233,7 +232,6 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
   },
 
   addTagToNote: async (noteId: string, tagId: string) => {
-    console.log("adding tag to note: ", noteId, tagId);
     const { data: { user } } = await supabase.auth.getUser();
     const { pendingOps } = get();
 
@@ -298,7 +296,6 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
   },
 
   removeTagFromNote: async (noteId: string, tagId: string) => {
-    console.log("removing tag from note: ", noteId, tagId);
     const { data: { user } } = await supabase.auth.getUser();
     const { pendingOps } = get();
 
@@ -364,7 +361,6 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
   flushTagOperations: async (noteId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      console.log('⚠️ No user, skipping tag operations flush');
       return; // Guest operations are already in localStorage
     }
 
@@ -372,7 +368,6 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
     const ops = pendingOps.get(noteId);
 
     if (!ops || (ops.toAdd.size === 0 && ops.toRemove.size === 0)) {
-      console.log(`⚠️ No operations to flush for note ${noteId}`);
       return;
     }
 
@@ -380,16 +375,10 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
     const tagsToAdd = Array.from(ops.toAdd).filter(tagId => !ops.toRemove.has(tagId));
     const tagsToRemove = Array.from(ops.toRemove);
 
-    console.log(`🔄 Flushing tag operations for note ${noteId}:`, {
-      toAdd: tagsToAdd,
-      toRemove: tagsToRemove,
-      userId: user.id
-    });
 
     try {
       // Batch delete first (remove tags)
       if (tagsToRemove.length > 0) {
-        console.log(`🗑️ Deleting ${tagsToRemove.length} tag associations...`);
         const { data: deleteData, error: deleteError } = await supabase
           .from('note_tags')
           .delete()
@@ -401,12 +390,10 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
           console.error('❌ Delete error:', deleteError);
           throw deleteError;
         }
-        console.log(`✅ Deleted ${deleteData?.length || 0} tag associations`);
       }
 
       // Batch insert (add tags) - use insert instead of upsert to avoid conflicts
       if (tagsToAdd.length > 0) {
-        console.log(`➕ Inserting ${tagsToAdd.length} tag associations...`);
         const inserts = tagsToAdd.map(tagId => ({
           note_id: noteId,
           tag_id: tagId
@@ -422,12 +409,9 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
           // If it's a unique constraint violation, the tag might already exist
           // This is okay - we can ignore it
           if (insertError.code === '23505') {
-            console.log('⚠️ Some tags already exist (unique constraint), continuing...');
           } else {
             throw insertError;
           }
-        } else {
-          console.log(`✅ Inserted ${insertData?.length || 0} tag associations`);
         }
       }
 
@@ -435,7 +419,6 @@ export const useTagsStore = create<TagsStore>((set, get) => ({
       pendingOps.delete(noteId);
       set({ pendingOps: new Map(pendingOps) });
 
-      console.log(`✅ Successfully synced tag operations for note ${noteId}`);
     } catch (err: unknown) {
       console.error('❌ Failed to flush tag operations:', err);
       const error = err as { message?: string; code?: string; details?: string; hint?: string };

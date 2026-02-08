@@ -214,7 +214,6 @@ export const useNotesStore = create<NotesStore>()(
         const user = getCurrentUser();
         // 1. Check user
         if (!user) {
-          console.log('No user, skipping Supabase load');
           return;
         }
 
@@ -223,7 +222,6 @@ export const useNotesStore = create<NotesStore>()(
         const hasGuestNotes = notes.length > 0 && !hasLoadedFromSupabase;
 
         if (hasGuestNotes) {
-          console.log("Found guest notes during load attempt. Aborting load to prompt merge.");
           // If not already prompting, trigger the prompt logic
           if (mergeState === 'idle') {
             get().handleSignIn();
@@ -233,12 +231,10 @@ export const useNotesStore = create<NotesStore>()(
 
         // 2. Race guard check
         if (get().isFetchingFromSupabase) {
-          console.log('⏭️  Fetch already in progress, skipping');
           return;
         }
 
         try {
-          console.log('Loading notes and tags from Supabase...');
           // 3. Set flag
           set({ isFetchingFromSupabase: true });
 
@@ -262,7 +258,6 @@ export const useNotesStore = create<NotesStore>()(
 
           if (notesResponse.error) throw notesResponse.error;
           if (tagsResponse.error) throw tagsResponse.error;
-          console.log("fetched data: ", notesResponse.data, tagsResponse.data);
           
           const masterTags = tagsResponse.data || [];
           useTagsStore.getState().syncTags(masterTags);
@@ -279,8 +274,6 @@ export const useNotesStore = create<NotesStore>()(
           });
 
 
-          console.log(`Loaded ${transformedNotes.length} notes from Supabase`);
-          console.log("transformed notes: ", transformedNotes);
           set({
             notes: transformedNotes,
             hasLoadedFromSupabase: true,
@@ -307,7 +300,6 @@ export const useNotesStore = create<NotesStore>()(
         const { dirtyNoteIds } = get();
         if (dirtyNoteIds.size === 0) return;
 
-        console.log(`Queueing sync for ${dirtyNoteIds.size} dirty notes...`);
 
         // Clear existing timeout
         if (syncTimeout) {
@@ -324,16 +316,13 @@ export const useNotesStore = create<NotesStore>()(
         const { dirtyNoteIds, syncState } = get();
 
         if (syncState === 'syncing') {
-          console.log('Sync already in progress');
           return;
         }
 
         if (dirtyNoteIds.size === 0) {
-          console.log('No dirty notes to retry');
           return;
         }
 
-        console.log(`Retrying sync for ${dirtyNoteIds.size} notes...`);
         await get().syncToSupabase();
       },
 
@@ -350,7 +339,6 @@ export const useNotesStore = create<NotesStore>()(
         const user = getCurrentUser();
         if (!user) {
           telemetry.track('notes.sync.skipped', { reason: 'no_user' });
-          console.log('No user, skipping Supabase sync');
           return;
         }
 
@@ -358,7 +346,6 @@ export const useNotesStore = create<NotesStore>()(
         const dirtyNotes = notes.filter(note => dirtyNoteIds.has(note.id));
         if (dirtyNotes.length === 0) {
           telemetry.track('notes.sync.skipped', { reason: 'no_dirty_notes' });
-          console.log('No dirty notes to sync');
           return;
         }
 
@@ -366,7 +353,6 @@ export const useNotesStore = create<NotesStore>()(
           noteCount: dirtyNotes.length,
           retryCount
         });
-        console.log(`Starting sync: ${dirtyNotes.length} notes (attempt ${retryCount + 1})`);
         set({ syncState: 'syncing' });
         try {
           const supabaseNotes = dirtyNotes.map(note =>
@@ -392,7 +378,6 @@ export const useNotesStore = create<NotesStore>()(
                 error: error.message,
                 errorCode: error.code
               });
-              console.log(`⏳ Retry ${retryCount + 1}/${MAX_RETRIES} in ${delay}ms`);
 
               set({
                 syncState: 'error',
@@ -438,7 +423,6 @@ export const useNotesStore = create<NotesStore>()(
             return;
           }
           // Success - reset retry count
-          console.log(`✅ Synced ${dirtyNotes.length} notes to Supabase`);
 
           timer.end({ success: true, noteCount: dirtyNotes.length });
           telemetry.track('notes.sync.success', {
@@ -460,7 +444,6 @@ export const useNotesStore = create<NotesStore>()(
 
           if (isTransient && retryCount < MAX_RETRIES) {
             const delay = BASE_DELAY_MS * Math.pow(2, retryCount);
-            console.log(`⏳ Retry ${retryCount + 1}/${MAX_RETRIES} in ${delay}ms`);
 
             telemetry.track('notes.sync.retry', {
               noteCount: dirtyNotes.length,
@@ -615,7 +598,6 @@ export const useNotesStore = create<NotesStore>()(
 
         // If authenticated, delete from Supabase IMMEDIATE (no debounce)
         if (user) {
-          console.log(`Deleting note ${id} immediately...`);
 
           try {
             const { error } = await supabase
@@ -628,7 +610,6 @@ export const useNotesStore = create<NotesStore>()(
               console.error('Error deleting note from Supabase:', error);
               // Rollback: Restore the note
               if (deletedNote) {
-                console.log('Rolling back delete due to error');
                 set((state) => ({
                   notes: [...state.notes, deletedNote],
                   // Add back to pending deletes if you want to retry, or just clear err
@@ -637,7 +618,6 @@ export const useNotesStore = create<NotesStore>()(
               }
               throw error; // Re-throw to be caught below
             } else {
-              console.log('Deleted note from Supabase');
               // Clear from pending deletes
               set((state) => ({
                 syncState: 'idle',
@@ -661,13 +641,10 @@ export const useNotesStore = create<NotesStore>()(
 
         // Guard: Don't re-trigger if already handling merge
         if (mergeState === 'prompt') {
-          console.log('Merge already in progress, skipping');
           return;
         }
 
         if (notes.length > 0 && !hasLoadedFromSupabase) {
-          console.log("notes: ", notes);
-          console.log(`Found ${notes.length} guest notes. Prompting for merge.`);
 
           // set guest notes as merge and set merge
           set({
@@ -693,7 +670,6 @@ export const useNotesStore = create<NotesStore>()(
           return;
         }
 
-        console.log(`Merging ${guestNotes.length} guest notes to Supabase...`);
         set({ syncState: 'syncing' });
 
         try {
@@ -711,7 +687,6 @@ export const useNotesStore = create<NotesStore>()(
 
           if (error) throw error;
 
-          console.log('Merge successful. Loading combined notes...');
 
           // 3. Clear guest state
           set({ guestNotes: [], mergeState: 'idle' });
@@ -725,13 +700,11 @@ export const useNotesStore = create<NotesStore>()(
           // Optional: Keep mergeState='prompt' to allow retry?
           // For now, let's reset to avoid stuck state, but maybe log it.
           // Or better: Restore guest notes to 'notes' so user doesn't lose them?
-          console.log('Restoring guest notes locally due to error.');
           set({ notes: guestNotes, mergeState: 'idle', syncState: 'error' });
         }
       },
 
       discardMerge: async () => {
-        console.log('Discarding guest notes.');
         set({ guestNotes: [], mergeState: 'idle' });
         await get().loadFromSupabase();
       },

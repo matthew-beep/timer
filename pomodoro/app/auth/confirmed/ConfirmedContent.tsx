@@ -17,8 +17,6 @@ export default function ConfirmedContent() {
         const token_hash = searchParams.get('token_hash');
         const type = searchParams.get('type');
 
-        console.log('Token hash from URL:', { token_hash: !!token_hash, type });
-
         if (token_hash && type) {
           const { data, error } = await supabase.auth.verifyOtp({
             token_hash,
@@ -27,7 +25,6 @@ export default function ConfirmedContent() {
 
           if (error) throw error;
 
-          console.log('✅ Email verified successfully:', data);
           setStatus('success');
 
           localStorage.setItem('email_confirmed', Date.now().toString());
@@ -39,7 +36,6 @@ export default function ConfirmedContent() {
           const { data: { session } } = await supabase.auth.getSession();
           
           if (session) {
-            console.log('✅ Already has session');
             setStatus('success');
             setTimeout(() => {
               router.push('/');

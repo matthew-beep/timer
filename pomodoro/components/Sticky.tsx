@@ -53,9 +53,8 @@ export default function StickyNote({
   const resizeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const setExpandedNote = useNotesStore((s) => s.setExpandedNote);
 
-  const handleColorChange = (color: string) => {
-    //updateNote(id, { color });
-    console.log("color changed to: ", color);
+  const handleColorChange = () => {
+    // Color change handled via StickyContextMenu
   };
 
   const bgColor = theme === "dark" ? DARK_STICKY_COLORS[colorIndex] : LIGHT_STICKY_COLORS[colorIndex];

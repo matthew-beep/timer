@@ -34,8 +34,6 @@ export default function Timer() {
   const endRoom = useRoomStore(s => s.endRoom);
   const leaveRoom = useRoomStore(s => s.leaveRoom);
 
-  useEffect(() => { console.log("Room Name:", roomName) }, [roomName]);
-
   const method = useTimer(s => s.method);
 
   const minutes = Math.floor(timeRemaining / 60)
@@ -96,8 +94,8 @@ export default function Timer() {
         await audioRef.current.play();
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
-      } catch (e) {
-        console.log("Audio priming failed, will try again on next click");
+      } catch {
+        // Audio priming failed - will retry on next user interaction
       }
     }
     start(); // Your Zustand start function
@@ -247,10 +245,6 @@ export default function Timer() {
       <audio
         ref={audioRef} src="/sounds/small-dog.wav"
         onEnded={() => {
-          console.log('Audio finished playing!');
-          // Call your function here
-          // handleAudioComplete();
-          // TODO: need to find when 4 pomodoros complete to switch to long break
           complete();
           clearCompletion();
           start();

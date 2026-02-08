@@ -52,29 +52,14 @@ export default function StickyCanvas({
     }
   }, [editCanvas, paths]);
 
-  /*
-
-  useEffect(() => {
-    if (!canvasRef.current) return;
-    console.log("isActive changed: ", isActive, " for note id: ", id);
-    if (!isActive) {
-      console.log("disabling edit mode for note id: ", id);
-      canvasRef.current.eraseMode(false);
-    }
-  }, [isActive]);
-*/
-
   const saveEditCanvas = async (editMode: boolean) => {
 
 
-    console.log("saveEditCanvas called with editMode: ", editMode);
     if (editMode) {
       if (!canvasRef.current) return;
       try {
         const paths = await canvasRef.current.exportPaths();
         const svgElement = await canvasRef.current.exportSvg();
-        console.log("Saved paths: ", paths);
-        console.log("inline: ", svgElement);
         updateNote(id, { paths, inlineSvg: svgElement });
         setEditCanvas(false);
       } catch {

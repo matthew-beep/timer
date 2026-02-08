@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Modal, { ModalSection, ModalDivider } from "./Modal";
 import { Button } from "./Button";
 import { useAuthStore } from "@/store/useAuth";
@@ -67,10 +67,6 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     clearError();
     setSuccessMessage(null);
   };
-
-  useEffect(() => {
-    console.log("isLoading changed: ", isLoading);
-  }, [isLoading]);
 
   return (
     <Modal
