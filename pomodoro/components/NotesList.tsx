@@ -7,12 +7,15 @@ import Modal, { ModalSection } from "@/components/Modal";
 import { IoAddOutline, IoSearchOutline } from 'react-icons/io5';
 import { Button } from "@/components/Button";
 import { useTagsStore } from '@/store/useTags';
+import { useThemeStore } from '@/store/useTheme';
 import { TagPill } from '@/components/TagPill';
 
 export default function NotesList({ showList, setShowList }: { showList: boolean, setShowList: (mode: "grid" | "list") => void }) {
   const notes = useNotesStore((s) => s.notes);
+  const addNewNote = useNotesStore((s) => s.addNewNote);
   const tags = useTagsStore((s) => s.tags);
   const deleteTag = useTagsStore((s) => s.deleteTag);
+  const theme = useThemeStore((s) => s.theme);
   const [searchQuery, setSearchQuery] = useState("");
   const [newTagName, setNewTagName] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);  
@@ -53,17 +56,16 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
   const handleCreateTag = async (newTagName: string) => {
     if (!newTagName.trim()) return;
     try {
-      // Assuming createTag returns the new tag or its ID
       await useTagsStore.getState().createTag(newTagName.trim());
-      
-      // Optional: auto-select the tag you just created
-      //if (newTag?.id) setSelectedTagIds(prev => [...prev, newTag.id]);
-      
       setNewTagName('');
       setAddTagSection(false);
     } catch (error) {
       console.error("Error creating tag:", error);
     }
+  };
+
+  const handleCreateNote = async () => {
+    await addNewNote(theme);
   };
 
   return (
@@ -220,7 +222,11 @@ export default function NotesList({ showList, setShowList }: { showList: boolean
               </ModalSection>
 
               <div className="p-4 mt-auto">
-                <Button variant="glassPlain" className="flex h-10 justify-center items-center rounded-xl text-text w-full gap-2 border border-white/5 hover:bg-white/5">
+                <Button
+                  variant="glassPlain"
+                  className="flex h-10 justify-center items-center rounded-xl text-text w-full gap-2 border border-white/5 hover:bg-white/5"
+                  onClick={handleCreateNote}
+                >
                   <IoAddOutline size={20} />
                   <span className="text-sm font-medium">Create New Note</span>
                 </Button>

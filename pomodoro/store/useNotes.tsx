@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { v4 as uuidv4 } from "uuid";
 import { supabase } from "@/lib/supabase";
 import type { CanvasPath } from "react-sketch-canvas";
 import { JSONContent } from '@tiptap/core';
@@ -9,6 +10,8 @@ import { telemetry } from "@/lib/telemetry";
 import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
 import { Tag, NoteTagJoinRow } from '@/types/index';
 import { useTagsStore } from "./useTags";
+
+const EMPTY_NOTE_TEXT: JSONContent = { type: 'doc', content: [{ type: 'paragraph' }] };
 
 export type StickyNote = {
   id: string;
@@ -52,6 +55,7 @@ type NotesStore = {
 
   // Local actions (optimistic updates)
   addNote: (note: StickyNote) => Promise<void>;
+  addNewNote: (theme: 'light' | 'dark') => Promise<void>;
   updateNote: (id: string, updates: Partial<StickyNote>) => Promise<void>;
   deleteNote: (id: string) => Promise<void>;
   setActiveNote: (id: string) => void;
@@ -516,6 +520,33 @@ export const useNotesStore = create<NotesStore>()(
 
         // Queue sync if authenticated
         get().queueSync();
+      },
+
+      addNewNote: async (theme) => {
+        const { notes } = get();
+        const stickyColor = theme === "dark" ? DARK_STICKY_COLORS[0] : LIGHT_STICKY_COLORS[0];
+        const now = new Date().toISOString();
+        const lastNoteX = notes.length > 0 ? notes[notes.length - 1].x + 20 : 0;
+        const lastNoteY = notes.length > 0 ? notes[notes.length - 1].y + 20 : 0;
+        const maxZ = notes.length > 0 ? Math.max(...notes.map((n) => n.zIndex)) : 0;
+
+        const newNote: StickyNote = {
+          id: uuidv4(),
+          x: lastNoteX,
+          y: lastNoteY,
+          text: EMPTY_NOTE_TEXT,
+          plainText: "",
+          color: stickyColor,
+          colorIndex: 0,
+          zIndex: maxZ + 1,
+          width: DEFAULT_NOTE_WIDTH,
+          height: DEFAULT_NOTE_HEIGHT,
+          mode: "text",
+          dateCreated: now,
+          lastEdited: now,
+        };
+
+        await get().addNote(newNote);
       },
 
       updateNote: async (id, updates) => {

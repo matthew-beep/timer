@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNotesStore } from "@/store/useNotes";
 import { useThemeStore } from "@/store/useTheme";
 import { Button } from "./Button";

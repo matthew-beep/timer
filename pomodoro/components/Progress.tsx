@@ -1,25 +1,21 @@
 'use client'
 import { motion, AnimatePresence } from 'motion/react';
 import { useTimer } from '@/store/useTimer';
-import { useNotesStore, DEFAULT_NOTE_WIDTH, DEFAULT_NOTE_HEIGHT } from '@/store/useNotes';
+import { useNotesStore } from '@/store/useNotes';
 import { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { IoSettingsOutline, IoAddOutline } from 'react-icons/io5';
 import { Button } from '@/components/Button';
 import { LuLayoutGrid, LuList } from "react-icons/lu";
 import { useThemeStore } from '@/store/useTheme';
-import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
-import { v4 as uuidv4 } from 'uuid';
 import { PetRenderer } from './Pet';
 import { usePetStore } from "@/store/usePetStore";
 import { useTagsStore } from "@/store/useTags";
 
 import TimerToolbar from './TimerToolbar';
-const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
 
 export default function ProgressBar() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const notes = useNotesStore((s) => s.notes);
   const timeRemaining = useTimer((s) => s.timeRemaining);
   const duration = useTimer((s) => s.duration);
   const progress = 1 - timeRemaining / duration;
@@ -48,7 +44,7 @@ export default function ProgressBar() {
   };
 
   const theme = useThemeStore((s) => s.theme);
-  const addNote = useNotesStore((s) => s.addNote);
+  const addNewNote = useNotesStore((s) => s.addNewNote);
   const activePets = usePetStore((s) => s.activePets);
   useLayoutEffect(() => {
     const el = containerRef.current;
@@ -63,16 +59,7 @@ export default function ProgressBar() {
     return () => observer.disconnect();
   }, []);
 
-  const addSticky = () => {
-    const stickyColor = theme == "dark" ? DARK_STICKY_COLORS[0] : LIGHT_STICKY_COLORS[0];
-    const id = uuidv4();
-    const lastNoteX = notes.length > 0 ? notes[notes.length - 1].x + 20 : 0;
-    const lastNoteY = notes.length > 0 ? notes[notes.length - 1].y + 20 : 0;
-    const now = new Date().toISOString();
-    const maxZ = notes.length > 0 ? Math.max(...notes.map(n => n.zIndex)) : 0;
-
-    addNote({ id, x: lastNoteX, y: lastNoteY, text: emptyText, plainText: "", color: stickyColor, colorIndex: 0, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now });
-  }
+  const addSticky = () => addNewNote(theme);
 
   return (
     <div className="w-screen fixed bottom-0 left-0 h-auto flex flex-col pointer-events-none z-50">

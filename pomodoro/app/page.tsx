@@ -31,6 +31,7 @@ export default function Home() {
   const timeRemaining = useTimer((s) => s.timeRemaining);
   const duration = useTimer((s) => s.duration);
   const isNoteExpanded = useNotesStore((s) => s.isNoteExpanded);
+  const expandedNoteId = useNotesStore((s) => s.expandedNoteId);
 
   const showNotch = collapsed && typeof timeRemaining === "number" && typeof duration === "number";
 
@@ -87,7 +88,7 @@ export default function Home() {
         </Overlay>
 
         <Overlay isOpen={isNoteExpanded} onClose={() => useNotesStore.getState().setExpandedNote(null)} blur="xl" slide="top">
-          <ExpandedNote />
+          <ExpandedNote key={expandedNoteId ?? "none"} />
         </Overlay>
 
         <Overlay isOpen={roomModalOpen} onClose={() => setRoomModalOpen(false)} blur="xl" slide="top">

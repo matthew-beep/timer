@@ -12,13 +12,23 @@ interface OverlayProps {
     slide?: "left" | "right" | "top" | "bottom";
 }
 
+const BLUR_CLASSES: Record<string, string> = {
+    xs: "backdrop-blur-xs",
+    sm: "backdrop-blur-sm",
+    md: "backdrop-blur-md",
+    lg: "backdrop-blur-lg",
+    xl: "backdrop-blur-xl",
+    "2xl": "backdrop-blur-2xl",
+    "3xl": "backdrop-blur-3xl",
+};
+
 export default function Overlay({ isOpen, onClose, children, contentClassName, blur = "xs", slide = "right" }: OverlayProps) {
 
     const slideVariants = {
         left: { initial: { x: -200, opacity: 0 }, animate: { x: 0, opacity: 1 }, exit: { x: -200, opacity: 0 } },
         right: { initial: { x: 200, opacity: 0 }, animate: { x: 0, opacity: 1 }, exit: { x: 200, opacity: 0 } },
         top: { initial: { y: -200, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: { y: -200, opacity: 0 } },
-        bottom: { initial: { y: 200, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: { y: 200, opacity : 1 } },
+        bottom: { initial: { y: 200, opacity: 0 }, animate: { y: 0, opacity: 1 }, exit: { y: 200, opacity: 0 } },
     };
     return (
         <AnimatePresence>
@@ -30,7 +40,7 @@ export default function Overlay({ isOpen, onClose, children, contentClassName, b
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className={`fixed inset-0 bg-black/20 z-40 backdrop-blur-${blur}`}
+                        className={`fixed inset-0 bg-black/20 z-40 ${BLUR_CLASSES[blur] ?? BLUR_CLASSES.xs}`}
                     />
 
                     {/* Content panel - NO FLEX, just a positioned container */}

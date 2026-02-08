@@ -1,40 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useNotesStore, DEFAULT_NOTE_WIDTH, DEFAULT_NOTE_HEIGHT } from '@/store/useNotes';
+import { useNotesStore } from '@/store/useNotes';
 import { Button } from './Button';
-import { v4 as uuidv4 } from 'uuid';
-import { IoSettingsOutline, IoAddOutline, IoPersonOutline } from 'react-icons/io5';
+import { IoSettingsOutline } from 'react-icons/io5';
 import { useThemeStore } from '@/store/useTheme';
 import { useTimer } from '@/store/useTimer';
 import AuthButton from './AuthButton';
-import RoomModal from './RoomModal';
 import RoomStatusButton from './RoomStatusButton';
-
-import { DARK_STICKY_COLORS, LIGHT_STICKY_COLORS } from "@/components/Themes";
-
-
-const emptyText = { type: 'doc', content: [{ type: 'paragraph' }] };
-
 
 export default function Header({ showSettings, setShowSettings, setShowAuthModal, showAuthModal, setRoomModalOpen, roomModalOpen }: { showSettings: boolean, setShowSettings: (show: boolean) => void, setShowAuthModal: (show: boolean) => void, showAuthModal: boolean, setRoomModalOpen: (show: boolean) => void, roomModalOpen: boolean }) {
 
-    const addNote = useNotesStore((s) => s.addNote);
-    const notes = useNotesStore((s) => s.notes);
+    const addNewNote = useNotesStore((s) => s.addNewNote);
     const theme = useThemeStore((s) => s.theme);
     const pomodoroCount = useTimer((s) => s.pomodoroCount);
 
-    const addSticky = () => {
-        const stickyColor = theme == "dark" ? DARK_STICKY_COLORS[0] : LIGHT_STICKY_COLORS[0];
-        const id = uuidv4();
-        console.log("add sticky: ", id);
-        const lastNoteX = notes.length > 0 ? notes[notes.length - 1].x + 20 : 0;
-        const lastNoteY = notes.length > 0 ? notes[notes.length - 1].y + 20 : 0;
-        const now = new Date().toISOString();
-        const maxZ = notes.length > 0
-            ? Math.max(...notes.map(n => n.zIndex))
-            : 0;
-
-        addNote({ id: id, x: lastNoteX, y: lastNoteY, text: emptyText, plainText: "", color: stickyColor, colorIndex: 0, zIndex: maxZ + 1, width: DEFAULT_NOTE_WIDTH, height: DEFAULT_NOTE_HEIGHT, mode: "text", dateCreated: now, lastEdited: now });
-    }
     // probably want to debounce the sync menu
     return (
         <div className="rounded-md flex justify-between py-10 px-5 relative z-10">
@@ -56,14 +33,6 @@ export default function Header({ showSettings, setShowSettings, setShowAuthModal
                 {/* Room Status Button - shows for hosts and joined users */}
                 <RoomStatusButton onRoomModalOpen={() => setRoomModalOpen(true)} />
 
-                {false &&
-                    <Button
-                        className="flex items-center justify-center p-2 rounded-full"
-                        onClick={addSticky}
-                        variant='glassPlain'
-                    >
-                        <IoAddOutline size={18} strokeWidth={0.5} />
-                    </Button>}
                 <Button
                     className="flex items-center justify-center p-2 rounded-full"
                     onClick={() => setShowSettings(!showSettings)}
